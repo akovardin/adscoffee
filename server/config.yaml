@@ -1,0 +1,54 @@
+pipelines:
+  - name: google
+
+    input:
+      name: rtb
+    
+    requests:
+      - name: native
+      - name: banner
+
+    stages:
+      - name: banners
+      - name: limits
+      - name: targeting
+      - name: rotation
+
+    targetings:
+      - name: geo
+      - name: ua
+    
+    formats:
+      - name: native
+      - name: banner
+    
+    output:
+      name: rtb # rtb
+
+
+  - name: amazon
+    
+    input:
+      name: rtb
+
+    requests:
+      - name: native
+      - name: banner
+
+    stages:
+      - name: banners
+      - name: limits
+      - name: targeting
+      - name: rotation
+      - name: process
+
+    targetings:
+      - name: geo
+      - name: ua
+
+    formats:
+      - name: native
+      - name: banner
+        
+    output:
+      name: rtb # rtb
