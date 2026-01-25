@@ -12,6 +12,7 @@ require (
 )
 
 require (
+	github.com/go-chi/chi/v5 v5.2.4
 	go.uber.org/config v1.4.0
 	go.uber.org/dig v1.19.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect

@@ -1,6 +1,7 @@
 package domain
 
 type Targeting interface {
-	Filter()
 	Name() string
+	Copy(cfg map[string]any) Targeting
+	Filter()
 }

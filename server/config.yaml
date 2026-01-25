@@ -1,54 +1,55 @@
 pipelines:
   - name: google
-
+    route: /google
     input:
-      name: rtb
-    
-    requests:
-      - name: native
-      - name: banner
-
+      name: inputs.rtb
     stages:
-      - name: banners
-      - name: limits
-      - name: targeting
-      - name: rotation
-
+      - name: stages.banners
+      - name: stages.limits
+      - name: stages.targeting
+      - name: stages.rotation
     targetings:
-      - name: geo
-      - name: ua
-    
+      - name: targetings.apps
+      - name: targetings.geo
     formats:
-      - name: native
-      - name: banner
-    
+      - name: formats.native
+      - name: formats.banner
     output:
-      name: rtb # rtb
-
+      name: outputs.rtb
 
   - name: amazon
-    
+    route: /amazon
     input:
-      name: rtb
-
-    requests:
-      - name: native
-      - name: banner
-
+      name: inputs.rtb
     stages:
-      - name: banners
-      - name: limits
-      - name: targeting
-      - name: rotation
-      - name: process
-
+      - name: stages.banners
+      - name: stages.limits
+      - name: stages.targeting
+      - name: stages.rotation
     targetings:
-      - name: geo
-      - name: ua
-
+      - name: targetings.apps
+      - name: targetings.geo
     formats:
-      - name: native
-      - name: banner
-        
+      - name: formats.native
+      - name: formats.banner
     output:
-      name: rtb # rtb
+      name: outputs.rtb # rtb
+
+  - name: kodikapusta
+    route: /kodikapusta
+    input:
+      name: inputs.web
+    stages:
+      - name: stages.banners
+        config:
+          example: example
+      - name: stages.limits
+      - name: stages.targeting
+      - name: stages.rotation
+    targetings:
+      - name: targetings.apps
+      - name: targetings.geo
+    formats:
+      - name: formats.banner
+    output:
+      name: outputs.web # rtb

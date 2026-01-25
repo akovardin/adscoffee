@@ -20,6 +20,5 @@ func New(inputs []domain.Input) *Inputs {
 }
 
 func (i *Inputs) Get(name string, cfg map[string]any) domain.Input {
-	// use config
-	return i.plugins[name]
+	return i.plugins[name].Copy(cfg)
 }

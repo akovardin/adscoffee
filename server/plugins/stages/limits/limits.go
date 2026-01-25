@@ -1,5 +1,24 @@
 package limits
 
+import (
+	"context"
+
+	"go.ads.coffee/server/domain"
+	"go.uber.org/fx"
+)
+
+var Module = fx.Module(
+	"stages.limits",
+
+	fx.Provide(
+		fx.Annotate(
+			New,
+			fx.As(new(domain.Stage)),
+			fx.ResultTags(`group:"stages"`),
+		),
+	),
+)
+
 type Limits struct{}
 
 func New() *Limits {
@@ -7,5 +26,13 @@ func New() *Limits {
 }
 
 func (l *Limits) Name() string {
-	return "limits"
+	return "stages.limits"
+}
+
+func (l *Limits) Copy(cfg map[string]any) domain.Stage {
+	return &Limits{}
+}
+
+func (l *Limits) Process(ctx context.Context, state *domain.State) {
+	// process limits
 }

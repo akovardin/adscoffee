@@ -7,6 +7,8 @@
 - https://www.youtube.com/watch?v=qerWv9JTlo8&list=PLJTW0ZQ22rrFwoMuJdyIhtryfyJYghrvd&index=3
 - https://github.com/GopherConRu/talks/blob/main/2020/Designing%20Pluggable%20Idiomatic%20Go%20Applications%20-%20Mark%20Bates.pdf
 
+Данные в стейте прокидываются через контекст. Это поможет прокинуть параметры из входящего плагина в исходщие плагины
+
 ## Caddy
 
 https://caddyserver.com/docs/extending-caddy

@@ -2,14 +2,12 @@ package main
 
 import (
 	"context"
-	"net/http"
 
 	"go.uber.org/config"
 	"go.uber.org/fx"
 
 	cfg "go.ads.coffee/server/config"
-	"go.ads.coffee/server/domain"
-	"go.ads.coffee/server/pipeline"
+	"go.ads.coffee/server/internal/server"
 	"go.ads.coffee/server/plugins"
 )
 
@@ -18,7 +16,7 @@ func main() {
 		fx.Provide(
 			func() (cfg.Config, error) {
 
-				base := config.File("config.yaml")
+				base := config.File("/Users/artem/projects/adscoffee/platform/server/config.yaml")
 
 				provider, err := config.NewYAML(base)
 				if err != nil {
@@ -36,6 +34,7 @@ func main() {
 		),
 
 		plugins.Module,
+		server.Module,
 
 		fx.Invoke(
 			start,
@@ -43,29 +42,6 @@ func main() {
 	).Run()
 }
 
-func start(manager *pipeline.Manager) {
-	r, _ := http.NewRequest(http.MethodGet, "", nil)
-	w := &Response{}
-
-	state := domain.State{
-		Request:  r,
-		Response: w,
-	}
-
-	manager.Process(context.Background(), state)
-}
-
-type Response struct {
-}
-
-func (r *Response) Write(b []byte) (int, error) {
-	return 0, nil
-}
-
-func (r *Response) Header() http.Header {
-	return http.Header{}
-}
-
-func (r *Response) WriteHeader(statusCode int) {
-
+func start(server *server.Server) {
+	server.Start(context.Background())
 }

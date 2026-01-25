@@ -3,15 +3,20 @@ package targetings
 import "go.ads.coffee/server/domain"
 
 type Targetings struct {
-	list []domain.Targeting
+	list map[string]domain.Targeting
 }
 
 func New(list []domain.Targeting) *Targetings {
+	plugins := map[string]domain.Targeting{}
+	for _, targeting := range list {
+		plugins[targeting.Name()] = targeting
+	}
+
 	return &Targetings{
-		list: list,
+		list: plugins,
 	}
 }
 
 func (i *Targetings) Get(name string, cfg map[string]any) domain.Targeting {
-	return nil
+	return i.list[name].Copy(cfg)
 }

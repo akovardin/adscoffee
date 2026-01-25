@@ -3,15 +3,20 @@ package outputs
 import "go.ads.coffee/server/domain"
 
 type Outputs struct {
-	list []domain.Output
+	list map[string]domain.Output
 }
 
 func New(list []domain.Output) *Outputs {
+	plugins := map[string]domain.Output{}
+	for _, output := range list {
+		plugins[output.Name()] = output
+	}
+
 	return &Outputs{
-		list: list,
+		list: plugins,
 	}
 }
 
 func (i *Outputs) Get(name string, cfg map[string]any) domain.Output {
-	return nil
+	return i.list[name].Copy(cfg)
 }

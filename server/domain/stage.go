@@ -1,7 +1,11 @@
 package domain
 
+import "context"
+
 type Stage interface {
 	Name() string
+	Copy(cfg map[string]any) Stage
+	Process(ctx context.Context, state *State)
 }
 
 type WithTargetings interface {

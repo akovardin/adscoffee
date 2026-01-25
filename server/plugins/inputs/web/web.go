@@ -1,4 +1,4 @@
-package rtb
+package web
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 )
 
 var Module = fx.Module(
-	"inputs.rtb",
+	"inputs.web",
 
 	fx.Provide(
 		fx.Annotate(
@@ -21,29 +21,27 @@ var Module = fx.Module(
 	),
 )
 
-type Rtb struct {
+type Web struct {
 }
 
-func New(config config.Config) *Rtb {
-	input := &Rtb{}
+func New(config config.Config) *Web {
+	input := &Web{}
 
 	return input
 }
 
-func (rtb *Rtb) Name() string {
-	return "inputs.rtb"
+func (s *Web) Name() string {
+	return "inputs.web"
 }
 
-func (rtb *Rtb) Copy(cfg map[string]any) domain.Input {
-	return &Rtb{} // copy
+func (s *Web) Copy(cfg map[string]any) domain.Input {
+	return &Web{} // copy
 }
 
-func (rtb *Rtb) Process(ctx context.Context, state *domain.State) bool {
+func (stages *Web) Process(ctx context.Context, state *domain.State) bool {
 
 	// обработка разных типов запросов тоже
 	// может быть вынесена в пллагины
-
-	// тут я могу понять какие форматы мне нужны
 
 	return true
 }

@@ -1,8 +1,9 @@
 package domain
 
-import "net/http"
+import "context"
 
 type Input interface {
-	Process(r *http.Request) bool
 	Name() string
+	Copy(cfg map[string]any) Input
+	Process(ctx context.Context, state *State) bool
 }
