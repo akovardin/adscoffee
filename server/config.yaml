@@ -52,4 +52,6 @@ pipelines:
     formats:
       - name: formats.banner
     output:
-      name: outputs.web # rtb
+      name: outputs.web
+      config:
+        example: example
