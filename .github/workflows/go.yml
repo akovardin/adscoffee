@@ -34,3 +34,4 @@ jobs:
         report: true
         chart: true
         amend: true
+        module-dir: server
