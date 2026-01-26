@@ -29,7 +29,5 @@ jobs:
           cd server && go test -v ./... -covermode=count -coverprofile=coverage.out
           cd server && go tool cover -func=coverage.out -o=coverage.out
 
-    - name: Go Coverage Badge  # Pass the `coverage.out` output to this action
-      uses: tj-actions/coverage-badge-go@v3
-      with:
-          filename: coverage.out
+    - name: Update coverage report
+      uses: ncruces/go-coverage-report@main
