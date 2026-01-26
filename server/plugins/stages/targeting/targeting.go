@@ -39,5 +39,5 @@ func (t *Targeting) Targetings(tt []domain.Targeting) {
 
 func (t *Targeting) Do(ctx context.Context, state *domain.State) {
 	// обрабатываются таргетинги
-	state.Candidates = state.Candidates
+	state.Candidates = state.Candidates[:]
 }

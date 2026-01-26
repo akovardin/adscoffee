@@ -62,7 +62,7 @@ func TestNewWithEmptySlice(t *testing.T) {
 	assert.Len(t, outputs.list, 0)
 }
 
-func TestGetNonExistentOutput(t *testing.T) {
+func TestOutput_GetNonExistentOutput(t *testing.T) {
 	outputList := []domain.Output{
 		&mockOutput{name: "outputs.rtb"},
 	}

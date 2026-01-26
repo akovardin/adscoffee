@@ -1,3 +1,4 @@
+//nolint:errcheck
 package server
 
 import (
@@ -37,7 +38,7 @@ func TestNew(t *testing.T) {
 	assert.Equal(t, addr, server.srv.Addr)
 }
 
-func TestServer_Start_Success(t *testing.T) {
+func TestServer_StartSuccess(t *testing.T) {
 	mockMgr := &mockManager{}
 
 	server := &Server{
@@ -55,10 +56,9 @@ func TestServer_Start_Success(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	conn, err := net.DialTimeout("tcp", addr, time.Second)
-	if err != nil {
-		t.Fatalf("Failed to connect to server: %v", err)
-	}
-	conn.Close()
+	assert.NoError(t, err)
+	err = conn.Close()
+	assert.NoError(t, err)
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

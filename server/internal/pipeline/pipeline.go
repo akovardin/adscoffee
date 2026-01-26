@@ -45,8 +45,9 @@ func (p *Pipeline) Do(
 	ctx context.Context,
 	state *domain.State,
 ) bool {
-
-	p.input.Do(ctx, state)
+	if ok := p.input.Do(ctx, state); !ok {
+		return false
+	}
 
 	for _, stage := range p.stages {
 		stage.Do(ctx, state)

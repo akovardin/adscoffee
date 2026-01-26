@@ -1,7 +1,10 @@
+//nolint:errcheck
 package pipeline
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/go-chi/chi/v5"
@@ -181,7 +184,7 @@ func TestNewManager(t *testing.T) {
 	assert.Equal(t, "/dsp", pipeline.Route())
 }
 
-func TestManagerMount(t *testing.T) {
+func TestManager_Mount(t *testing.T) {
 	inputList := []domain.Input{
 		&mockInput{name: "inputs.rtb"},
 	}
@@ -241,4 +244,175 @@ func TestManagerMount(t *testing.T) {
 
 	assert.NotNil(t, manager)
 	assert.Len(t, manager.pipelines, 1)
+}
+
+func TestManager_MountHandlers(t *testing.T) {
+	// Create mock components
+	inputList := []domain.Input{
+		&mockInput{name: "inputs.rtb"},
+	}
+	inputs := inputs.New(inputList)
+
+	outputList := []domain.Output{
+		&mockOutput{name: "outputs.rtb"},
+	}
+	outputs := outputs.New(outputList)
+
+	stageList := []domain.Stage{
+		&mockStage{name: "stages.banners"},
+	}
+	stages := stages.New(stageList)
+
+	targetingList := []domain.Targeting{
+		&mockTargeting{name: "targetings.apps"},
+	}
+	targetings := targetings.New(targetingList)
+
+	formatList := []domain.Format{
+		&mockFormat{name: "formats.native"},
+	}
+	formats := formats.New(formatList)
+
+	// Create config with multiple pipelines
+	cfg := config.Config{
+		Pipelines: []config.Pipeline{
+			{
+				Name:  "dsp",
+				Route: "/dsp",
+				Input: config.Input{
+					Name:   "inputs.rtb",
+					Config: map[string]any{},
+				},
+				Stages: []config.Stage{
+					{Name: "stages.banners", Config: map[string]any{}},
+				},
+				Targetings: []config.Targeting{
+					{Name: "targetings.apps", Config: map[string]any{}},
+				},
+				Formats: []config.Format{
+					{Name: "formats.native", Config: map[string]any{}},
+				},
+				Output: config.Output{
+					Name:   "outputs.rtb",
+					Config: map[string]any{},
+				},
+			},
+			{
+				Name:  "web",
+				Route: "/web",
+				Input: config.Input{
+					Name:   "inputs.rtb",
+					Config: map[string]any{},
+				},
+				Stages: []config.Stage{
+					{Name: "stages.banners", Config: map[string]any{}},
+				},
+				Targetings: []config.Targeting{
+					{Name: "targetings.apps", Config: map[string]any{}},
+				},
+				Formats: []config.Format{
+					{Name: "formats.native", Config: map[string]any{}},
+				},
+				Output: config.Output{
+					Name:   "outputs.rtb",
+					Config: map[string]any{},
+				},
+			},
+		},
+	}
+
+	manager := NewManager(cfg, inputs, outputs, stages, targetings, formats)
+
+	router := chi.NewRouter()
+
+	// Mount the pipelines
+	manager.Mount(router)
+
+	// Test that routes are registered by making requests
+	ts := httptest.NewServer(router)
+	defer ts.Close()
+
+	// Test first route
+	resp, err := http.Get(ts.URL + "/dsp")
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	resp.Body.Close()
+
+	// Test second route
+	resp, err = http.Get(ts.URL + "/web")
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	resp.Body.Close()
+}
+
+func TestManager_MountWithPipelineDo(t *testing.T) {
+	// Create mock components
+	inputList := []domain.Input{
+		&mockInput{name: "inputs.rtb"},
+	}
+	inputs := inputs.New(inputList)
+
+	outputList := []domain.Output{
+		&mockOutput{name: "outputs.rtb"},
+	}
+	outputs := outputs.New(outputList)
+
+	stageList := []domain.Stage{
+		&mockStage{name: "stages.banners"},
+	}
+	stages := stages.New(stageList)
+
+	targetingList := []domain.Targeting{
+		&mockTargeting{name: "targetings.apps"},
+	}
+	targetings := targetings.New(targetingList)
+
+	formatList := []domain.Format{
+		&mockFormat{name: "formats.native"},
+	}
+	formats := formats.New(formatList)
+
+	// Create config with a single pipeline
+	cfg := config.Config{
+		Pipelines: []config.Pipeline{
+			{
+				Name:  "test",
+				Route: "/test",
+				Input: config.Input{
+					Name:   "inputs.rtb",
+					Config: map[string]any{},
+				},
+				Stages: []config.Stage{
+					{Name: "stages.banners", Config: map[string]any{}},
+				},
+				Targetings: []config.Targeting{
+					{Name: "targetings.apps", Config: map[string]any{}},
+				},
+				Formats: []config.Format{
+					{Name: "formats.native", Config: map[string]any{}},
+				},
+				Output: config.Output{
+					Name:   "outputs.rtb",
+					Config: map[string]any{},
+				},
+			},
+		},
+	}
+
+	manager := NewManager(cfg, inputs, outputs, stages, targetings, formats)
+
+	router := chi.NewRouter()
+
+	// Mount the pipelines
+	manager.Mount(router)
+
+	// Test that the handler is properly mounted
+	ts := httptest.NewServer(router)
+	defer ts.Close()
+
+	// Make a request to trigger the handler
+	resp, err := http.Get(ts.URL + "/test")
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	resp.Body.Close()
 }

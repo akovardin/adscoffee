@@ -69,7 +69,6 @@ func NewManager(
 
 func (m *Manager) Mount(router *chi.Mux) {
 	for _, p := range m.pipelines {
-
 		router.Mount(p.Route(), http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
 

@@ -43,7 +43,11 @@ func (s *Server) Start(ctx context.Context) error {
 
 	fmt.Println("Served at http://localhost" + addr)
 
-	go s.srv.Serve(ln)
+	go func() {
+		if err := s.srv.Serve(ln); err != nil {
+			panic(err)
+		}
+	}()
 
 	return nil
 }

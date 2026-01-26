@@ -41,6 +41,7 @@ func (w *Web) Formats(ff []domain.Format) {
 	w.formtats = ff
 }
 
+//nolint:errcheck
 func (w *Web) Do(ctx context.Context, state *domain.State) {
 
 	// обработка разных типов запросов тоже

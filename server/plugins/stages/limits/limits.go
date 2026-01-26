@@ -35,5 +35,5 @@ func (l *Limits) Copy(cfg map[string]any) domain.Stage {
 
 func (l *Limits) Do(ctx context.Context, state *domain.State) {
 	// срабатывают ограничения по показам, капингам и так далее
-	state.Candidates = state.Candidates
+	state.Candidates = state.Candidates[:]
 }

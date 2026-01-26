@@ -64,7 +64,7 @@ func (m *testMockOutput) Do(ctx context.Context, state *domain.State) {
 	m.doCalled = true
 }
 
-func TestPipelineDo(t *testing.T) {
+func TestPipeline_Do(t *testing.T) {
 	mockInput := &testMockInput{name: "test-input"}
 	mockStage1 := &testMockStage{name: "test-stage-1"}
 	mockStage2 := &testMockStage{name: "test-stage-2"}
@@ -94,7 +94,7 @@ func TestPipelineDo(t *testing.T) {
 	assert.True(t, mockOutput.doCalled, "Output.Do should be called")
 }
 
-func TestPipelineDoWithNoStages(t *testing.T) {
+func TestPipeline_DoWithNoStages(t *testing.T) {
 	mockInput := &testMockInput{name: "test-input"}
 	mockOutput := &testMockOutput{name: "test-output"}
 
@@ -120,7 +120,7 @@ func TestPipelineDoWithNoStages(t *testing.T) {
 	assert.True(t, mockOutput.doCalled, "Output.Do should be called")
 }
 
-func TestPipelineNameAndRoute(t *testing.T) {
+func TestPipeline_NameAndRoute(t *testing.T) {
 	pipeline := NewPipeline(
 		"test-pipeline",
 		"/test-route",

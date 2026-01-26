@@ -60,7 +60,7 @@ func TestNewWithEmptySlice(t *testing.T) {
 	assert.Len(t, inputs.plugins, 0)
 }
 
-func TestGetNonExistentInput(t *testing.T) {
+func TestInput_GetNonExistentInput(t *testing.T) {
 	inputList := []domain.Input{
 		&mockInput{name: "inputs.rtb"},
 	}
