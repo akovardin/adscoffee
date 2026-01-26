@@ -23,9 +23,7 @@ type Rtb struct {
 }
 
 func New() *Rtb {
-	input := &Rtb{}
-
-	return input
+	return &Rtb{}
 }
 
 func (r *Rtb) Name() string {
@@ -40,7 +38,7 @@ func (r *Rtb) Formats(ff []domain.Format) {
 	// set formats
 }
 
-func (rtb *Rtb) Process(ctx context.Context, state *domain.State) {
+func (rtb *Rtb) Do(ctx context.Context, state *domain.State) {
 
 	// обработка разных типов запросов тоже
 	// может быть вынесена в пллагины

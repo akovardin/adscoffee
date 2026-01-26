@@ -38,7 +38,7 @@ func (s *Web) Copy(cfg map[string]any) domain.Input {
 	return &Web{} // copy
 }
 
-func (stages *Web) Process(ctx context.Context, state *domain.State) bool {
+func (stages *Web) Do(ctx context.Context, state *domain.State) bool {
 
 	// обработка разных типов запросов тоже
 	// может быть вынесена в пллагины

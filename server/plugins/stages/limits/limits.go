@@ -33,6 +33,6 @@ func (l *Limits) Copy(cfg map[string]any) domain.Stage {
 	return &Limits{}
 }
 
-func (l *Limits) Process(ctx context.Context, state *domain.State) {
+func (l *Limits) Do(ctx context.Context, state *domain.State) {
 	// process limits
 }

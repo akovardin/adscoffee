@@ -38,7 +38,7 @@ func (rtb *Rtb) Copy(cfg map[string]any) domain.Input {
 	return &Rtb{} // copy
 }
 
-func (rtb *Rtb) Process(ctx context.Context, state *domain.State) bool {
+func (rtb *Rtb) Do(ctx context.Context, state *domain.State) bool {
 
 	// обработка разных типов запросов тоже
 	// может быть вынесена в пллагины

@@ -33,6 +33,6 @@ func (t *Rotattion) Copy(cfg map[string]any) domain.Stage {
 	return &Rotattion{}
 }
 
-func (t *Rotattion) Process(ctx context.Context, state *domain.State) {
+func (t *Rotattion) Do(ctx context.Context, state *domain.State) {
 	// process limits
 }

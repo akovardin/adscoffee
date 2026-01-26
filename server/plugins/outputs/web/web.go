@@ -24,9 +24,7 @@ type Web struct {
 }
 
 func New() *Web {
-	input := &Web{}
-
-	return input
+	return &Web{}
 }
 
 func (w *Web) Name() string {
@@ -43,7 +41,7 @@ func (w *Web) Formats(ff []domain.Format) {
 	w.formtats = ff
 }
 
-func (w *Web) Process(ctx context.Context, state *domain.State) {
+func (w *Web) Do(ctx context.Context, state *domain.State) {
 
 	// обработка разных типов запросов тоже
 	// может быть вынесена в пллагины

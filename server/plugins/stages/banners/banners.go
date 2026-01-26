@@ -33,6 +33,6 @@ func (t *Banners) Copy(cfg map[string]any) domain.Stage {
 	return &Banners{}
 }
 
-func (t *Banners) Process(ctx context.Context, state *domain.State) {
+func (t *Banners) Do(ctx context.Context, state *domain.State) {
 	// process banners
 }

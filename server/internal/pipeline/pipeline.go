@@ -41,18 +41,18 @@ func (p *Pipeline) Route() string {
 	return p.route
 }
 
-func (p *Pipeline) Process(
+func (p *Pipeline) Do(
 	ctx context.Context,
 	state *domain.State,
 ) bool {
 
-	p.input.Process(ctx, state)
+	p.input.Do(ctx, state)
 
 	for _, stage := range p.stages {
-		stage.Process(ctx, state)
+		stage.Do(ctx, state)
 	}
 
-	p.output.Process(ctx, state)
+	p.output.Do(ctx, state)
 
 	return true
 }

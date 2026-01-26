@@ -25,9 +25,6 @@ func NewManager(
 	targetings *targetings.Targetings,
 	formats *formats.Formats,
 ) *Manager {
-
-	// собираем пайплайн по спецификации в конфиге
-
 	m := &Manager{}
 	for _, c := range cfg.Pipelines {
 		tt := []domain.Targeting{}
@@ -81,7 +78,7 @@ func (m *Manager) Mount(router *chi.Mux) {
 				Response: w,
 			}
 
-			p.Process(ctx, state)
+			p.Do(ctx, state)
 		}))
 	}
 }

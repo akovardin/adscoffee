@@ -37,6 +37,6 @@ func (t *Targeting) Targetings(tt []domain.Targeting) {
 	// set targetings
 }
 
-func (t *Targeting) Process(ctx context.Context, state *domain.State) {
+func (t *Targeting) Do(ctx context.Context, state *domain.State) {
 	// process targetings
 }
