@@ -1,7 +1,7 @@
 package targetings
 
 import (
-	"go.ads.coffee/server/plugins/targetings"
+	"go.ads.coffee/platform/server/plugins/targetings"
 	"go.uber.org/fx"
 )
 

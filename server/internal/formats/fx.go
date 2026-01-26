@@ -3,7 +3,7 @@ package formats
 import (
 	"go.uber.org/fx"
 
-	"go.ads.coffee/server/plugins/formats"
+	"go.ads.coffee/platform/server/plugins/formats"
 )
 
 var Module = fx.Module(

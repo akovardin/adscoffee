@@ -5,8 +5,8 @@ import (
 
 	"go.uber.org/fx"
 
-	"go.ads.coffee/server/config"
-	"go.ads.coffee/server/domain"
+	"go.ads.coffee/platform/server/config"
+	"go.ads.coffee/platform/server/domain"
 )
 
 var Module = fx.Module(
@@ -25,9 +25,7 @@ type Web struct {
 }
 
 func New(config config.Config) *Web {
-	input := &Web{}
-
-	return input
+	return &Web{}
 }
 
 func (s *Web) Name() string {
@@ -35,13 +33,14 @@ func (s *Web) Name() string {
 }
 
 func (s *Web) Copy(cfg map[string]any) domain.Input {
-	return &Web{} // copy
+	return &Web{}
 }
 
 func (stages *Web) Do(ctx context.Context, state *domain.State) bool {
+	// нужно получить данные пользователя из запроса
 
-	// обработка разных типов запросов тоже
-	// может быть вынесена в пллагины
+	state.User = &domain.User{}
+	state.Device = &domain.Device{}
 
 	return true
 }

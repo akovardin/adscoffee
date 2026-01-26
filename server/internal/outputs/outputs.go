@@ -1,6 +1,6 @@
 package outputs
 
-import "go.ads.coffee/server/domain"
+import "go.ads.coffee/platform/server/domain"
 
 type Outputs struct {
 	list map[string]domain.Output

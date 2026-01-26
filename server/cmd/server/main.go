@@ -2,23 +2,28 @@ package main
 
 import (
 	"context"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"go.uber.org/config"
 	"go.uber.org/fx"
 
-	cfg "go.ads.coffee/server/config"
-	"go.ads.coffee/server/internal/server"
-	"go.ads.coffee/server/plugins"
+	cfg "go.ads.coffee/platform/server/config"
+	"go.ads.coffee/platform/server/internal/server"
+	"go.ads.coffee/platform/server/plugins"
 )
 
 func main() {
-	fx.New(
+	app := fx.New(
 		fx.Provide(
 			func() (cfg.Config, error) {
-
-				base := config.File("/Users/artem/projects/adscoffee/platform/server/config.yaml")
-
-				provider, err := config.NewYAML(base)
+				provider, err := config.NewYAML(
+					config.Expand(os.LookupEnv),
+					config.File("server/config.yaml"),
+					config.Permissive(),
+				)
 				if err != nil {
 					return cfg.Config{}, err
 				}
@@ -39,9 +44,29 @@ func main() {
 		fx.Invoke(
 			start,
 		),
-	).Run()
+	)
+
+	app.Run()
+
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+	<-sig
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := app.Stop(ctx); err != nil {
+		panic(err)
+	}
 }
 
-func start(server *server.Server) {
-	server.Start(context.Background())
+func start(lc fx.Lifecycle, server *server.Server) {
+	lc.Append(fx.Hook{
+		OnStart: func(ctx context.Context) error {
+			return server.Start(ctx)
+		},
+		OnStop: func(ctx context.Context) error {
+			return server.Shutdown(ctx)
+		},
+	})
 }

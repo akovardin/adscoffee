@@ -4,13 +4,13 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"go.ads.coffee/server/config"
-	"go.ads.coffee/server/domain"
-	"go.ads.coffee/server/internal/formats"
-	"go.ads.coffee/server/internal/inputs"
-	"go.ads.coffee/server/internal/outputs"
-	"go.ads.coffee/server/internal/stages"
-	"go.ads.coffee/server/internal/targetings"
+	"go.ads.coffee/platform/server/config"
+	"go.ads.coffee/platform/server/domain"
+	"go.ads.coffee/platform/server/internal/formats"
+	"go.ads.coffee/platform/server/internal/inputs"
+	"go.ads.coffee/platform/server/internal/outputs"
+	"go.ads.coffee/platform/server/internal/stages"
+	"go.ads.coffee/platform/server/internal/targetings"
 )
 
 type Manager struct {

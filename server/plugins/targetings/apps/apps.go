@@ -3,7 +3,7 @@ package apps
 import (
 	"go.uber.org/fx"
 
-	"go.ads.coffee/server/domain"
+	"go.ads.coffee/platform/server/domain"
 )
 
 var Module = fx.Module(

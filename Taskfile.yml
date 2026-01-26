@@ -9,3 +9,7 @@ tasks:
       - git push sourcecraft master
       - git push github master
       - git push gitverse master
+
+  test:
+    cmds:
+      - go test -v ./...

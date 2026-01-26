@@ -3,7 +3,7 @@ package stages
 import (
 	"go.uber.org/fx"
 
-	"go.ads.coffee/server/plugins/stages"
+	"go.ads.coffee/platform/server/plugins/stages"
 )
 
 var Module = fx.Module(

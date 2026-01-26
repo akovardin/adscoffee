@@ -6,10 +6,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.ads.coffee/server/domain"
+	"go.ads.coffee/platform/server/domain"
 )
 
-// Mock implementations for testing with unique names to avoid conflicts
 type testMockInput struct {
 	name     string
 	doCalled bool
@@ -59,7 +58,6 @@ func (m *testMockOutput) Copy(cfg map[string]any) domain.Output {
 }
 
 func (m *testMockOutput) Formats(ff []domain.Format) {
-	// Mock implementation
 }
 
 func (m *testMockOutput) Do(ctx context.Context, state *domain.State) {
@@ -67,13 +65,11 @@ func (m *testMockOutput) Do(ctx context.Context, state *domain.State) {
 }
 
 func TestPipelineDo(t *testing.T) {
-	// Create mock components
 	mockInput := &testMockInput{name: "test-input"}
 	mockStage1 := &testMockStage{name: "test-stage-1"}
 	mockStage2 := &testMockStage{name: "test-stage-2"}
 	mockOutput := &testMockOutput{name: "test-output"}
 
-	// Create pipeline
 	pipeline := NewPipeline(
 		"test-pipeline",
 		"/test",
@@ -83,67 +79,48 @@ func TestPipelineDo(t *testing.T) {
 		nil,
 	)
 
-	// Create test context and state
 	ctx := context.Background()
 	state := &domain.State{
 		Request:  &http.Request{},
 		Response: nil,
 	}
 
-	// Execute pipeline
 	result := pipeline.Do(ctx, state)
 
-	// Assertions
 	assert.True(t, result, "Pipeline.Do should return true")
-
-	// Verify input was called
 	assert.True(t, mockInput.doCalled, "Input.Do should be called")
-
-	// Verify stages were called
 	assert.True(t, mockStage1.doCalled, "Stage 1 Do should be called")
 	assert.True(t, mockStage2.doCalled, "Stage 2 Do should be called")
-
-	// Verify output was called
 	assert.True(t, mockOutput.doCalled, "Output.Do should be called")
 }
 
 func TestPipelineDoWithNoStages(t *testing.T) {
-	// Create mock components
 	mockInput := &testMockInput{name: "test-input"}
 	mockOutput := &testMockOutput{name: "test-output"}
 
-	// Create pipeline with no stages
 	pipeline := NewPipeline(
 		"test-pipeline",
 		"/test",
 		mockInput,
 		mockOutput,
-		[]domain.Stage{}, // No stages
+		[]domain.Stage{},
 		nil,
 	)
 
-	// Create test context and state
 	ctx := context.Background()
 	state := &domain.State{
 		Request:  &http.Request{},
 		Response: nil,
 	}
 
-	// Execute pipeline
 	result := pipeline.Do(ctx, state)
 
-	// Assertions
 	assert.True(t, result, "Pipeline.Do should return true")
-
-	// Verify input was called
 	assert.True(t, mockInput.doCalled, "Input.Do should be called")
-
-	// Verify output was called
 	assert.True(t, mockOutput.doCalled, "Output.Do should be called")
 }
 
 func TestPipelineNameAndRoute(t *testing.T) {
-	// Create pipeline
 	pipeline := NewPipeline(
 		"test-pipeline",
 		"/test-route",
@@ -153,7 +130,6 @@ func TestPipelineNameAndRoute(t *testing.T) {
 		nil,
 	)
 
-	// Assertions
 	assert.Equal(t, "test-pipeline", pipeline.Name(), "Pipeline name should match")
 	assert.Equal(t, "/test-route", pipeline.Route(), "Pipeline route should match")
 }

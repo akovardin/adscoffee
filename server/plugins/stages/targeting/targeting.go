@@ -3,7 +3,7 @@ package targeting
 import (
 	"context"
 
-	"go.ads.coffee/server/domain"
+	"go.ads.coffee/platform/server/domain"
 	"go.uber.org/fx"
 )
 
@@ -38,5 +38,6 @@ func (t *Targeting) Targetings(tt []domain.Targeting) {
 }
 
 func (t *Targeting) Do(ctx context.Context, state *domain.State) {
-	// process targetings
+	// обрабатываются таргетинги
+	state.Candidates = state.Candidates
 }

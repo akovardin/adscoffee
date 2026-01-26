@@ -3,7 +3,7 @@ package pipeline
 import (
 	"context"
 
-	"go.ads.coffee/server/domain"
+	"go.ads.coffee/platform/server/domain"
 )
 
 type Pipeline struct {

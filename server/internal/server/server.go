@@ -7,14 +7,19 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"go.ads.coffee/server/internal/pipeline"
+
+	"go.ads.coffee/platform/server/internal/pipeline"
 )
 
 const addr = ":9090"
 
+type Manager interface {
+	Mount(router *chi.Mux)
+}
+
 type Server struct {
 	srv     *http.Server
-	manager *pipeline.Manager
+	manager Manager
 }
 
 func New(manager *pipeline.Manager) *Server {
@@ -23,8 +28,8 @@ func New(manager *pipeline.Manager) *Server {
 		manager: manager,
 	}
 }
-func (s *Server) Start(ctx context.Context) error {
 
+func (s *Server) Start(ctx context.Context) error {
 	router := chi.NewRouter()
 
 	s.manager.Mount(router)
@@ -41,7 +46,6 @@ func (s *Server) Start(ctx context.Context) error {
 	go s.srv.Serve(ln)
 
 	return nil
-
 }
 
 func (s *Server) Shutdown(ctx context.Context) error {

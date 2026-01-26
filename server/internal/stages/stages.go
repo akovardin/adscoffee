@@ -1,6 +1,6 @@
 package stages
 
-import "go.ads.coffee/server/domain"
+import "go.ads.coffee/platform/server/domain"
 
 type Stages struct {
 	list map[string]domain.Stage

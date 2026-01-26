@@ -6,16 +6,15 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
-	"go.ads.coffee/server/config"
-	"go.ads.coffee/server/domain"
-	"go.ads.coffee/server/internal/formats"
-	"go.ads.coffee/server/internal/inputs"
-	"go.ads.coffee/server/internal/outputs"
-	"go.ads.coffee/server/internal/stages"
-	"go.ads.coffee/server/internal/targetings"
+	"go.ads.coffee/platform/server/config"
+	"go.ads.coffee/platform/server/domain"
+	"go.ads.coffee/platform/server/internal/formats"
+	"go.ads.coffee/platform/server/internal/inputs"
+	"go.ads.coffee/platform/server/internal/outputs"
+	"go.ads.coffee/platform/server/internal/stages"
+	"go.ads.coffee/platform/server/internal/targetings"
 )
 
-// Mock implementations for testing
 type mockInput struct {
 	name string
 }
@@ -45,7 +44,6 @@ func (m *mockStage) Copy(cfg map[string]any) domain.Stage {
 }
 
 func (m *mockStage) Do(ctx context.Context, state *domain.State) {
-	// Mock implementation
 }
 
 type mockStageWithTargetings struct {
@@ -76,7 +74,6 @@ func (m *mockTargeting) Copy(cfg map[string]any) domain.Targeting {
 }
 
 func (m *mockTargeting) Filter() {
-	// Mock implementation
 }
 
 type mockFormat struct {
@@ -92,7 +89,6 @@ func (m *mockFormat) Copy(cfg map[string]any) domain.Format {
 }
 
 func (m *mockFormat) Render(ctx context.Context, state *domain.State) {
-	// Mock implementation
 }
 
 type mockOutput struct {
@@ -113,46 +109,39 @@ func (m *mockOutput) Formats(ff []domain.Format) {
 }
 
 func (m *mockOutput) Do(ctx context.Context, state *domain.State) {
-	// Mock implementation
 }
 
 func TestNewManager(t *testing.T) {
-	// Create mock inputs
 	inputList := []domain.Input{
 		&mockInput{name: "inputs.rtb"},
 		&mockInput{name: "inputs.web"},
 	}
 	inputs := inputs.New(inputList)
 
-	// Create mock outputs
 	outputList := []domain.Output{
 		&mockOutput{name: "outputs.rtb"},
 		&mockOutput{name: "outputs.web"},
 	}
 	outputs := outputs.New(outputList)
 
-	// Create mock stages
 	stageList := []domain.Stage{
 		&mockStage{name: "stages.banners"},
 		&mockStageWithTargetings{mockStage: mockStage{name: "stages.targeting"}},
 	}
 	stages := stages.New(stageList)
 
-	// Create mock targetings
 	targetingList := []domain.Targeting{
 		&mockTargeting{name: "targetings.apps"},
 		&mockTargeting{name: "targetings.geo"},
 	}
 	targetings := targetings.New(targetingList)
 
-	// Create mock formats
 	formatList := []domain.Format{
 		&mockFormat{name: "formats.native"},
 		&mockFormat{name: "formats.banner"},
 	}
 	formats := formats.New(formatList)
 
-	// Create test config
 	cfg := config.Config{
 		Pipelines: []config.Pipeline{
 			{
@@ -182,10 +171,8 @@ func TestNewManager(t *testing.T) {
 		},
 	}
 
-	// Create manager
 	manager := NewManager(cfg, inputs, outputs, stages, targetings, formats)
 
-	// Assertions
 	assert.NotNil(t, manager)
 	assert.Len(t, manager.pipelines, 1)
 
@@ -195,37 +182,31 @@ func TestNewManager(t *testing.T) {
 }
 
 func TestManagerMount(t *testing.T) {
-	// Create mock inputs
 	inputList := []domain.Input{
 		&mockInput{name: "inputs.rtb"},
 	}
 	inputs := inputs.New(inputList)
 
-	// Create mock outputs
 	outputList := []domain.Output{
 		&mockOutput{name: "outputs.rtb"},
 	}
 	outputs := outputs.New(outputList)
 
-	// Create mock stages
 	stageList := []domain.Stage{
 		&mockStage{name: "stages.banners"},
 	}
 	stages := stages.New(stageList)
 
-	// Create mock targetings
 	targetingList := []domain.Targeting{
 		&mockTargeting{name: "targetings.apps"},
 	}
 	targetings := targetings.New(targetingList)
 
-	// Create mock formats
 	formatList := []domain.Format{
 		&mockFormat{name: "formats.native"},
 	}
 	formats := formats.New(formatList)
 
-	// Create test config
 	cfg := config.Config{
 		Pipelines: []config.Pipeline{
 			{
@@ -252,18 +233,12 @@ func TestManagerMount(t *testing.T) {
 		},
 	}
 
-	// Create manager
 	manager := NewManager(cfg, inputs, outputs, stages, targetings, formats)
 
-	// Create router
 	router := chi.NewRouter()
 
-	// Mount pipelines
 	manager.Mount(router)
 
-	// Assertions
-	// We can't easily test the mounting without making actual HTTP requests,
-	// but we can verify the manager was created correctly
 	assert.NotNil(t, manager)
 	assert.Len(t, manager.pipelines, 1)
 }

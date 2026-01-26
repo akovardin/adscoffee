@@ -3,7 +3,7 @@ package banners
 import (
 	"context"
 
-	"go.ads.coffee/server/domain"
+	"go.ads.coffee/platform/server/domain"
 	"go.uber.org/fx"
 )
 
@@ -34,5 +34,8 @@ func (t *Banners) Copy(cfg map[string]any) domain.Stage {
 }
 
 func (t *Banners) Do(ctx context.Context, state *domain.State) {
-	// process banners
+	// загружаем баннеры из репозитория
+	// и добавляем их в стейт
+
+	state.Candidates = []domain.Banner{}
 }

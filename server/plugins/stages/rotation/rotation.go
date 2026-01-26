@@ -3,7 +3,7 @@ package rotation
 import (
 	"context"
 
-	"go.ads.coffee/server/domain"
+	"go.ads.coffee/platform/server/domain"
 	"go.uber.org/fx"
 )
 
@@ -34,5 +34,6 @@ func (t *Rotattion) Copy(cfg map[string]any) domain.Stage {
 }
 
 func (t *Rotattion) Do(ctx context.Context, state *domain.State) {
-	// process limits
+	// делаем взвешанный рандом по ecpm
+	state.Winners = state.Candidates
 }

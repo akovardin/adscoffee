@@ -3,7 +3,7 @@ package outputs
 import (
 	"go.uber.org/fx"
 
-	"go.ads.coffee/server/plugins/outputs"
+	"go.ads.coffee/platform/server/plugins/outputs"
 )
 
 var Module = fx.Module(

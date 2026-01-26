@@ -1,7 +1,7 @@
 package inputs
 
 import (
-	"go.ads.coffee/server/domain"
+	"go.ads.coffee/platform/server/domain"
 )
 
 type Inputs struct {

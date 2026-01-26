@@ -3,7 +3,7 @@ package web
 import (
 	"context"
 
-	"go.ads.coffee/server/domain"
+	"go.ads.coffee/platform/server/domain"
 	"go.uber.org/fx"
 )
 

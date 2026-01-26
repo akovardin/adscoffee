@@ -1,6 +1,6 @@
 package formats
 
-import "go.ads.coffee/server/domain"
+import "go.ads.coffee/platform/server/domain"
 
 type Formats struct {
 	list map[string]domain.Format
