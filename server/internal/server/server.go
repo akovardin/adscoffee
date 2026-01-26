@@ -45,7 +45,7 @@ func (s *Server) Start(ctx context.Context) error {
 
 	go func() {
 		if err := s.srv.Serve(ln); err != nil {
-			panic(err)
+			fmt.Println(err)
 		}
 	}()
 
