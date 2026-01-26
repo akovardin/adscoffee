@@ -26,8 +26,11 @@ jobs:
 
     - name: Test
       run: |
-          cd server && go test -v ./... -covermode=count -coverprofile=coverage.out
-          cd server && go tool cover -func=coverage.out -o=coverage.out
+          cd server && go test -v ./...
 
     - name: Update coverage report
-      uses: ncruces/go-coverage-report@main
+      uses: ncruces/go-coverage-report@v0
+      with:
+        report: true
+        chart: true
+        amend: true
