@@ -1,0 +1,27 @@
+<clickhouse>
+    <users>
+        <admin>
+            <password>password</password>
+            <networks>
+                <ip>::/0</ip>
+            </networks>
+            <profile>default</profile>
+            <quota>default</quota>
+        </admin>
+        <default>
+            <password></password>
+            <networks>
+                <ip>::/0</ip>
+            </networks>
+            <profile>default</profile>
+            <quota>default</quota>
+        </default>
+    </users>
+
+    <profiles>
+        <default>
+            <max_memory_usage>6000000000</max_memory_usage>
+            <max_execution_time>300</max_execution_time>
+        </default>
+    </profiles>
+</clickhouse>

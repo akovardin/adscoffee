@@ -1,0 +1,132 @@
+services:
+  redis:
+    container_name: redis-adscoffee
+    build: 
+      context: docker/redis-cluster
+      dockerfile: Dockerfile
+    # image: dspredis:latest
+    environment:
+      - 'IP=0.0.0.0'
+      - 'INITIAL_PORT=7001'
+    ports:
+      - '7001-7006:7001-7006'
+
+  postgres:
+    container_name: postgres-adscoffee
+    image: postgres
+    environment:
+      - "POSTGRES_USER=admin"
+      - "POSTGRES_PASSWORD=123"
+      - "POSTGRES_DB=admin_dev"
+      - "PGDATA=/data/postgres"
+    ports:
+      - "6432:5432"
+    volumes:
+      - ./data/db:/data/postgres
+
+  kafka1:
+    container_name: kafka1-adscoffee
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka1
+    ports:
+      - "19092:19092"
+      - "19093:19093"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_BROKER_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:19093,2@kafka2:19093,3@kafka3:19093'
+      KAFKA_LISTENERS: 'PLAINTEXT_INTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:19093,PLAINTEXT_EXTERNAL://0.0.0.0:19092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_INTERNAL://kafka1:9092,PLAINTEXT_EXTERNAL://localhost:19092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT,PLAINTEXT_EXTERNAL:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT_INTERNAL'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - ./data/kafka1:/var/lib/kafka/data
+
+  kafka2:
+    container_name: kafka2-adscoffee
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka2
+    ports:
+      - "29092:29092"
+      - "29093:29093"
+    environment:
+      KAFKA_NODE_ID: 2
+      KAFKA_BROKER_ID: 2
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:19093,2@kafka2:19093,3@kafka3:19093'
+      KAFKA_LISTENERS: 'PLAINTEXT_INTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:19093,PLAINTEXT_EXTERNAL://0.0.0.0:29092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_INTERNAL://kafka2:9092,PLAINTEXT_EXTERNAL://localhost:29092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT,PLAINTEXT_EXTERNAL:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT_INTERNAL'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - ./data/kafka2:/var/lib/kafka/data
+
+  kafka3:
+    container_name: kafka3-adscoffee
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka3
+    ports:
+      - "39092:39092"
+      - "39093:39093"
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_BROKER_ID: 3
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:19093,2@kafka2:19093,3@kafka3:19093'
+      KAFKA_LISTENERS: 'PLAINTEXT_INTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:19093,PLAINTEXT_EXTERNAL://0.0.0.0:39092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_INTERNAL://kafka3:9092,PLAINTEXT_EXTERNAL://localhost:39092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT,PLAINTEXT_EXTERNAL:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT_INTERNAL'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - ./data/kafka3:/var/lib/kafka/data
+
+  kafka-ui:
+    container_name: kafka-cluster-ui-adscoffee
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka1:9092,kafka2:9092,kafka3:9092
+      # KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: connect
+      # KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect:8083
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+
+  clickhouse:
+    container_name: clickhouse-server-adscoffee
+    image: clickhouse/clickhouse-server:24.1
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - ./data/clickhouse/data:/var/lib/clickhouse
+      - ./data/clickhouse/users.xml:/etc/clickhouse-server/users.d/docker.xml
+      - ./data/clickhouse/init:/docker-entrypoint-initdb.d
+    environment:
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
