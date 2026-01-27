@@ -21,8 +21,9 @@ func (m *mockFormat) Copy(cfg map[string]any) plugins.Format {
 	return &mockFormat{name: m.name}
 }
 
-func (m *mockFormat) Render(ctx context.Context, state *plugins.State) {
+func (m *mockFormat) Render(ctx context.Context, state *plugins.State) error {
 	// Mock implementation
+	return nil
 }
 
 func TestNew(t *testing.T) {

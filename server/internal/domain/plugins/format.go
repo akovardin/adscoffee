@@ -7,5 +7,5 @@ import (
 type Format interface {
 	Name() string
 	Copy(cfg map[string]any) Format
-	Render(ctx context.Context, state *State)
+	Render(ctx context.Context, state *State) error
 }

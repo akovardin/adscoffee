@@ -39,8 +39,6 @@ func (r *Rtb) Formats(ff []plugins.Format) {
 	// set formats
 }
 
-func (rtb *Rtb) Do(ctx context.Context, state *plugins.State) {
-
-	// обработка разных типов запросов тоже
-	// может быть вынесена в пллагины
+func (rtb *Rtb) Do(ctx context.Context, state *plugins.State) error {
+	return nil
 }

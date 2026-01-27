@@ -23,7 +23,8 @@ func (m *mockOutput) Copy(cfg map[string]any) plugins.Output {
 func (m *mockOutput) Formats(ff []plugins.Format) {
 }
 
-func (m *mockOutput) Do(ctx context.Context, state *plugins.State) {
+func (m *mockOutput) Do(ctx context.Context, state *plugins.State) error {
+	return nil
 }
 
 func TestNew(t *testing.T) {

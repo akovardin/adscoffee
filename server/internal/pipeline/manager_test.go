@@ -91,7 +91,8 @@ func (m *mockFormat) Copy(cfg map[string]any) plugins.Format {
 	return &mockFormat{name: m.name}
 }
 
-func (m *mockFormat) Render(ctx context.Context, state *plugins.State) {
+func (m *mockFormat) Render(ctx context.Context, state *plugins.State) error {
+	return nil
 }
 
 type mockOutput struct {
@@ -111,7 +112,8 @@ func (m *mockOutput) Formats(ff []plugins.Format) {
 	m.formats = ff
 }
 
-func (m *mockOutput) Do(ctx context.Context, state *plugins.State) {
+func (m *mockOutput) Do(ctx context.Context, state *plugins.State) error {
+	return nil
 }
 
 func TestNewManager(t *testing.T) {

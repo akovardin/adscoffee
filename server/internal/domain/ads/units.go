@@ -5,4 +5,5 @@ type Unit struct {
 	Title   string
 	Network string
 	Price   int
+	Format  string
 }

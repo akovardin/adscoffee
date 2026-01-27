@@ -76,7 +76,9 @@ func (m *Manager) Mount(router *chi.Mux) {
 				Response: w,
 			}
 
-			p.Do(ctx, state)
+			if err := p.Do(ctx, state); err != nil {
+				w.WriteHeader(http.StatusNotFound)
+			}
 		}))
 	}
 }

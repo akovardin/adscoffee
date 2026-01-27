@@ -2,6 +2,7 @@ package web
 
 import (
 	"context"
+	"fmt"
 
 	"go.uber.org/fx"
 
@@ -43,13 +44,12 @@ func (w *Web) Formats(ff []plugins.Format) {
 }
 
 //nolint:errcheck
-func (w *Web) Do(ctx context.Context, state *plugins.State) {
+func (w *Web) Do(ctx context.Context, state *plugins.State) error {
+	for _, f := range w.formtats {
+		if err := f.Render(ctx, state); err != nil {
+			return fmt.Errorf("error on render format: %w", err)
+		}
+	}
 
-	// обработка разных типов запросов тоже
-	// может быть вынесена в пллагины
-
-	// а тут я могу использовать разные форматы в зависимости
-	// от конфига и запроса
-
-	state.Response.Write([]byte(`:)`))
+	return nil
 }

@@ -36,16 +36,18 @@ func New(cache *banners.Cache) *Banners {
 	}
 }
 
-func (t *Banners) Name() string {
+func (b *Banners) Name() string {
 	return "stages.banners"
 }
 
-func (t *Banners) Copy(cfg map[string]any) plugins.Stage {
-	return &Banners{}
+func (b *Banners) Copy(cfg map[string]any) plugins.Stage {
+	return &Banners{
+		cache: b.cache,
+	}
 }
 
-func (t *Banners) Do(ctx context.Context, state *plugins.State) error {
-	state.Candidates = t.cache.All(ctx)
+func (b *Banners) Do(ctx context.Context, state *plugins.State) error {
+	state.Candidates = b.cache.All(ctx)
 
 	return nil
 }

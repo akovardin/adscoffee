@@ -44,16 +44,16 @@ func (p *Pipeline) Route() string {
 func (p *Pipeline) Do(
 	ctx context.Context,
 	state *plugins.State,
-) bool {
+) error {
 	if ok := p.input.Do(ctx, state); !ok {
-		return false
+		return nil
 	}
 
 	for _, stage := range p.stages {
-		stage.Do(ctx, state)
+		if err := stage.Do(ctx, state); err != nil {
+			return err
+		}
 	}
 
-	p.output.Do(ctx, state)
-
-	return true
+	return p.output.Do(ctx, state)
 }

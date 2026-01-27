@@ -34,6 +34,6 @@ func (b *Native) Copy(cfg map[string]any) plugins.Format {
 	return &Native{}
 }
 
-func (b *Native) Render(ctx context.Context, state *plugins.State) {
-
+func (b *Native) Render(ctx context.Context, state *plugins.State) error {
+	return nil
 }

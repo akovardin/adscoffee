@@ -38,7 +38,6 @@ func (r *Pixel) Copy(cfg map[string]any) plugins.Output {
 func (r *Pixel) Formats(ff []plugins.Format) {
 }
 
-func (rtb *Pixel) Do(ctx context.Context, state *plugins.State) {
-
-	// возвращаем пиксель
+func (rtb *Pixel) Do(ctx context.Context, state *plugins.State) error {
+	return nil
 }

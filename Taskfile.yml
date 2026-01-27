@@ -9,7 +9,7 @@ tasks:
   gitpush:
     cmds:
       - git push gitflic master
-      # - git push sourcecraft master
+      - git push sourcecraft master
       - git push github master
       - git push gitverse master
 

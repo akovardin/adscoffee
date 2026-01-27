@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
 
+	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
@@ -48,6 +49,14 @@ func (stages *Web) Do(ctx context.Context, state *plugins.State) bool {
 
 	state.Placement = &plugins.Placement{
 		ID: placement,
+		Units: []ads.Unit{
+			{
+				ID:      "yandex-1",
+				Network: "yandex",
+				Price:   10,
+				Format:  "banner",
+			},
+		},
 	}
 
 	return true

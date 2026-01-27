@@ -35,6 +35,6 @@ func (b *Video) Copy(cfg map[string]any) plugins.Format {
 	return &Video{}
 }
 
-func (b *Video) Render(ctx context.Context, state *plugins.State) {
-
+func (b *Video) Render(ctx context.Context, state *plugins.State) error {
+	return nil
 }

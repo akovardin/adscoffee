@@ -2,9 +2,12 @@ package banner
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"go.uber.org/fx"
 
+	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
@@ -34,6 +37,23 @@ func (b *Banner) Copy(cfg map[string]any) plugins.Format {
 	return &Banner{}
 }
 
-func (b *Banner) Render(ctx context.Context, state *plugins.State) {
+func (b *Banner) Render(ctx context.Context, state *plugins.State) error {
+	items := []ads.Banner{}
 
+	for _, b := range state.Winners {
+		if b.Format != "banner" {
+			continue
+		}
+
+		items = append(items, b)
+	}
+
+	data, err := json.Marshal(items)
+	if err != nil {
+		return fmt.Errorf("error on marshal banner: %w", err)
+	}
+
+	state.Response.Write(data)
+
+	return nil
 }

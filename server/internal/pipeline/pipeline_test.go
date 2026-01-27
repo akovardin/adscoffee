@@ -62,8 +62,10 @@ func (m *testMockOutput) Copy(cfg map[string]any) plugins.Output {
 func (m *testMockOutput) Formats(ff []plugins.Format) {
 }
 
-func (m *testMockOutput) Do(ctx context.Context, state *plugins.State) {
+func (m *testMockOutput) Do(ctx context.Context, state *plugins.State) error {
 	m.doCalled = true
+
+	return nil
 }
 
 func TestPipeline_Do(t *testing.T) {
@@ -87,9 +89,9 @@ func TestPipeline_Do(t *testing.T) {
 		Response: nil,
 	}
 
-	result := pipeline.Do(ctx, state)
+	err := pipeline.Do(ctx, state)
 
-	assert.True(t, result, "Pipeline.Do should return true")
+	assert.NoError(t, err)
 	assert.True(t, mockInput.doCalled, "Input.Do should be called")
 	assert.True(t, mockStage1.doCalled, "Stage 1 Do should be called")
 	assert.True(t, mockStage2.doCalled, "Stage 2 Do should be called")
@@ -115,9 +117,9 @@ func TestPipeline_DoWithNoStages(t *testing.T) {
 		Response: nil,
 	}
 
-	result := pipeline.Do(ctx, state)
+	err := pipeline.Do(ctx, state)
 
-	assert.True(t, result, "Pipeline.Do should return true")
+	assert.NoError(t, err)
 	assert.True(t, mockInput.doCalled, "Input.Do should be called")
 	assert.True(t, mockOutput.doCalled, "Output.Do should be called")
 }
