@@ -2,3 +2,4 @@
 .codeassistant/*
 data/*
 backup.sql
+geoip/*
