@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.ads.coffee/platform/server/domain"
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 type mockOutput struct {
@@ -16,18 +16,18 @@ func (m *mockOutput) Name() string {
 	return m.name
 }
 
-func (m *mockOutput) Copy(cfg map[string]any) domain.Output {
+func (m *mockOutput) Copy(cfg map[string]any) plugins.Output {
 	return &mockOutput{name: m.name}
 }
 
-func (m *mockOutput) Formats(ff []domain.Format) {
+func (m *mockOutput) Formats(ff []plugins.Format) {
 }
 
-func (m *mockOutput) Do(ctx context.Context, state *domain.State) {
+func (m *mockOutput) Do(ctx context.Context, state *plugins.State) {
 }
 
 func TestNew(t *testing.T) {
-	outputList := []domain.Output{
+	outputList := []plugins.Output{
 		&mockOutput{name: "outputs.rtb"},
 		&mockOutput{name: "outputs.web"},
 	}
@@ -41,7 +41,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestOutputs_Get(t *testing.T) {
-	outputList := []domain.Output{
+	outputList := []plugins.Output{
 		&mockOutput{name: "outputs.rtb"},
 		&mockOutput{name: "outputs.web"},
 	}
@@ -56,14 +56,14 @@ func TestOutputs_Get(t *testing.T) {
 }
 
 func TestNewWithEmptySlice(t *testing.T) {
-	outputs := New([]domain.Output{})
+	outputs := New([]plugins.Output{})
 
 	assert.NotNil(t, outputs)
 	assert.Len(t, outputs.list, 0)
 }
 
 func TestOutput_GetNonExistentOutput(t *testing.T) {
-	outputList := []domain.Output{
+	outputList := []plugins.Output{
 		&mockOutput{name: "outputs.rtb"},
 	}
 

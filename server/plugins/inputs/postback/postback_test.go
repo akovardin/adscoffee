@@ -6,20 +6,18 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.ads.coffee/platform/server/config"
-	"go.ads.coffee/platform/server/domain"
+	"go.ads.coffee/platform/server/internal/domain/ads"
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 func TestNew(t *testing.T) {
-	cfg := config.Config{}
-	postback := New(cfg)
+	postback := New()
 
 	assert.NotNil(t, postback)
 }
 
 func TestPostback_Name(t *testing.T) {
-	cfg := config.Config{}
-	postback := New(cfg)
+	postback := New()
 
 	name := postback.Name()
 
@@ -27,8 +25,7 @@ func TestPostback_Name(t *testing.T) {
 }
 
 func TestPostback_Copy(t *testing.T) {
-	cfg := config.Config{}
-	postback := New(cfg)
+	postback := New()
 
 	cfgMap := map[string]any{"key": "value"}
 	copied := postback.Copy(cfgMap)
@@ -38,17 +35,16 @@ func TestPostback_Copy(t *testing.T) {
 }
 
 func TestPostback_Do(t *testing.T) {
-	cfg := config.Config{}
-	postback := New(cfg)
+	postback := New()
 
 	ctx := context.Background()
-	state := &domain.State{
+	state := &plugins.State{
 		Request:    &http.Request{},
 		Response:   nil,
 		User:       nil,
 		Device:     nil,
-		Candidates: []domain.Banner{},
-		Winners:    []domain.Banner{},
+		Candidates: []ads.Banner{},
+		Winners:    []ads.Banner{},
 	}
 
 	result := postback.Do(ctx, state)

@@ -5,8 +5,7 @@ import (
 
 	"go.uber.org/fx"
 
-	"go.ads.coffee/platform/server/config"
-	"go.ads.coffee/platform/server/domain"
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 var Module = fx.Module(
@@ -15,7 +14,7 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(domain.Input)),
+			fx.As(new(plugins.Input)),
 			fx.ResultTags(`group:"inputs"`),
 		),
 	),
@@ -24,7 +23,7 @@ var Module = fx.Module(
 type Web struct {
 }
 
-func New(config config.Config) *Web {
+func New() *Web {
 	return &Web{}
 }
 
@@ -32,15 +31,21 @@ func (s *Web) Name() string {
 	return "inputs.web"
 }
 
-func (s *Web) Copy(cfg map[string]any) domain.Input {
+func (s *Web) Copy(cfg map[string]any) plugins.Input {
 	return &Web{}
 }
 
-func (stages *Web) Do(ctx context.Context, state *domain.State) bool {
+func (stages *Web) Do(ctx context.Context, state *plugins.State) bool {
 	// нужно получить данные пользователя из запроса
 
-	state.User = &domain.User{}
-	state.Device = &domain.Device{}
+	state.User = &plugins.User{}
+	state.Device = &plugins.Device{}
+
+	// проверить наличие юнита
+
+	// по юниту может быть включена медиация ->
+	// это значит, что должны получить разные настройки сети и выполнить
+	// аукцион и ротацию баннера
 
 	return true
 }

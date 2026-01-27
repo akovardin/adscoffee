@@ -1,13 +1,13 @@
 package formats
 
-import "go.ads.coffee/platform/server/domain"
+import "go.ads.coffee/platform/server/internal/domain/plugins"
 
 type Formats struct {
-	list map[string]domain.Format
+	list map[string]plugins.Format
 }
 
-func New(list []domain.Format) *Formats {
-	plugins := map[string]domain.Format{}
+func New(list []plugins.Format) *Formats {
+	plugins := map[string]plugins.Format{}
 	for _, format := range list {
 		plugins[format.Name()] = format
 	}
@@ -17,6 +17,6 @@ func New(list []domain.Format) *Formats {
 	}
 }
 
-func (i *Formats) Get(name string, cfg map[string]any) domain.Format {
+func (i *Formats) Get(name string, cfg map[string]any) plugins.Format {
 	return i.list[name].Copy(cfg)
 }

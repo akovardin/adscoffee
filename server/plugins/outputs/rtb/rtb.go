@@ -3,8 +3,9 @@ package rtb
 import (
 	"context"
 
-	"go.ads.coffee/platform/server/domain"
 	"go.uber.org/fx"
+
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 var Module = fx.Module(
@@ -13,7 +14,7 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(domain.Output)),
+			fx.As(new(plugins.Output)),
 			fx.ResultTags(`group:"outputs"`),
 		),
 	),
@@ -30,15 +31,15 @@ func (r *Rtb) Name() string {
 	return "outputs.rtb"
 }
 
-func (r *Rtb) Copy(cfg map[string]any) domain.Output {
+func (r *Rtb) Copy(cfg map[string]any) plugins.Output {
 	return &Rtb{}
 }
 
-func (r *Rtb) Formats(ff []domain.Format) {
+func (r *Rtb) Formats(ff []plugins.Format) {
 	// set formats
 }
 
-func (rtb *Rtb) Do(ctx context.Context, state *domain.State) {
+func (rtb *Rtb) Do(ctx context.Context, state *plugins.State) {
 
 	// обработка разных типов запросов тоже
 	// может быть вынесена в пллагины

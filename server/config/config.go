@@ -1,42 +1,38 @@
 package config
 
+import (
+	"os"
+
+	"go.ads.coffee/platform/pkg/database"
+	"go.ads.coffee/platform/server/internal/pipeline"
+	"go.uber.org/config"
+	"go.uber.org/fx"
+)
+
 type Config struct {
-	Pipelines []Pipeline `yaml:"pipelines"`
+	fx.Out
+
+	Pipelines []pipeline.Config `yaml:"pipelines"`
+	Database  database.Config   `yaml:"database"`
 }
 
-// тут используется только конфигурация для упорядочивания
-// обхода по плагинам
-type Pipeline struct {
-	Name       string      `yaml:"name"`
-	Route      string      `yaml:"route"`
-	Input      Input       `yaml:"input"`
-	Stages     []Stage     `yaml:"stages"`
-	Targetings []Targeting `yaml:"targetings"`
-	Formats    []Format    `yaml:"formats"`
-	Output     Output      `yaml:"output"`
-}
+func New(file string) (Config, error) {
+	provider, err := config.NewYAML(
+		config.Expand(os.LookupEnv),
+		config.File(file),
+		config.Permissive(),
+	)
 
-type Input struct {
-	Name   string         `yaml:"name"`
-	Config map[string]any `yaml:"config"`
-}
+	if err != nil {
+		return Config{}, err
+	}
 
-type Stage struct {
-	Name   string         `yaml:"name"`
-	Config map[string]any `yaml:"config"`
-}
+	cfg := Config{}
 
-type Targeting struct {
-	Name   string         `yaml:"name"`
-	Config map[string]any `yaml:"config"`
-}
+	err = provider.Get("").Populate(&cfg)
+	if err != nil {
+		return Config{}, err
+	}
 
-type Format struct {
-	Name   string         `yaml:"name"`
-	Config map[string]any `yaml:"config"`
-}
-
-type Output struct {
-	Name   string         `yaml:"name"`
-	Config map[string]any `yaml:"config"`
+	return cfg, nil
 }

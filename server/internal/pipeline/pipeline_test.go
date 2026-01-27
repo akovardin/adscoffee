@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.ads.coffee/platform/server/domain"
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 type testMockInput struct {
@@ -18,11 +18,11 @@ func (m *testMockInput) Name() string {
 	return m.name
 }
 
-func (m *testMockInput) Copy(cfg map[string]any) domain.Input {
+func (m *testMockInput) Copy(cfg map[string]any) plugins.Input {
 	return &testMockInput{name: m.name}
 }
 
-func (m *testMockInput) Do(ctx context.Context, state *domain.State) bool {
+func (m *testMockInput) Do(ctx context.Context, state *plugins.State) bool {
 	m.doCalled = true
 	return true
 }
@@ -36,11 +36,11 @@ func (m *testMockStage) Name() string {
 	return m.name
 }
 
-func (m *testMockStage) Copy(cfg map[string]any) domain.Stage {
+func (m *testMockStage) Copy(cfg map[string]any) plugins.Stage {
 	return &testMockStage{name: m.name}
 }
 
-func (m *testMockStage) Do(ctx context.Context, state *domain.State) {
+func (m *testMockStage) Do(ctx context.Context, state *plugins.State) {
 	m.doCalled = true
 }
 
@@ -53,14 +53,14 @@ func (m *testMockOutput) Name() string {
 	return m.name
 }
 
-func (m *testMockOutput) Copy(cfg map[string]any) domain.Output {
+func (m *testMockOutput) Copy(cfg map[string]any) plugins.Output {
 	return &testMockOutput{name: m.name}
 }
 
-func (m *testMockOutput) Formats(ff []domain.Format) {
+func (m *testMockOutput) Formats(ff []plugins.Format) {
 }
 
-func (m *testMockOutput) Do(ctx context.Context, state *domain.State) {
+func (m *testMockOutput) Do(ctx context.Context, state *plugins.State) {
 	m.doCalled = true
 }
 
@@ -75,12 +75,12 @@ func TestPipeline_Do(t *testing.T) {
 		"/test",
 		mockInput,
 		mockOutput,
-		[]domain.Stage{mockStage1, mockStage2},
+		[]plugins.Stage{mockStage1, mockStage2},
 		nil,
 	)
 
 	ctx := context.Background()
-	state := &domain.State{
+	state := &plugins.State{
 		Request:  &http.Request{},
 		Response: nil,
 	}
@@ -103,12 +103,12 @@ func TestPipeline_DoWithNoStages(t *testing.T) {
 		"/test",
 		mockInput,
 		mockOutput,
-		[]domain.Stage{},
+		[]plugins.Stage{},
 		nil,
 	)
 
 	ctx := context.Background()
-	state := &domain.State{
+	state := &plugins.State{
 		Request:  &http.Request{},
 		Response: nil,
 	}
@@ -126,7 +126,7 @@ func TestPipeline_NameAndRoute(t *testing.T) {
 		"/test-route",
 		&testMockInput{name: "test-input"},
 		&testMockOutput{name: "test-output"},
-		[]domain.Stage{},
+		[]plugins.Stage{},
 		nil,
 	)
 

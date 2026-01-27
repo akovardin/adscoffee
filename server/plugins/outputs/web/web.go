@@ -3,8 +3,9 @@ package web
 import (
 	"context"
 
-	"go.ads.coffee/platform/server/domain"
 	"go.uber.org/fx"
+
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 var Module = fx.Module(
@@ -13,14 +14,14 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(domain.Output)),
+			fx.As(new(plugins.Output)),
 			fx.ResultTags(`group:"outputs"`),
 		),
 	),
 )
 
 type Web struct {
-	formtats []domain.Format
+	formtats []plugins.Format
 }
 
 func New() *Web {
@@ -31,18 +32,18 @@ func (w *Web) Name() string {
 	return "outputs.web"
 }
 
-func (w *Web) Copy(cfg map[string]any) domain.Output {
+func (w *Web) Copy(cfg map[string]any) plugins.Output {
 	return &Web{
 		formtats: w.formtats,
 	}
 }
 
-func (w *Web) Formats(ff []domain.Format) {
+func (w *Web) Formats(ff []plugins.Format) {
 	w.formtats = ff
 }
 
 //nolint:errcheck
-func (w *Web) Do(ctx context.Context, state *domain.State) {
+func (w *Web) Do(ctx context.Context, state *plugins.State) {
 
 	// обработка разных типов запросов тоже
 	// может быть вынесена в пллагины

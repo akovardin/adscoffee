@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.ads.coffee/platform/server/domain"
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 type mockInput struct {
@@ -16,16 +16,16 @@ func (m *mockInput) Name() string {
 	return m.name
 }
 
-func (m *mockInput) Copy(cfg map[string]any) domain.Input {
+func (m *mockInput) Copy(cfg map[string]any) plugins.Input {
 	return &mockInput{name: m.name}
 }
 
-func (m *mockInput) Do(ctx context.Context, state *domain.State) bool {
+func (m *mockInput) Do(ctx context.Context, state *plugins.State) bool {
 	return true
 }
 
 func TestNew(t *testing.T) {
-	inputList := []domain.Input{
+	inputList := []plugins.Input{
 		&mockInput{name: "inputs.rtb"},
 		&mockInput{name: "inputs.web"},
 	}
@@ -39,7 +39,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestInputs_Get(t *testing.T) {
-	inputList := []domain.Input{
+	inputList := []plugins.Input{
 		&mockInput{name: "inputs.rtb"},
 		&mockInput{name: "inputs.web"},
 	}
@@ -54,14 +54,14 @@ func TestInputs_Get(t *testing.T) {
 }
 
 func TestNewWithEmptySlice(t *testing.T) {
-	inputs := New([]domain.Input{})
+	inputs := New([]plugins.Input{})
 
 	assert.NotNil(t, inputs)
 	assert.Len(t, inputs.plugins, 0)
 }
 
 func TestInput_GetNonExistentInput(t *testing.T) {
-	inputList := []domain.Input{
+	inputList := []plugins.Input{
 		&mockInput{name: "inputs.rtb"},
 	}
 

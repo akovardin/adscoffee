@@ -3,8 +3,9 @@ package video
 import (
 	"context"
 
-	"go.ads.coffee/platform/server/domain"
 	"go.uber.org/fx"
+
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 var Module = fx.Module(
@@ -13,12 +14,13 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(domain.Format)),
+			fx.As(new(plugins.Format)),
 			fx.ResultTags(`group:"formats"`),
 		),
 	),
 )
 
+// Example plugin
 type Video struct{}
 
 func New() *Video {
@@ -29,10 +31,10 @@ func (b *Video) Name() string {
 	return "formats.video"
 }
 
-func (b *Video) Copy(cfg map[string]any) domain.Format {
+func (b *Video) Copy(cfg map[string]any) plugins.Format {
 	return &Video{}
 }
 
-func (b *Video) Render(ctx context.Context, state *domain.State) {
+func (b *Video) Render(ctx context.Context, state *plugins.State) {
 
 }

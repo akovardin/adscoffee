@@ -7,42 +7,30 @@ import (
 	"syscall"
 	"time"
 
-	"go.uber.org/config"
 	"go.uber.org/fx"
 
-	cfg "go.ads.coffee/platform/server/config"
+	"go.ads.coffee/platform/pkg/database"
+	"go.ads.coffee/platform/pkg/logger"
+	"go.ads.coffee/platform/server/config"
+	"go.ads.coffee/platform/server/internal/repos/banners"
 	"go.ads.coffee/platform/server/internal/server"
 	"go.ads.coffee/platform/server/plugins"
 )
 
 func main() {
 	app := fx.New(
-		fx.Provide(
-			func() (cfg.Config, error) {
-				provider, err := config.NewYAML(
-					config.Expand(os.LookupEnv),
-					config.File("server/config.yaml"),
-					config.Permissive(),
-				)
-				if err != nil {
-					return cfg.Config{}, err
-				}
-
-				c := cfg.Config{}
-
-				if err := provider.Get("").Populate(&c); err != nil {
-					return cfg.Config{}, err
-				}
-
-				return c, nil
-			},
-		),
-
-		plugins.Module,
+		config.Module,
+		logger.Module,
 		server.Module,
+		database.Module,
+		plugins.Module,
+
+		// repos
+		banners.Module,
 
 		fx.Invoke(
 			start,
+			caches,
 		),
 	)
 
@@ -69,4 +57,8 @@ func start(lc fx.Lifecycle, server *server.Server) {
 			return server.Shutdown(ctx)
 		},
 	})
+}
+
+func caches(banners *banners.Cache) {
+	go banners.Start(context.Background())
 }

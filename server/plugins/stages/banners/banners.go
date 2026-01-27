@@ -3,8 +3,10 @@ package banners
 import (
 	"context"
 
-	"go.ads.coffee/platform/server/domain"
 	"go.uber.org/fx"
+
+	"go.ads.coffee/platform/server/internal/domain/ads"
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 var Module = fx.Module(
@@ -13,7 +15,7 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(domain.Stage)),
+			fx.As(new(plugins.Stage)),
 			fx.ResultTags(`group:"stages"`),
 		),
 	),
@@ -29,13 +31,13 @@ func (t *Banners) Name() string {
 	return "stages.banners"
 }
 
-func (t *Banners) Copy(cfg map[string]any) domain.Stage {
+func (t *Banners) Copy(cfg map[string]any) plugins.Stage {
 	return &Banners{}
 }
 
-func (t *Banners) Do(ctx context.Context, state *domain.State) {
+func (t *Banners) Do(ctx context.Context, state *plugins.State) {
 	// загружаем баннеры из репозитория
 	// и добавляем их в стейт
 
-	state.Candidates = []domain.Banner{}
+	state.Candidates = []ads.Banner{}
 }

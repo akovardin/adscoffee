@@ -1,13 +1,13 @@
 package stages
 
-import "go.ads.coffee/platform/server/domain"
+import "go.ads.coffee/platform/server/internal/domain/plugins"
 
 type Stages struct {
-	list map[string]domain.Stage
+	list map[string]plugins.Stage
 }
 
-func New(list []domain.Stage) *Stages {
-	plugins := map[string]domain.Stage{}
+func New(list []plugins.Stage) *Stages {
+	plugins := map[string]plugins.Stage{}
 	for _, stage := range list {
 		plugins[stage.Name()] = stage
 	}
@@ -17,6 +17,6 @@ func New(list []domain.Stage) *Stages {
 	}
 }
 
-func (i *Stages) Get(name string, cfg map[string]any) domain.Stage {
+func (i *Stages) Get(name string, cfg map[string]any) plugins.Stage {
 	return i.list[name].Copy(cfg)
 }

@@ -3,8 +3,9 @@ package empty
 import (
 	"context"
 
-	"go.ads.coffee/platform/server/domain"
 	"go.uber.org/fx"
+
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 var Module = fx.Module(
@@ -13,7 +14,7 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(domain.Output)),
+			fx.As(new(plugins.Output)),
 			fx.ResultTags(`group:"outputs"`),
 		),
 	),
@@ -30,14 +31,14 @@ func (r *Empty) Name() string {
 	return "outputs.empty"
 }
 
-func (r *Empty) Copy(cfg map[string]any) domain.Output {
+func (r *Empty) Copy(cfg map[string]any) plugins.Output {
 	return &Empty{}
 }
 
-func (r *Empty) Formats(ff []domain.Format) {
+func (r *Empty) Formats(ff []plugins.Format) {
 }
 
-func (rtb *Empty) Do(ctx context.Context, state *domain.State) {
+func (rtb *Empty) Do(ctx context.Context, state *plugins.State) {
 
 	// возвращаем пиксель
 }

@@ -1,3 +1,10 @@
+database:
+  user: admin
+  password: 123
+  host: localhost
+  port: 6432
+  dbname: admin_dev
+
 pipelines:
   - name: dsp
     route: /dsp

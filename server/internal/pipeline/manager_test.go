@@ -9,8 +9,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
-	"go.ads.coffee/platform/server/config"
-	"go.ads.coffee/platform/server/domain"
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 	"go.ads.coffee/platform/server/internal/formats"
 	"go.ads.coffee/platform/server/internal/inputs"
 	"go.ads.coffee/platform/server/internal/outputs"
@@ -26,11 +25,11 @@ func (m *mockInput) Name() string {
 	return m.name
 }
 
-func (m *mockInput) Copy(cfg map[string]any) domain.Input {
+func (m *mockInput) Copy(cfg map[string]any) plugins.Input {
 	return &mockInput{name: m.name}
 }
 
-func (m *mockInput) Do(ctx context.Context, state *domain.State) bool {
+func (m *mockInput) Do(ctx context.Context, state *plugins.State) bool {
 	return true
 }
 
@@ -42,23 +41,23 @@ func (m *mockStage) Name() string {
 	return m.name
 }
 
-func (m *mockStage) Copy(cfg map[string]any) domain.Stage {
+func (m *mockStage) Copy(cfg map[string]any) plugins.Stage {
 	return &mockStage{name: m.name}
 }
 
-func (m *mockStage) Do(ctx context.Context, state *domain.State) {
+func (m *mockStage) Do(ctx context.Context, state *plugins.State) {
 }
 
 type mockStageWithTargetings struct {
 	mockStage
-	targetings []domain.Targeting
+	targetings []plugins.Targeting
 }
 
-func (m *mockStageWithTargetings) Targetings(tt []domain.Targeting) {
+func (m *mockStageWithTargetings) Targetings(tt []plugins.Targeting) {
 	m.targetings = tt
 }
 
-func (m *mockStageWithTargetings) Copy(cfg map[string]any) domain.Stage {
+func (m *mockStageWithTargetings) Copy(cfg map[string]any) plugins.Stage {
 	return &mockStageWithTargetings{
 		mockStage: mockStage{name: m.name},
 	}
@@ -72,7 +71,7 @@ func (m *mockTargeting) Name() string {
 	return m.name
 }
 
-func (m *mockTargeting) Copy(cfg map[string]any) domain.Targeting {
+func (m *mockTargeting) Copy(cfg map[string]any) plugins.Targeting {
 	return &mockTargeting{name: m.name}
 }
 
@@ -87,89 +86,87 @@ func (m *mockFormat) Name() string {
 	return m.name
 }
 
-func (m *mockFormat) Copy(cfg map[string]any) domain.Format {
+func (m *mockFormat) Copy(cfg map[string]any) plugins.Format {
 	return &mockFormat{name: m.name}
 }
 
-func (m *mockFormat) Render(ctx context.Context, state *domain.State) {
+func (m *mockFormat) Render(ctx context.Context, state *plugins.State) {
 }
 
 type mockOutput struct {
 	name    string
-	formats []domain.Format
+	formats []plugins.Format
 }
 
 func (m *mockOutput) Name() string {
 	return m.name
 }
 
-func (m *mockOutput) Copy(cfg map[string]any) domain.Output {
+func (m *mockOutput) Copy(cfg map[string]any) plugins.Output {
 	return &mockOutput{name: m.name}
 }
 
-func (m *mockOutput) Formats(ff []domain.Format) {
+func (m *mockOutput) Formats(ff []plugins.Format) {
 	m.formats = ff
 }
 
-func (m *mockOutput) Do(ctx context.Context, state *domain.State) {
+func (m *mockOutput) Do(ctx context.Context, state *plugins.State) {
 }
 
 func TestNewManager(t *testing.T) {
-	inputList := []domain.Input{
+	inputList := []plugins.Input{
 		&mockInput{name: "inputs.rtb"},
 		&mockInput{name: "inputs.web"},
 	}
 	inputs := inputs.New(inputList)
 
-	outputList := []domain.Output{
+	outputList := []plugins.Output{
 		&mockOutput{name: "outputs.rtb"},
 		&mockOutput{name: "outputs.web"},
 	}
 	outputs := outputs.New(outputList)
 
-	stageList := []domain.Stage{
+	stageList := []plugins.Stage{
 		&mockStage{name: "stages.banners"},
 		&mockStageWithTargetings{mockStage: mockStage{name: "stages.targeting"}},
 	}
 	stages := stages.New(stageList)
 
-	targetingList := []domain.Targeting{
+	targetingList := []plugins.Targeting{
 		&mockTargeting{name: "targetings.apps"},
 		&mockTargeting{name: "targetings.geo"},
 	}
 	targetings := targetings.New(targetingList)
 
-	formatList := []domain.Format{
+	formatList := []plugins.Format{
 		&mockFormat{name: "formats.native"},
 		&mockFormat{name: "formats.banner"},
 	}
 	formats := formats.New(formatList)
 
-	cfg := config.Config{
-		Pipelines: []config.Pipeline{
-			{
-				Name:  "dsp",
-				Route: "/dsp",
-				Input: config.Input{
-					Name:   "inputs.rtb",
-					Config: map[string]any{},
-				},
-				Stages: []config.Stage{
-					{Name: "stages.banners", Config: map[string]any{}},
-					{Name: "stages.targeting", Config: map[string]any{}},
-				},
-				Targetings: []config.Targeting{
-					{Name: "targetings.apps", Config: map[string]any{}},
-					{Name: "targetings.geo", Config: map[string]any{}},
-				},
-				Formats: []config.Format{
-					{Name: "formats.native", Config: map[string]any{}},
-					{Name: "formats.banner", Config: map[string]any{}},
-				},
-				Output: config.Output{
-					Name:   "outputs.rtb",
-					Config: map[string]any{},
-				},
+	cfg := []Config{
+		{
+			Name:  "dsp",
+			Route: "/dsp",
+			Input: Input{
+				Name:   "inputs.rtb",
+				Config: map[string]any{},
+			},
+			Stages: []Stage{
+				{Name: "stages.banners", Config: map[string]any{}},
+				{Name: "stages.targeting", Config: map[string]any{}},
+			},
+			Targetings: []Targeting{
+				{Name: "targetings.apps", Config: map[string]any{}},
+				{Name: "targetings.geo", Config: map[string]any{}},
+			},
+			Formats: []Format{
+				{Name: "formats.native", Config: map[string]any{}},
+				{Name: "formats.banner", Config: map[string]any{}},
+			},
+			Output: Output{
+				Name:   "outputs.rtb",
+				Config: map[string]any{},
 			},
 		},
 	}
@@ -185,53 +182,51 @@ func TestNewManager(t *testing.T) {
 }
 
 func TestManager_Mount(t *testing.T) {
-	inputList := []domain.Input{
+	inputList := []plugins.Input{
 		&mockInput{name: "inputs.rtb"},
 	}
 	inputs := inputs.New(inputList)
 
-	outputList := []domain.Output{
+	outputList := []plugins.Output{
 		&mockOutput{name: "outputs.rtb"},
 	}
 	outputs := outputs.New(outputList)
 
-	stageList := []domain.Stage{
+	stageList := []plugins.Stage{
 		&mockStage{name: "stages.banners"},
 	}
 	stages := stages.New(stageList)
 
-	targetingList := []domain.Targeting{
+	targetingList := []plugins.Targeting{
 		&mockTargeting{name: "targetings.apps"},
 	}
 	targetings := targetings.New(targetingList)
 
-	formatList := []domain.Format{
+	formatList := []plugins.Format{
 		&mockFormat{name: "formats.native"},
 	}
 	formats := formats.New(formatList)
 
-	cfg := config.Config{
-		Pipelines: []config.Pipeline{
-			{
-				Name:  "dsp",
-				Route: "/dsp",
-				Input: config.Input{
-					Name:   "inputs.rtb",
-					Config: map[string]any{},
-				},
-				Stages: []config.Stage{
-					{Name: "stages.banners", Config: map[string]any{}},
-				},
-				Targetings: []config.Targeting{
-					{Name: "targetings.apps", Config: map[string]any{}},
-				},
-				Formats: []config.Format{
-					{Name: "formats.native", Config: map[string]any{}},
-				},
-				Output: config.Output{
-					Name:   "outputs.rtb",
-					Config: map[string]any{},
-				},
+	cfg := []Config{
+		{
+			Name:  "dsp",
+			Route: "/dsp",
+			Input: Input{
+				Name:   "inputs.rtb",
+				Config: map[string]any{},
+			},
+			Stages: []Stage{
+				{Name: "stages.banners", Config: map[string]any{}},
+			},
+			Targetings: []Targeting{
+				{Name: "targetings.apps", Config: map[string]any{}},
+			},
+			Formats: []Format{
+				{Name: "formats.native", Config: map[string]any{}},
+			},
+			Output: Output{
+				Name:   "outputs.rtb",
+				Config: map[string]any{},
 			},
 		},
 	}
@@ -248,75 +243,73 @@ func TestManager_Mount(t *testing.T) {
 
 func TestManager_MountHandlers(t *testing.T) {
 	// Create mock components
-	inputList := []domain.Input{
+	inputList := []plugins.Input{
 		&mockInput{name: "inputs.rtb"},
 	}
 	inputs := inputs.New(inputList)
 
-	outputList := []domain.Output{
+	outputList := []plugins.Output{
 		&mockOutput{name: "outputs.rtb"},
 	}
 	outputs := outputs.New(outputList)
 
-	stageList := []domain.Stage{
+	stageList := []plugins.Stage{
 		&mockStage{name: "stages.banners"},
 	}
 	stages := stages.New(stageList)
 
-	targetingList := []domain.Targeting{
+	targetingList := []plugins.Targeting{
 		&mockTargeting{name: "targetings.apps"},
 	}
 	targetings := targetings.New(targetingList)
 
-	formatList := []domain.Format{
+	formatList := []plugins.Format{
 		&mockFormat{name: "formats.native"},
 	}
 	formats := formats.New(formatList)
 
 	// Create config with multiple pipelines
-	cfg := config.Config{
-		Pipelines: []config.Pipeline{
-			{
-				Name:  "dsp",
-				Route: "/dsp",
-				Input: config.Input{
-					Name:   "inputs.rtb",
-					Config: map[string]any{},
-				},
-				Stages: []config.Stage{
-					{Name: "stages.banners", Config: map[string]any{}},
-				},
-				Targetings: []config.Targeting{
-					{Name: "targetings.apps", Config: map[string]any{}},
-				},
-				Formats: []config.Format{
-					{Name: "formats.native", Config: map[string]any{}},
-				},
-				Output: config.Output{
-					Name:   "outputs.rtb",
-					Config: map[string]any{},
-				},
+	cfg := []Config{
+		{
+			Name:  "dsp",
+			Route: "/dsp",
+			Input: Input{
+				Name:   "inputs.rtb",
+				Config: map[string]any{},
 			},
-			{
-				Name:  "web",
-				Route: "/web",
-				Input: config.Input{
-					Name:   "inputs.rtb",
-					Config: map[string]any{},
-				},
-				Stages: []config.Stage{
-					{Name: "stages.banners", Config: map[string]any{}},
-				},
-				Targetings: []config.Targeting{
-					{Name: "targetings.apps", Config: map[string]any{}},
-				},
-				Formats: []config.Format{
-					{Name: "formats.native", Config: map[string]any{}},
-				},
-				Output: config.Output{
-					Name:   "outputs.rtb",
-					Config: map[string]any{},
-				},
+			Stages: []Stage{
+				{Name: "stages.banners", Config: map[string]any{}},
+			},
+			Targetings: []Targeting{
+				{Name: "targetings.apps", Config: map[string]any{}},
+			},
+			Formats: []Format{
+				{Name: "formats.native", Config: map[string]any{}},
+			},
+			Output: Output{
+				Name:   "outputs.rtb",
+				Config: map[string]any{},
+			},
+		},
+		{
+			Name:  "web",
+			Route: "/web",
+			Input: Input{
+				Name:   "inputs.rtb",
+				Config: map[string]any{},
+			},
+			Stages: []Stage{
+				{Name: "stages.banners", Config: map[string]any{}},
+			},
+			Targetings: []Targeting{
+				{Name: "targetings.apps", Config: map[string]any{}},
+			},
+			Formats: []Format{
+				{Name: "formats.native", Config: map[string]any{}},
+			},
+			Output: Output{
+				Name:   "outputs.rtb",
+				Config: map[string]any{},
 			},
 		},
 	}
@@ -347,54 +340,52 @@ func TestManager_MountHandlers(t *testing.T) {
 
 func TestManager_MountWithPipelineDo(t *testing.T) {
 	// Create mock components
-	inputList := []domain.Input{
+	inputList := []plugins.Input{
 		&mockInput{name: "inputs.rtb"},
 	}
 	inputs := inputs.New(inputList)
 
-	outputList := []domain.Output{
+	outputList := []plugins.Output{
 		&mockOutput{name: "outputs.rtb"},
 	}
 	outputs := outputs.New(outputList)
 
-	stageList := []domain.Stage{
+	stageList := []plugins.Stage{
 		&mockStage{name: "stages.banners"},
 	}
 	stages := stages.New(stageList)
 
-	targetingList := []domain.Targeting{
+	targetingList := []plugins.Targeting{
 		&mockTargeting{name: "targetings.apps"},
 	}
 	targetings := targetings.New(targetingList)
 
-	formatList := []domain.Format{
+	formatList := []plugins.Format{
 		&mockFormat{name: "formats.native"},
 	}
 	formats := formats.New(formatList)
 
 	// Create config with a single pipeline
-	cfg := config.Config{
-		Pipelines: []config.Pipeline{
-			{
-				Name:  "test",
-				Route: "/test",
-				Input: config.Input{
-					Name:   "inputs.rtb",
-					Config: map[string]any{},
-				},
-				Stages: []config.Stage{
-					{Name: "stages.banners", Config: map[string]any{}},
-				},
-				Targetings: []config.Targeting{
-					{Name: "targetings.apps", Config: map[string]any{}},
-				},
-				Formats: []config.Format{
-					{Name: "formats.native", Config: map[string]any{}},
-				},
-				Output: config.Output{
-					Name:   "outputs.rtb",
-					Config: map[string]any{},
-				},
+	cfg := []Config{
+		{
+			Name:  "test",
+			Route: "/test",
+			Input: Input{
+				Name:   "inputs.rtb",
+				Config: map[string]any{},
+			},
+			Stages: []Stage{
+				{Name: "stages.banners", Config: map[string]any{}},
+			},
+			Targetings: []Targeting{
+				{Name: "targetings.apps", Config: map[string]any{}},
+			},
+			Formats: []Format{
+				{Name: "formats.native", Config: map[string]any{}},
+			},
+			Output: Output{
+				Name:   "outputs.rtb",
+				Config: map[string]any{},
 			},
 		},
 	}

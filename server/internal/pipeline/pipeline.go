@@ -3,25 +3,25 @@ package pipeline
 import (
 	"context"
 
-	"go.ads.coffee/platform/server/domain"
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 type Pipeline struct {
 	name    string
 	route   string
-	input   domain.Input
-	output  domain.Output
-	stages  []domain.Stage
-	formats []domain.Format
+	input   plugins.Input
+	output  plugins.Output
+	stages  []plugins.Stage
+	formats []plugins.Format
 }
 
 func NewPipeline(
 	name string,
 	route string,
-	input domain.Input,
-	output domain.Output,
-	stages []domain.Stage,
-	formats []domain.Format,
+	input plugins.Input,
+	output plugins.Output,
+	stages []plugins.Stage,
+	formats []plugins.Format,
 ) *Pipeline {
 	return &Pipeline{
 		name:    name,
@@ -43,7 +43,7 @@ func (p *Pipeline) Route() string {
 
 func (p *Pipeline) Do(
 	ctx context.Context,
-	state *domain.State,
+	state *plugins.State,
 ) bool {
 	if ok := p.input.Do(ctx, state); !ok {
 		return false

@@ -1,0 +1,35 @@
+linters:
+  disable-all: true
+  enable:
+    - dupl
+    - errcheck
+    - exportloopref
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - goimports
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - megacheck
+    - misspell
+    - nakedret
+    - prealloc
+    - revive
+    - staticcheck
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+issues:
+  exclude-rules:
+    - linters:
+        - gosec
+      text: "G404"
+    - linters:
+        - gosec
+      text: "G114"

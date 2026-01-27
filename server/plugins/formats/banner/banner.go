@@ -3,8 +3,9 @@ package banner
 import (
 	"context"
 
-	"go.ads.coffee/platform/server/domain"
 	"go.uber.org/fx"
+
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 var Module = fx.Module(
@@ -13,7 +14,7 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(domain.Format)),
+			fx.As(new(plugins.Format)),
 			fx.ResultTags(`group:"formats"`),
 		),
 	),
@@ -29,10 +30,10 @@ func (b *Banner) Name() string {
 	return "formats.banner"
 }
 
-func (b *Banner) Copy(cfg map[string]any) domain.Format {
+func (b *Banner) Copy(cfg map[string]any) plugins.Format {
 	return &Banner{}
 }
 
-func (b *Banner) Render(ctx context.Context, state *domain.State) {
+func (b *Banner) Render(ctx context.Context, state *plugins.State) {
 
 }

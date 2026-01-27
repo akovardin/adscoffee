@@ -3,8 +3,9 @@ package rotation
 import (
 	"context"
 
-	"go.ads.coffee/platform/server/domain"
 	"go.uber.org/fx"
+
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 var Module = fx.Module(
@@ -13,7 +14,7 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(domain.Stage)),
+			fx.As(new(plugins.Stage)),
 			fx.ResultTags(`group:"stages"`),
 		),
 	),
@@ -29,11 +30,11 @@ func (t *Rotattion) Name() string {
 	return "stages.rotation"
 }
 
-func (t *Rotattion) Copy(cfg map[string]any) domain.Stage {
+func (t *Rotattion) Copy(cfg map[string]any) plugins.Stage {
 	return &Rotattion{}
 }
 
-func (t *Rotattion) Do(ctx context.Context, state *domain.State) {
+func (t *Rotattion) Do(ctx context.Context, state *plugins.State) {
 	// делаем взвешанный рандом по ecpm
 	state.Winners = state.Candidates
 }

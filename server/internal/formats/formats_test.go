@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.ads.coffee/platform/server/domain"
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 // Mock implementation of domain.Format for testing
@@ -17,17 +17,17 @@ func (m *mockFormat) Name() string {
 	return m.name
 }
 
-func (m *mockFormat) Copy(cfg map[string]any) domain.Format {
+func (m *mockFormat) Copy(cfg map[string]any) plugins.Format {
 	return &mockFormat{name: m.name}
 }
 
-func (m *mockFormat) Render(ctx context.Context, state *domain.State) {
+func (m *mockFormat) Render(ctx context.Context, state *plugins.State) {
 	// Mock implementation
 }
 
 func TestNew(t *testing.T) {
 	// Create mock formats
-	formatList := []domain.Format{
+	formatList := []plugins.Format{
 		&mockFormat{name: "formats.native"},
 		&mockFormat{name: "formats.banner"},
 	}
@@ -44,7 +44,7 @@ func TestNew(t *testing.T) {
 
 func TestFormats_Get(t *testing.T) {
 	// Create mock formats
-	formatList := []domain.Format{
+	formatList := []plugins.Format{
 		&mockFormat{name: "formats.native"},
 		&mockFormat{name: "formats.banner"},
 	}

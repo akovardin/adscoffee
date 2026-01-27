@@ -3,8 +3,9 @@ package native
 import (
 	"context"
 
-	"go.ads.coffee/platform/server/domain"
 	"go.uber.org/fx"
+
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 var Module = fx.Module(
@@ -13,7 +14,7 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(domain.Format)),
+			fx.As(new(plugins.Format)),
 			fx.ResultTags(`group:"formats"`),
 		),
 	),
@@ -29,10 +30,10 @@ func (b *Native) Name() string {
 	return "formats.native"
 }
 
-func (b *Native) Copy(cfg map[string]any) domain.Format {
+func (b *Native) Copy(cfg map[string]any) plugins.Format {
 	return &Native{}
 }
 
-func (b *Native) Render(ctx context.Context, state *domain.State) {
+func (b *Native) Render(ctx context.Context, state *plugins.State) {
 
 }

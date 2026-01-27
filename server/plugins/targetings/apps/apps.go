@@ -3,7 +3,7 @@ package apps
 import (
 	"go.uber.org/fx"
 
-	"go.ads.coffee/platform/server/domain"
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 var Module = fx.Module(
@@ -11,7 +11,7 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(domain.Targeting)),
+			fx.As(new(plugins.Targeting)),
 			fx.ResultTags(`group:"targetings"`),
 		),
 	),
@@ -27,7 +27,7 @@ func (a *Apps) Name() string {
 	return "targetings.apps"
 }
 
-func (a *Apps) Copy(cfg map[string]any) domain.Targeting {
+func (a *Apps) Copy(cfg map[string]any) plugins.Targeting {
 	return &Apps{}
 }
 

@@ -1,8 +1,9 @@
 package geo
 
 import (
-	"go.ads.coffee/platform/server/domain"
 	"go.uber.org/fx"
+
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 var Module = fx.Module(
@@ -10,7 +11,7 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(domain.Targeting)),
+			fx.As(new(plugins.Targeting)),
 			fx.ResultTags(`group:"targetings"`),
 		),
 	),
@@ -27,7 +28,7 @@ func (g *Geo) Name() string {
 	return "targetings.geo"
 }
 
-func (g *Geo) Copy(cfg map[string]any) domain.Targeting {
+func (g *Geo) Copy(cfg map[string]any) plugins.Targeting {
 	return &Geo{}
 }
 

@@ -4,8 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"go.ads.coffee/platform/server/config"
-	"go.ads.coffee/platform/server/domain"
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 	"go.ads.coffee/platform/server/internal/formats"
 	"go.ads.coffee/platform/server/internal/inputs"
 	"go.ads.coffee/platform/server/internal/outputs"
@@ -18,7 +17,7 @@ type Manager struct {
 }
 
 func NewManager(
-	cfg config.Config,
+	pipelines []Config,
 	inputs *inputs.Inputs,
 	outputs *outputs.Outputs,
 	stages *stages.Stages,
@@ -26,25 +25,25 @@ func NewManager(
 	formats *formats.Formats,
 ) *Manager {
 	m := &Manager{}
-	for _, c := range cfg.Pipelines {
-		tt := []domain.Targeting{}
+	for _, c := range pipelines {
+		tt := []plugins.Targeting{}
 
 		for _, t := range c.Targetings {
 			tt = append(tt, targetings.Get(t.Name, t.Config))
 		}
 
-		ff := []domain.Format{}
+		ff := []plugins.Format{}
 
 		for _, f := range c.Formats {
 			ff = append(ff, formats.Get(f.Name, f.Config))
 		}
 
-		ss := []domain.Stage{}
+		ss := []plugins.Stage{}
 
 		for _, s := range c.Stages {
 			v := stages.Get(s.Name, s.Config)
 			switch s := v.(type) {
-			case domain.WithTargetings:
+			case plugins.WithTargetings:
 				s.Targetings(tt)
 			default:
 				ss = append(ss, v)
@@ -72,7 +71,7 @@ func (m *Manager) Mount(router *chi.Mux) {
 		router.Mount(p.Route(), http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
 
-			state := &domain.State{
+			state := &plugins.State{
 				Request:  r,
 				Response: w,
 			}
