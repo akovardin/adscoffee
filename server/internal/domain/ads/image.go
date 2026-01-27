@@ -30,8 +30,8 @@ func (i Image) Full(cdn string) string {
 		return "https:" + i.Url
 	}
 
-	img := strings.Replace(i.Url, base, cdn, -1)
-	img = strings.Replace(img, "file", "file.image", -1)
+	img := strings.ReplaceAll(i.Url, base, cdn)
+	img = strings.ReplaceAll(img, "file", "file.image")
 
 	return img
 }

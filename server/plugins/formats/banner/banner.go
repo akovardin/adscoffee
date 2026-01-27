@@ -53,7 +53,7 @@ func (b *Banner) Render(ctx context.Context, state *plugins.State) error {
 		return fmt.Errorf("error on marshal banner: %w", err)
 	}
 
-	state.Response.Write(data)
+	_, err = state.Response.Write(data)
 
-	return nil
+	return err
 }
