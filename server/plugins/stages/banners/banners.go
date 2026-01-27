@@ -7,6 +7,7 @@ import (
 
 	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
+	"go.ads.coffee/platform/server/internal/repos/banners"
 )
 
 var Module = fx.Module(
@@ -21,10 +22,18 @@ var Module = fx.Module(
 	),
 )
 
-type Banners struct{}
+type BannersCache interface {
+	All(ctx context.Context) []ads.Banner
+}
 
-func New() *Banners {
-	return &Banners{}
+type Banners struct {
+	cache BannersCache
+}
+
+func New(cache *banners.Cache) *Banners {
+	return &Banners{
+		cache: cache,
+	}
 }
 
 func (t *Banners) Name() string {
@@ -35,9 +44,8 @@ func (t *Banners) Copy(cfg map[string]any) plugins.Stage {
 	return &Banners{}
 }
 
-func (t *Banners) Do(ctx context.Context, state *plugins.State) {
-	// загружаем баннеры из репозитория
-	// и добавляем их в стейт
+func (t *Banners) Do(ctx context.Context, state *plugins.State) error {
+	state.Candidates = t.cache.All(ctx)
 
-	state.Candidates = []ads.Banner{}
+	return nil
 }

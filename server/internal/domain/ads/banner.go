@@ -5,11 +5,21 @@ import (
 	"time"
 )
 
+const (
+	CreativeTypeBanner   = "banner"
+	CreativeTypeVideo    = "video"
+	CreativeTypeNative   = "native"
+	CreativeTypeMediator = "mediator"
+)
+
 type Banner struct {
 	ID     string
 	Title  string
 	Price  int
 	Active bool
+
+	Type    string
+	Network string
 
 	Targeting Targeting
 	Timetable Timetable

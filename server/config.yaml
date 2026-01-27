@@ -1,3 +1,39 @@
+server:
+  port: ":8081"
+
+redis-pool:
+  main:
+    enabled: true
+    key_prefix: "adexprodsp"
+    cluster_addrs: ["127.0.0.1:7001"]
+    username: ''
+    password: ''
+    pool_size: 10
+    route_by_latency: true
+    route_randomly: false
+    pool_timeout: 3s
+    connect_timeout: 1s
+    max_retries: 3
+    min_retry_backoff: 8ms
+    max_retry_backoff: 512ms
+    dial_timeout: 5s
+    read_timeout: 2s
+    write_timeout: 2s
+
+kafka-pool:
+    main:
+      enabled: true
+      seeds:
+        - localhost:19092
+        - localhost:29092
+        - localhost:39092
+      producer:
+        disable_idempotent_write: true
+
+telemetry:
+  jaeger:
+    enabled: false
+
 database:
   user: admin
   password: 123
@@ -25,7 +61,7 @@ pipelines:
       name: outputs.rtb
 
   - name: kodikapusta
-    route: /kodikapusta
+    route: /kodikapusta/{placement}
     input:
       name: inputs.web
     stages:
@@ -35,6 +71,7 @@ pipelines:
       - name: stages.limits
       - name: stages.targeting
       - name: stages.rotation
+      - name: stages.mediation
     targetings:
       - name: targetings.apps
       - name: targetings.geo

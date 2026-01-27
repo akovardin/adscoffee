@@ -13,6 +13,7 @@ type State struct {
 	Device     *Device
 	Candidates []ads.Banner
 	Winners    []ads.Banner
+	Placement  *Placement
 }
 
 type User struct {
@@ -22,4 +23,9 @@ type User struct {
 type Device struct {
 	UA string
 	IP string
+}
+
+type Placement struct {
+	ID    string
+	Units []ads.Unit
 }

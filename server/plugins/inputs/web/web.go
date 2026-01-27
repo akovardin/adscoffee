@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 
+	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
 
 	"go.ads.coffee/platform/server/internal/domain/plugins"
@@ -41,11 +42,13 @@ func (stages *Web) Do(ctx context.Context, state *plugins.State) bool {
 	state.User = &plugins.User{}
 	state.Device = &plugins.Device{}
 
-	// проверить наличие юнита
+	// проверить наличие placement
 
-	// по юниту может быть включена медиация ->
-	// это значит, что должны получить разные настройки сети и выполнить
-	// аукцион и ротацию баннера
+	placement := chi.URLParam(state.Request, "placement")
+
+	state.Placement = &plugins.Placement{
+		ID: placement,
+	}
 
 	return true
 }

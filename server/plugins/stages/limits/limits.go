@@ -34,7 +34,9 @@ func (l *Limits) Copy(cfg map[string]any) plugins.Stage {
 	return &Limits{}
 }
 
-func (l *Limits) Do(ctx context.Context, state *plugins.State) {
+func (l *Limits) Do(ctx context.Context, state *plugins.State) error {
 	// срабатывают ограничения по показам, капингам и так далее
 	state.Candidates = state.Candidates[:]
+
+	return nil
 }

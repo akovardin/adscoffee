@@ -45,7 +45,8 @@ func (m *mockStage) Copy(cfg map[string]any) plugins.Stage {
 	return &mockStage{name: m.name}
 }
 
-func (m *mockStage) Do(ctx context.Context, state *plugins.State) {
+func (m *mockStage) Do(ctx context.Context, state *plugins.State) error {
+	return nil
 }
 
 type mockStageWithTargetings struct {

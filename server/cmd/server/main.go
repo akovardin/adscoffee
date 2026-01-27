@@ -13,6 +13,7 @@ import (
 	"go.ads.coffee/platform/pkg/logger"
 	"go.ads.coffee/platform/server/config"
 	"go.ads.coffee/platform/server/internal/repos/banners"
+	"go.ads.coffee/platform/server/internal/repos/placements"
 	"go.ads.coffee/platform/server/internal/server"
 	"go.ads.coffee/platform/server/plugins"
 )
@@ -27,6 +28,7 @@ func main() {
 
 		// repos
 		banners.Module,
+		placements.Module,
 
 		fx.Invoke(
 			start,

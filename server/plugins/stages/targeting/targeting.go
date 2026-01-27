@@ -38,7 +38,9 @@ func (t *Targeting) Targetings(tt []plugins.Targeting) {
 	// set targetings
 }
 
-func (t *Targeting) Do(ctx context.Context, state *plugins.State) {
+func (t *Targeting) Do(ctx context.Context, state *plugins.State) error {
 	// обрабатываются таргетинги
 	state.Candidates = state.Candidates[:]
+
+	return nil
 }

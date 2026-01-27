@@ -2,6 +2,9 @@
 
 version: '3'
 
+vars:
+  PG_CONNECT: user=admin password=123 dbname=admin_dev host=localhost port=6432 sslmode=disable
+
 tasks:  
   gitpush:
     cmds:
@@ -18,6 +21,22 @@ tasks:
     cmds:
       - golangci-lint run
 
-  up:
+  docker-up:
     cmds:
       - docker-compose up -d
+
+  migration-status:
+    cmds:
+      - goose -dir ./migrations/postgres postgres "{{.PG_CONNECT}}" status
+
+  migration-create:
+    cmds:
+      - goose -dir ./migrations/postgres postgres  "{{.PG_CONNECT}}" create {{.MIGRATION_NAME}} sql
+
+  migration-up:
+    cmds:
+      - goose -dir ./migrations/postgres postgres  "{{.PG_CONNECT}}" up
+
+  migration-down:
+    cmds:
+      - goose -dir ./migrations/postgres postgres  "{{.PG_CONNECT}}" down

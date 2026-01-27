@@ -1,11 +1,11 @@
-package banners
+package placements
 
 import (
 	"go.uber.org/fx"
 )
 
 var Module = fx.Module(
-	"repos.banners",
+	"repos.placements",
 
 	fx.Provide(
 		NewRepo,

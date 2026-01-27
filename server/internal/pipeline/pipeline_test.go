@@ -40,8 +40,10 @@ func (m *testMockStage) Copy(cfg map[string]any) plugins.Stage {
 	return &testMockStage{name: m.name}
 }
 
-func (m *testMockStage) Do(ctx context.Context, state *plugins.State) {
+func (m *testMockStage) Do(ctx context.Context, state *plugins.State) error {
 	m.doCalled = true
+
+	return nil
 }
 
 type testMockOutput struct {

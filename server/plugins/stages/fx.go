@@ -5,6 +5,7 @@ import (
 
 	"go.ads.coffee/platform/server/plugins/stages/banners"
 	"go.ads.coffee/platform/server/plugins/stages/limits"
+	"go.ads.coffee/platform/server/plugins/stages/mediation"
 	"go.ads.coffee/platform/server/plugins/stages/rotation"
 	"go.ads.coffee/platform/server/plugins/stages/targeting"
 )
@@ -16,4 +17,5 @@ var Module = fx.Module(
 	targeting.Module,
 	rotation.Module,
 	banners.Module,
+	mediation.Module,
 )
