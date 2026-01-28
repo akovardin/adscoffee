@@ -1,0 +1,42 @@
+@use '../vuetify' as vuetify;
+@use '../variables' as variables;
+
+.v-table > .v-table__wrapper > table > tbody > tr > th,
+.v-table > .v-table__wrapper > table > thead > tr > th,
+.v-table > .v-table__wrapper > table > tfoot > tr > th {
+  color: var(--v-theme-on-background);
+  background-color: variables.$color-grey-50;
+}
+
+.v-table tbody td {
+  .v-chip.v-chip--size-default {
+    --v-chip-height: 28px;
+    font-size: 12px;
+  }
+
+  .v-selection-control--dirty {
+    color: rgb(var(--v-theme-primary));
+  }
+}
+
+.v-table > .v-table__wrapper > table {
+  border: vuetify.$table-border;
+  border-radius: vuetify.$border-radius-root;
+  overflow: hidden;
+}
+
+/** fix the long text word-break problem **/
+table {
+  table-layout: auto;
+  word-break: break-word;
+}
+
+/** fix: v-tab item have box-shadow which cropped by v-window's property overflow:hidden **/
+.v-slide-group:not(.vx-tabs-wrap) ~ .v-window {
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  margin-left: -20px;
+  margin-right: -20px;
+  margin-bottom: -20px;
+}

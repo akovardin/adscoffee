@@ -1,0 +1,12 @@
+go.work*
+dev_env_local
+__*
+coverage.txt
+coverage.html
+.vscode
+_backup
+docs/docsrc/public
+.DS_Store
+.idea
+login/location/test-data
+.cursor

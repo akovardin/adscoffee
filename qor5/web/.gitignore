@@ -1,0 +1,6 @@
+.idea
+.vscode
+__*
+!__tests__
+
+.cursor

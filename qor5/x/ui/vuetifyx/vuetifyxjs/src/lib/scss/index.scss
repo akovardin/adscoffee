@@ -1,0 +1,32 @@
+// base comp style refactor
+@import './components/VTable';
+@import './components/VCard';
+@import './components/VField';
+@import './components/VBtn';
+@import './components/VTextarea';
+@import 'components/SlideGroup';
+@import 'components/Navigation';
+@import 'components/vTabs';
+@import 'components/AutoComplete';
+@import 'components/Dialog';
+@import 'components/VPagination';
+@import 'components/Section';
+@import 'components/ActivityTimeLine';
+@import 'components/vChip';
+@import 'components/VFilter';
+@import 'components/VVersionSelect';
+@import 'components/imgUploader';
+@import 'components/Tiptap';
+
+// page module
+@import 'page/Listing';
+@import 'page/Detailing';
+@import 'page/PageBuilder';
+
+//some style that fix display problems
+@import './fixer';
+
+@import './utils';
+
+// it's flexible to split out from qor5 index.scss
+@import 'sites/k-theme.scss';

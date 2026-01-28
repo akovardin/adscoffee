@@ -1,0 +1,131 @@
+package integration_test
+
+import (
+	"encoding/json"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/qor5/admin/v3/utils/testflow"
+	"github.com/qor5/web/v3/multipartestutils"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+type FlowNew struct {
+	*Flow
+}
+
+func TestFlowNew(t *testing.T) {
+	flowNew(t, &FlowNew{
+		Flow: &Flow{
+			db: DB, h: PresetsBuilder,
+		},
+	})
+}
+
+func flowNew(t *testing.T, f *FlowNew) {
+	flowNew_Step00_Event_presets_New(t, f)
+
+	flowNew_Step01_Event_presets_Update(t, f)
+
+	flowNew_Step02_Event___dispatch_stateful_action__(t, f)
+}
+
+func flowNew_Step00_Event_presets_New(t *testing.T, f *FlowNew) *testflow.Then {
+	r := multipartestutils.NewMultipartBuilder().
+		PageURL("/examples/publish-example/with-publish-products").
+		EventFunc("presets_New").
+		BuildEventFuncRequest()
+
+	w := httptest.NewRecorder()
+	f.h.ServeHTTP(w, r)
+
+	var resp multipartestutils.TestEventResponse
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
+	assert.Empty(t, resp.PageTitle)
+	assert.False(t, resp.Reload)
+	assert.Nil(t, resp.PushState)
+	assert.Empty(t, resp.RedirectURL)
+	assert.Empty(t, resp.ReloadPortals)
+	assert.Len(t, resp.UpdatePortals, 1)
+	assert.Equal(t, "presets_RightDrawerPortalName", resp.UpdatePortals[0].Name)
+	assert.Nil(t, resp.Data)
+	assert.Equal(t, testflow.RemoveTime(`setTimeout(function(){ vars.presetsRightDrawer = true }, 100)`), testflow.RemoveTime(resp.RunScript))
+
+	testflow.Validate(t, w, r,
+		testflow.OpenRightDrawer("New WithPublishProduct"),
+	)
+
+	return testflow.NewThen(t, w, r)
+}
+
+func flowNew_Step01_Event_presets_Update(t *testing.T, f *FlowNew) *testflow.Then {
+	r := multipartestutils.NewMultipartBuilder().
+		PageURL("/examples/publish-example/with-publish-products").
+		EventFunc("presets_Update").
+		AddField("Name", "FirstProduct").
+		AddField("Price", "123").
+		BuildEventFuncRequest()
+
+	w := httptest.NewRecorder()
+	f.h.ServeHTTP(w, r)
+
+	var resp multipartestutils.TestEventResponse
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
+	assert.Empty(t, resp.PageTitle)
+	assert.False(t, resp.Reload)
+	assert.Nil(t, resp.PushState)
+	assert.Empty(t, resp.RedirectURL)
+	assert.Empty(t, resp.ReloadPortals)
+	assert.Empty(t, resp.UpdatePortals)
+	assert.Nil(t, resp.Data)
+	assert.Equal(t, testflow.RemoveTime(`plaid().vars(vars).emit("PresetsNotifModelsCreatedexamplesAdminWithPublishProduct", {"models":[{"ID":32,"CreatedAt":"2024-07-04T18:03:29.389412+08:00","UpdatedAt":"2024-07-04T18:03:29.389412+08:00","DeletedAt":null,"Name":"FirstProduct","Price":123,"Status":"draft","OnlineUrl":"","ScheduledStartAt":null,"ScheduledEndAt":null,"ActualStartAt":null,"ActualEndAt":null,"Version":"2024-07-04-v01","VersionName":"2024-07-04-v01","ParentVersion":""}]}); vars.presetsRightDrawer = false; vars.presetsMessage = { show: true, message: "Successfully Updated", color: "success"}`), testflow.RemoveTime(resp.RunScript))
+
+	return testflow.NewThen(t, w, r)
+}
+
+func flowNew_Step02_Event___dispatch_stateful_action__(t *testing.T, f *FlowNew) *testflow.Then {
+	r := multipartestutils.NewMultipartBuilder().
+		PageURL("/examples/publish-example/with-publish-products").
+		EventFunc("__dispatch_stateful_action__").
+		AddField("__action__", `
+{
+	"compo_type": "*presets.ListingCompo",
+	"compo": {
+		"id": "examplespublish_examplewith_publish_products_page",
+		"popup": false,
+		"long_style_search_box": false,
+		"selected_ids": [],
+		"keyword": "",
+		"order_bys": null,
+		"page": 0,
+		"per_page": 0,
+		"display_columns": null,
+		"active_filter_tab": "",
+		"filter_query": "",
+		"on_mounted": ""
+	},
+	"injector": "examplespublish_examplewith_publish_products",
+	"sync_query": true,
+	"method": "OnReload",
+	"request": {}
+}`).
+		BuildEventFuncRequest()
+
+	w := httptest.NewRecorder()
+	f.h.ServeHTTP(w, r)
+
+	var resp multipartestutils.TestEventResponse
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
+	assert.Empty(t, resp.PageTitle)
+	assert.False(t, resp.Reload)
+	assert.Nil(t, resp.PushState)
+	assert.Empty(t, resp.RedirectURL)
+	assert.Empty(t, resp.ReloadPortals)
+	assert.Len(t, resp.UpdatePortals, 1)
+	assert.Equal(t, "ListingCompo_examplespublish_examplewith_publish_products_page", resp.UpdatePortals[0].Name)
+	assert.Nil(t, resp.Data)
+	assert.Empty(t, resp.RunScript)
+
+	return testflow.NewThen(t, w, r)
+}

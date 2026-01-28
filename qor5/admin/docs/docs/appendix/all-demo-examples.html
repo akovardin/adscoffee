@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Appendix - All Demo Examples - QOR5 Document</title>
+
+<meta name='description'>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<base href='/docs/'>
+
+<link href='index.css' rel='stylesheet' type='text/css'>
+
+<script type='text/javascript' defer src='index.js'></script>
+</head>
+
+<body>
+<div id='app' v-cloak>
+<div v-init-context:vars='{hideAside: false}' class='flex h-screen'>
+<div class='flex-1 flex flex-col overflow-hidden'>
+<div class='flex h-full'>
+<aside v-show='!vars.hideAside' id='menuScroller' class='flex flex-col w-80 h-full bg-gray-50 border-r border-gray-200 overflow-y-auto'>
+<div class='h-12'><search></search></div>
+
+<ul class='px-0 py-3 mx-0 text-base font-normal list-none text-gray-700'>
+<li class='m-0'>
+<a href='index.html' id='index.html' onclick='window.storeMenuState("index.html")' class='inline-block px-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Introduction</a>
+</li>
+
+<li class='cursor-default px-4 py-1 truncate break-words w-64 m-0'>Getting Started</li>
+
+<li class='m-0'>
+<a href='getting-started/one-minute-quick-start.html' id='getting-started/one-minute-quick-start.html' onclick='window.storeMenuState("getting-started/one-minute-quick-start.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>1 Minute Quick Start</a>
+</li>
+
+<li class='cursor-default px-4 py-1 truncate break-words w-64 m-0'>Building Admin</li>
+
+<li class='m-0'>
+<a href='basics/presets-instant-crud.html' id='basics/presets-instant-crud.html' onclick='window.storeMenuState("basics/presets-instant-crud.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>presets, Instant CRUD</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/listing.html' id='basics/listing.html' onclick='window.storeMenuState("basics/listing.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Listing</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/listing-customizations.html' id='basics/listing-customizations.html' onclick='window.storeMenuState("basics/listing-customizations.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Listing Customizations</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/filter.html' id='basics/filter.html' onclick='window.storeMenuState("basics/filter.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Filters</a>
+</li>
+
+<li class='m-0'>
+<a href='presets-guide/editing-customizations.html' id='presets-guide/editing-customizations.html' onclick='window.storeMenuState("presets-guide/editing-customizations.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Editing</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/brand.html' id='basics/brand.html' onclick='window.storeMenuState("basics/brand.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Brand</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/menu.html' id='basics/menu.html' onclick='window.storeMenuState("basics/menu.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Menu</a>
+</li>
+
+<li class='m-0'>
+<a href='presets-guide/detail-page-for-complex-object.html' id='presets-guide/detail-page-for-complex-object.html' onclick='window.storeMenuState("presets-guide/detail-page-for-complex-object.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Detailing</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/layout.html' id='basics/layout.html' onclick='window.storeMenuState("basics/layout.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Layout</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/login.html' id='basics/login.html' onclick='window.storeMenuState("basics/login.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Login</a>
+</li>
+
+<li class='m-0'>
+<a href='presets-guide/permissions.html' id='presets-guide/permissions.html' onclick='window.storeMenuState("presets-guide/permissions.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Permissions</a>
+</li>
+
+<li class='m-0'>
+<a href='presets-guide/role.html' id='presets-guide/role.html' onclick='window.storeMenuState("presets-guide/role.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Role</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/shortcut.html' id='basics/shortcut.html' onclick='window.storeMenuState("basics/shortcut.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Keyboard Shortcut</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/confirm-dialog.html' id='basics/confirm-dialog.html' onclick='window.storeMenuState("basics/confirm-dialog.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Confirm Dialog</a>
+</li>
+
+<li class='m-0'>
+<a href='slug.html' id='slug.html' onclick='window.storeMenuState("slug.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Slug</a>
+</li>
+
+<li class='m-0'>
+<a href='seo.html' id='seo.html' onclick='window.storeMenuState("seo.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>SEO</a>
+</li>
+
+<li class='m-0'>
+<a href='activity-log.html' id='activity-log.html' onclick='window.storeMenuState("activity-log.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Activity Log</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/worker.html' id='basics/worker.html' onclick='window.storeMenuState("basics/worker.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Worker</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/publish.html' id='basics/publish.html' onclick='window.storeMenuState("basics/publish.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Publish</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/i18n.html' id='basics/i18n.html' onclick='window.storeMenuState("basics/i18n.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Internationalization</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/l10n.html' id='basics/l10n.html' onclick='window.storeMenuState("basics/l10n.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Localization</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/redirection.html' id='basics/redirection.html' onclick='window.storeMenuState("basics/redirection.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Redirection</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/custom-page.html' id='basics/custom-page.html' onclick='window.storeMenuState("basics/custom-page.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Custom Pages</a>
+</li>
+
+<li class='cursor-default px-4 py-1 truncate break-words w-64 m-0'>Web Application</li>
+
+<li class='m-0'>
+<a href='advanced-functions/the-go-html-builder.html' id='advanced-functions/the-go-html-builder.html' onclick='window.storeMenuState("advanced-functions/the-go-html-builder.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>The Go HTML builder</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/page-func-and-event-func.html' id='basics/page-func-and-event-func.html' onclick='window.storeMenuState("basics/page-func-and-event-func.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Page Func and Event Func</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/layout-function-and-page-injector.html' id='basics/layout-function-and-page-injector.html' onclick='window.storeMenuState("basics/layout-function-and-page-injector.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Layout Function and Page Injector</a>
+</li>
+
+<li class='m-0'>
+<a href='vuetify-components/lazy-portals.html' id='vuetify-components/lazy-portals.html' onclick='window.storeMenuState("vuetify-components/lazy-portals.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Lazy Portals</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/switch-pages-with-push-state.html' id='basics/switch-pages-with-push-state.html' onclick='window.storeMenuState("basics/switch-pages-with-push-state.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Switch Pages with Push State</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/reload-page-with-a-flash.html' id='basics/reload-page-with-a-flash.html' onclick='window.storeMenuState("basics/reload-page-with-a-flash.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Reload Page with a Flash</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/partial-refresh-with-portal.html' id='basics/partial-refresh-with-portal.html' onclick='window.storeMenuState("basics/partial-refresh-with-portal.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Partial Refresh with Portal</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/manipulate-page-url-in-event-func.html' id='basics/manipulate-page-url-in-event-func.html' onclick='window.storeMenuState("basics/manipulate-page-url-in-event-func.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Manipulate Page URL in Event Func</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/summary-of-event-response.html' id='basics/summary-of-event-response.html' onclick='window.storeMenuState("basics/summary-of-event-response.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Summary of Event Response</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/web-scope.html' id='basics/web-scope.html' onclick='window.storeMenuState("basics/web-scope.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>web.Scope</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/event-handling.html' id='basics/event-handling.html' onclick='window.storeMenuState("basics/event-handling.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Event Handling</a>
+</li>
+
+<li class='m-0'>
+<a href='basics/form-handling.html' id='basics/form-handling.html' onclick='window.storeMenuState("basics/form-handling.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Form Handling</a>
+</li>
+
+<li class='cursor-default px-4 py-1 truncate break-words w-64 m-0'>UI Components</li>
+
+<li class='m-0'>
+<a href='vuetify-components/basic-inputs.html' id='vuetify-components/basic-inputs.html' onclick='window.storeMenuState("vuetify-components/basic-inputs.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Basic Inputs</a>
+</li>
+
+<li class='m-0'>
+<a href='vuetify-components/a-taste-of-using-vuetify-in-go.html' id='vuetify-components/a-taste-of-using-vuetify-in-go.html' onclick='window.storeMenuState("vuetify-components/a-taste-of-using-vuetify-in-go.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>A Taste of using Vuetify in Go</a>
+</li>
+
+<li class='m-0'>
+<a href='vuetify-components/linkage-select.html' id='vuetify-components/linkage-select.html' onclick='window.storeMenuState("vuetify-components/linkage-select.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Linkage Select</a>
+</li>
+
+<li class='m-0'>
+<a href='components-guide/composite-new-component-with-go.html' id='components-guide/composite-new-component-with-go.html' onclick='window.storeMenuState("components-guide/composite-new-component-with-go.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Composite new Component With Go</a>
+</li>
+
+<li class='m-0'>
+<a href='components-guide/integrate-a-heavy-vue-component.html' id='components-guide/integrate-a-heavy-vue-component.html' onclick='window.storeMenuState("components-guide/integrate-a-heavy-vue-component.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-gray-700'>Integrate a heavy Vue Component</a>
+</li>
+
+<li class='cursor-default px-4 py-1 truncate break-words w-64 m-0'>Appendix</li>
+
+<li class='m-0'>
+<a href='appendix/all-demo-examples.html' id='appendix/all-demo-examples.html' onclick='window.storeMenuState("appendix/all-demo-examples.html")' class='inline-block pl-10 pr-4 py-1 truncate break-words w-64 hover:text-blue-400 text-blue-500'>All Demo Examples</a>
+</li>
+</ul>
+</aside>
+
+<main class='flex flex-col w-full bg-white overflow-x-hidden overflow-y-auto'>
+<div id='docContentBox' class='flex flex-row w-full'>
+<div class='flex flex-grow flex-col w-2/3'>
+<div class='flex flex-row'>
+<button @click='vars.hideAside = !vars.hideAside' class='w-12 h-12 p-4'>
+<div class='w-4 h-4 fill-current text-gray-300'>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16px" height="16px" viewBox="0 0 16 16" version="1.1">
+<g id="surface1">
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 2 12 L 2 11 L 14 11 L 14 12 Z M 2 8.5 L 2 7.5 L 14 7.5 L 14 8.5 Z M 2 5 L 2 4 L 14 4 L 14 5 Z M 2 5 "/>
+</g>
+</svg>
+</div>
+</button>
+</div>
+
+<div id='docMainBox' class='px-16 pb-12 pt-4 overflow-auto'>
+<h1 class='mb-8'>All Demo Examples</h1>
+
+<div class='border-t'>
+<ul>
+<li>
+<a href='/examples/hello-vuetify-list' target='_blank'>Vuetify List</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_vuetify/vuetify-list.go#L3-L97' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/hello-vuetify-menu' target='_blank'>Vuetify Menu</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_vuetify/vuetify-menu.go#L3-L113' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-detail-page-top-notes/customers' target='_blank'>Presets Detail Page Top Notes</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/detailing.go#L18-L113' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-detail-page-details/customers' target='_blank'>Presets Detail Page Details</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/detailing.go#L115-L212' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/samples/presets-detail-page-cards/customers' target='_blank'>Presets Detail Page Credit Cards</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/detailing.go#L214-L303' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/event-handling-page?api=url' target='_blank'>Event Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/event-handling.go#L12-L23' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/event-handling-page?api=pushstate' target='_blank'>Event Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/event-handling.go#L25-L38' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/event-handling-page?api=reload' target='_blank'>Event Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/event-handling.go#L40-L50' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/event-handling-page?api=query' target='_blank'>Event Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/event-handling.go#L52-L62' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/event-handling-page?api=merge_query' target='_blank'>Event Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/event-handling.go#L64-L74' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/event-handling-page?api=clear_merge_query' target='_blank'>Event Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/event-handling.go#L76-L91' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/event-handling-page?api=string_query' target='_blank'>Event Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/event-handling.go#L93-L107' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/event-handling-page?api=queries' target='_blank'>Event Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/event-handling.go#L109-L123' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/event-handling-page?api=pushstateurl' target='_blank'>Event Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/event-handling.go#L109-L123' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/event-handling-page?api=location' target='_blank'>Event Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/event-handling.go#L139-L152' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/event-handling-page?api=fieldvalue' target='_blank'>Event Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/event-handling.go#L154-L167' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/event-handling-page?api=eventfunc' target='_blank'>Event Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/event-handling.go#L169-L180' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/event-handling-page?api=script' target='_blank'>Event Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/event-handling.go#L182-L202' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/event-handling-page?api=raw' target='_blank'>Event Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/event-handling.go#L204-L215' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/lazy-portals-and-reload' target='_blank'>Lazy Portals</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_vuetify/lazy_portals_and_reload.go#L3-L164' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/multi-state-page' target='_blank'>Manipulate Page URL In Event Func</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/manipulate-page-url.go#L3-L90' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/vuetify-navigation-drawer' target='_blank'>Vuetify Navigation Drawer</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_vuetify/vuetify-navigation-drawer.go#L3-L96' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/hello-world-reload' target='_blank'>Page Func and Event Func</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/hello-world-reload.go#L3-L34' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/partial-update-page' target='_blank'>Partial Update</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/partial-update.go#L3-L73' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/partial-reload-page' target='_blank'>Partial Reload</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/partial-reload.go#L3-L111' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/reload-with-flash' target='_blank'>Reload Page With a Flash</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/reload-with-a-flash.go#L3-L48' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/page_1' target='_blank'>Switch Pages With Push State</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/page-transition.go#L13-L95' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/type-safe-builder-example' target='_blank'>The Go HTML Builder</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/type-safe-builder-sample.go#L3-L46' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/web-scope-use-locals' target='_blank'>Web Scope Use Locals</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/web-scope.go#L9-L46' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/web-scope-use-form' target='_blank'>Web Scope Use PlaidForm</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/web-scope.go#L48-L165' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/composite-component-sample-1-page' target='_blank'>Composite New Component With Go</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/composite-components.go#L3-L153' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/hello-world-tip-tap' target='_blank'>Integrate a Heavy Vue Component</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_vuetify/use-tiptap-editor.go#L3-L64' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/hello-world' target='_blank'>Hello World</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/server/main.go#L45-L51' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/vuetify-basic-inputs' target='_blank'>Vuetify Basic Inputs</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_vuetify/vuetify-basic-inputs.go#L3-L139' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-brand-title/brands' target='_blank'>Brand Title</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/brand.go#L19-L21' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-brand-func/brands' target='_blank'>Brand Func</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/brand.go#L35-L41' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-profile/brands' target='_blank'>Profile</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/profile.go#L11-L76' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-confirm-dialog/confirm-dialog' target='_blank'>Confirm Dialog</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/confirm-dialog.go#L43-L54' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-editing-customization-description/customers' target='_blank'>Presets Editing Customization Description Field</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/editing.go#L23-L74' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-editing-customization-file-type/products' target='_blank'>Presets Editing Customization File Type</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/editing.go#L109-L183' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-editing-customization-tabs/companies' target='_blank'>Presets Editing Customization Tabs</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/editing.go#L207-L229' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-editing-customization-validation/customers' target='_blank'>Presets Editing Customization Validation</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/editing.go#L185-L205' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-basic-filter/posts' target='_blank'>Basic filter</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/filter.go#L3-L87' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/form-handling-page' target='_blank'>Form Handling</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/form-handling.go#L3-L208' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/internationalization-example/home' target='_blank'>I18n</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_admin/internationalization.go' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-hello-world/customers' target='_blank'>Presets Hello World</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/listing.go#L1-L70' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/vuetify-components-linkage-select' target='_blank'>Vuetify LinkageSelect</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_vuetifyx/linkage-select.go#L3-L60' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-linkage-select-filter-item/addresses' target='_blank'>LinkageSelect Filter Item</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/linkage_select_filter_item.go#L3-L91' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-listing-customization-fields/customers' target='_blank'>Presets Listing Customization Fields</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/listing.go#L83-L242' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-listing-customization-filters/customers' target='_blank'>Presets Listing Filters</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/listing.go#L244-L308' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-listing-customization-tabs/customers' target='_blank'>Presets Listing Filter Tabs</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/listing.go#L310-L345' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-listing-customization-bulk-actions/customers' target='_blank'>Presets Listing Bulk Actions</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/listing.go#L347-L410' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-listing-customization-searcher/customers' target='_blank'>Search Func</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/listing.go#L412-L430' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/listing-example/posts' target='_blank'>Presets Listing Customization Fields</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_admin/listing.go#L44-L136' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/localization-example/l10n-models' target='_blank'>L10n</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_admin/localization.go#L3-L65' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-order-menu/books' target='_blank'>Menu Order</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/menu.go#L52-L58' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-group-menu/videos' target='_blank'>Menu Group</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/menu.go#L147-L166' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/presets-notification-center-sample/pages' target='_blank'>Notification Center</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_presets/notification-center.go#L3-L48' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/publish-example/with-publish-products' target='_blank'>Publish</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_admin/publish.go#L60-L76' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/short-cut-sample' target='_blank'>Shortcut</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/../../../../../go/pkg/mod/github.com/qor5/web/v3@v3.0.12-0.20250225073451-8e876be98c21/examples/shortcut.go#L3-L39' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/vuetify-variant-sub-form' target='_blank'>Vuetify Variant Sub Form</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_vuetify/vuetify-variant-sub-form.go#L3-L116' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/worker-example/workers' target='_blank'>Worker</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_admin/worker.go#L3-L100' target='_blank'>Source</a>
+</li>
+
+<li>
+<a href='/examples/action-worker-example/example-resources' target='_blank'>Action Worker</a>
+ | 
+<a href='https://github.com/qor5/admin/tree/main/docs/docsrc/examples/examples_admin/action_worker.go#L3-L163' target='_blank'>Source</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class='font-medium text-base hidden xl:block text-gray-600 pt-4'>
+<div class='sticky top-4 w-52'>On This Page<toc></toc></div>
+</div>
+</div>
+<search-result></search-result></main>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

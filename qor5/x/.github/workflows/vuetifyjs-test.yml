@@ -1,0 +1,52 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: vuetifyxjs
+permissions:
+  contents: read
+  checks: write
+  pull-requests: read
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**/dist/**'
+      - '**/*.md'
+      - '**/docs/**'
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - '**/dist/**'
+      - '**/*.md'
+      - '**/docs/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: szenius/set-timezone@dd47655c84241eec2ffa0a855959c16c0920c3c4 # v1.0
+        with:
+          timezoneLinux: 'Asia/Shanghai'
+
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10.16.1
+
+      - name: Configure git for private repository access
+        run: |
+          git config --global url."https://${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "git@github.com:"
+          git config --global url."https://${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
+      - name: Build and Test
+        run: cd ./ui/vuetifyx/vuetifyxjs/ && pnpm install && pnpm run build && pnpm run test:unit

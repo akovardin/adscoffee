@@ -1,0 +1,101 @@
+.page-builder-edit-bar-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 36px;
+  width: 100%;
+
+  .tagList-bar-warp {
+    display: flex;
+    width: calc(100% - 364px);
+  }
+}
+
+.pb-drawer-btn {
+  &.v-btn--icon.v-btn--density-default {
+    position: absolute;
+    top: 24px;
+    right: 0;
+    margin-right: -16px;
+    width: 32px;
+    height: 32px;
+    z-index: 902;
+
+    &.drawer-btn-left {
+      right: 0;
+      margin-right: -16px;
+    }
+
+    &.drawer-btn-right {
+      left: 0;
+      margin-left: -16px;
+    }
+  }
+}
+
+.v-navigation-drawer {
+  &.draggable-el {
+    &::before {
+      position: absolute;
+      content: '';
+      height: 100%;
+      width: 5px;
+      left: -5px;
+      top: 0;
+    }
+  }
+
+  &.border-left-draggable-highlight {
+    cursor: col-resize;
+    transition-duration: unset;
+    &::after {
+      position: absolute;
+      content: '';
+      height: 100%;
+      background: rgb(var(--v-theme-primary));
+      transition: background-color ease 0.3s;
+      width: 2px;
+      left: 0;
+      top: 0;
+      z-index: 901;
+    }
+  }
+
+  //fix:align media box btn to left: https://theplanttokyo.atlassian.net/browse/QOR5-1329
+  .v-card--variant-flat .media-box-wrap,
+  .v-card.v-card--variant-flat .v-card--variant-flat .media-box-wrap {
+    padding-left: 12px;
+  }
+  .v-card.v-card--variant-flat .v-card--variant-outlined .media-box-wrap {
+    padding-left: 0;
+  }
+}
+
+.pageBuilder-right-drawer {
+  .pageBuilder-right-drawer .v-toolbar__content:not(.vuetify-pro-tiptap .v-toolbar__content) {
+    height: 56px !important;
+    border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  }
+
+  .v-card-text > div > .wrapper-field-label {
+    font-weight: 500;
+    font-size: 14px !important;
+    line-height: 20px;
+    opacity: 1;
+    color: #616161;
+  }
+
+  .wrapper-field-label + .v-card {
+    border: 0;
+    padding-left: 0 !important;
+
+    .v-label {
+      font-weight: 500;
+      font-size: 14px !important;
+      line-height: 20px;
+      opacity: 1;
+      color: #212121;
+    }
+  }
+}

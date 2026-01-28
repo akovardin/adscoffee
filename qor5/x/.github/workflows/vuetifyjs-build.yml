@@ -1,0 +1,57 @@
+name: Build and Commit Artifacts
+permissions:
+  contents: write
+  checks: write
+  pull-requests: read
+
+on:
+  pull_request:
+    branches: [master, release-test]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetches the entire history for a correct commit
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.x'
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10.16.1
+
+      - name: Configure git for private repository access
+        run: |
+          git config --global url."https://${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "git@github.com:"
+          git config --global url."https://${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
+      - name: Build project
+        run: |
+          cd ui/vuetifyx/vuetifyxjs
+          pnpm install
+          pnpm run build
+
+      - name: Commit build artifacts
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # Forcefully add the dist directory, which is ignored by .gitignore
+          git add ui/vuetifyx/vuetifyxjs/dist -f
+
+          # Check if there are any changes
+          if ! git diff --cached --quiet; then
+            git commit -m 'Add build artifacts'
+            git push origin HEAD:${{ github.head_ref }}
+          else
+            echo "No changes detected; skipping commit."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

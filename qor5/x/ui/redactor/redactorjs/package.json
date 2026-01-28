@@ -1,0 +1,26 @@
+{
+  "name": "redactorjs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@babel/helpers": "7.26.10",
+    "nanoid": "3.3.8",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.3",
+    "vite": "^5.4.20",
+    "vite-plugin-vue-devtools": "^7.7.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "esbuild": "0.25.0"
+    }
+  }
+}

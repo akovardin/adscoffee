@@ -1,0 +1,13 @@
+.v-pagination {
+  .v-pagination__item .v-btn {
+    --v-btn-size: 16px;
+    font-weight: 500;
+    &.v-btn--density-compact {
+      width: auto;
+      .v-btn__content {
+        padding: 0 10px;
+        min-width: 28px;
+      }
+    }
+  }
+}

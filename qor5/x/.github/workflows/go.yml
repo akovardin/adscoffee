@@ -1,0 +1,40 @@
+name: go
+permissions:
+  contents: read
+  checks: write
+  pull-requests: read
+
+on:
+  push:
+    branches: [master]
+    paths-ignore:
+      - '**/dist/**'
+      - '**/*.md'
+      - '**/docs/**'
+  pull_request:
+    branches: [master]
+    paths-ignore:
+      - '**/dist/**'
+      - '**/*.md'
+      - '**/docs/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: szenius/set-timezone@dd47655c84241eec2ffa0a855959c16c0920c3c4 # v1.0
+        with:
+          timezoneLinux: 'Asia/Shanghai'
+
+      - uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.22.3
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Test
+        run: go test -v ./...
