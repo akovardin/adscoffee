@@ -1,0 +1,40 @@
+run:
+  # Timeout settings
+  timeout: 5m
+  # Include test files
+  tests: true
+
+# Default configurations for all linters
+linters-settings:
+  goimports:
+    # Control the placement of local packages
+    local-prefixes: github.com/theplant/relay
+
+# List of enabled linters
+linters:
+  enable:
+    - errcheck     # Check error handling
+    - goimports    # Check imports formatting
+    - gosimple     # Check code simplification
+    - govet        # Check common errors
+    - ineffassign  # Check invalid assignments
+    - staticcheck  # Static analysis
+    - typecheck    # Type checking
+    - unused       # Check unused code
+    - misspell     # Check spelling errors
+  disable:
+    - wsl          # Disable whitespace rules that may conflict with project standards
+
+# Issue severity matching
+issues:
+  # Excluding configuration per-path, per-linter
+  exclude-rules:
+    # Exclude some issues in test files
+    - path: _test\.go
+      linters:
+        - errcheck
+        - gosec
+
+  # Maximum number of issues
+  max-issues-per-linter: 50
+  max-same-issues: 5 

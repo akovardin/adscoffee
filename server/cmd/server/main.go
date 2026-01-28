@@ -11,7 +11,7 @@ import (
 
 	"go.ads.coffee/platform/pkg/database"
 	"go.ads.coffee/platform/pkg/logger"
-	"go.ads.coffee/platform/server/config"
+	"go.ads.coffee/platform/server/internal/config"
 	"go.ads.coffee/platform/server/internal/repos/banners"
 	"go.ads.coffee/platform/server/internal/repos/placements"
 	"go.ads.coffee/platform/server/internal/server"

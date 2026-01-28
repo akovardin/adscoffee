@@ -1,0 +1,22 @@
+sudo: required
+
+env:
+  - GO111MODULE=on
+
+language: go
+
+go_import_path: github.com/ory/ladon
+
+go:
+  - 1.11
+
+install:
+  - go get github.com/mattn/goveralls golang.org/x/tools/cmd/cover github.com/pierrre/gotestcover
+
+script:
+  - gotestcover -coverprofile="cover.out" -race -covermode="atomic" $(go list ./... | grep -v /vendor/)
+
+after_success:
+  - go vet -x $(go list ./... | grep -v /vendor/)
+  - golint $(go list ./... | grep -v /vendor/)
+  - goveralls -coverprofile="cover.out"
