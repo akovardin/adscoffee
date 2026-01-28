@@ -1,0 +1,17 @@
+server:
+  port: ":8080"
+
+database:
+  debug: false
+  user: admin
+  password: 123
+  host: localhost
+  port: 6432
+  dbname: admin_dev
+
+s3storage:
+  bucket: "adexproadmin"
+  s3Endpoint: "https://hb.vkcloud-storage.ru"
+  accessId: "xxxx"
+  accessKey: "xxxx"
+  region: "ru-msk"
