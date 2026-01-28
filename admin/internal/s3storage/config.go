@@ -1,5 +1,6 @@
 package s3storage
 
+//nolint:staticcheck
 import "github.com/aws/aws-sdk-go/aws"
 
 // Config S3 client config

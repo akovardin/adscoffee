@@ -1,3 +1,4 @@
+//nolint:staticcheck
 package s3storage
 
 import (
@@ -19,6 +20,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/opentracing/opentracing-go/log"
 	"github.com/qor5/x/v3/oss"
 )
 
@@ -68,9 +70,15 @@ func (client Client) Get(ctx context.Context, path string) (file *os.File, err e
 
 	if err == nil {
 		if file, err = os.CreateTemp("/tmp", pattern); err == nil {
-			defer readCloser.Close()
+			defer func() {
+				if err := readCloser.Close(); err != nil {
+					log.Error(err)
+				}
+			}()
 			_, err = io.Copy(file, readCloser)
-			file.Seek(0, 0)
+			if _, err := file.Seek(0, 0); err != nil {
+				return nil, err
+			}
 		}
 	}
 
@@ -93,7 +101,9 @@ func (client Client) GetStream(ctx context.Context, path string) (io.ReadCloser,
 // Put store a reader into given path
 func (client Client) Put(ctx context.Context, urlPath string, reader io.Reader) (*oss.Object, error) {
 	if seeker, ok := reader.(io.ReadSeeker); ok {
-		seeker.Seek(0, 0)
+		if _, err := seeker.Seek(0, 0); err != nil {
+			return nil, err
+		}
 	}
 
 	urlPath = client.ToS3Key(urlPath)

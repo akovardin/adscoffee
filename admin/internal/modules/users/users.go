@@ -5,7 +5,7 @@ import (
 	"github.com/qor5/admin/v3/presets"
 	"github.com/qor5/web/v3"
 	"github.com/qor5/x/v3/login"
-	. "github.com/theplant/htmlgo"
+	h "github.com/theplant/htmlgo"
 	"gorm.io/gorm"
 
 	"go.ads.coffee/platform/admin/internal/modules/users/models"
@@ -30,8 +30,8 @@ func (u *Users) Auth(pb *presets.Builder) *login.Builder {
 		Secret(loginSecret).
 		TOTP(false)
 
-	pb.ProfileFunc(func(ctx *web.EventContext) HTMLComponent {
-		return A(Text("Выход")).Href(lb.LogoutURL).Style("margin-left:100px")
+	pb.ProfileFunc(func(ctx *web.EventContext) h.HTMLComponent {
+		return h.A(h.Text("Выход")).Href(lb.LogoutURL).Style("margin-left:100px")
 	})
 
 	return lb

@@ -53,7 +53,11 @@ func (s *Server) Serve() error {
 		return err
 	}
 
-	go s.srv.Serve(ln)
+	go func() {
+		if err := s.srv.Serve(ln); err != nil {
+			s.logger.Error("app server", zap.Error(err))
+		}
+	}()
 
 	return nil
 }

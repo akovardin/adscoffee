@@ -177,10 +177,3 @@ func TestNewPool_ErrorCases(t *testing.T) {
 		assert.NotNil(t, pool)
 	})
 }
-
-// Helper function to create a simple metrics instance for testing
-func createTestMetrics(t *testing.T) *Metrics {
-	// This is a simplified version for testing purposes
-	// In a real scenario, you would properly initialize the metrics
-	return &Metrics{}
-}

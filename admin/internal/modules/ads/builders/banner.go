@@ -154,6 +154,7 @@ func (m *Banner) Configure(b *presets.Builder) {
 		},
 	)
 
+	//nolint:staticcheck
 	mb.EventsHub.RegisterEventFunc("erid", func(ctx *web.EventContext) (r web.EventResponse, err error) {
 		banner := models.Banner{}
 
@@ -175,14 +176,6 @@ func (m *Banner) Configure(b *presets.Builder) {
 		banner.OrdTargeting = targeting
 		banner.OrdFormat = format
 		banner.OrdKktu = kktu
-
-		targets := []string{}
-		if banner.Clicktracker != "" {
-			targets = append(targets, banner.Clicktracker)
-		}
-		if banner.Target != "" {
-			targets = append(targets, banner.Target)
-		}
 
 		if err := m.db.Save(&banner).Error; err != nil {
 			m.logger.Error("error on save banner", zap.Error(err))
