@@ -21,9 +21,17 @@ tasks:
     cmds:
       - golangci-lint run
 
+  qor-install:
+    cmds:
+      - go install github.com/qor5/admin/v3/cmd/qor5@latest
+
   docker-up:
     cmds:
       - docker-compose up -d
+
+  docker-down:
+    cmds:
+      - docker-compose down
 
   migration-status:
     cmds:
