@@ -3,7 +3,6 @@
 [RU](README.ru.md)
 
 [![Go Coverage](https://github.com/akovardin/adscoffee/wiki/coverage.svg)](https://raw.githack.com/wiki/akovardin/adscoffee/coverage.html)
-Here is the translation preserving the original formatting and markdown structure.
 
 ## Open-Source Ad Platform for Developers
 
