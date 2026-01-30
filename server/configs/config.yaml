@@ -54,9 +54,6 @@ pipelines:
     targetings:
       - name: targetings.apps
       - name: targetings.geo
-    formats:
-      - name: formats.native
-      - name: formats.banner
     output:
       name: outputs.rtb
 
@@ -75,10 +72,28 @@ pipelines:
     targetings:
       - name: targetings.apps
       - name: targetings.geo
-    formats:
-      - name: formats.banner
     output:
       name: outputs.web
+      config:
+        example: example
+
+  - name: static
+    route: /static/{placement}
+    input:
+      name: inputs.web
+    stages:
+      - name: stages.banners
+        config:
+          example: example
+      - name: stages.limits
+      - name: stages.targeting
+      - name: stages.rotation
+      - name: stages.mediation
+    targetings:
+      - name: targetings.apps
+      - name: targetings.geo
+    output:
+      name: outputs.static
       config:
         example: example
 

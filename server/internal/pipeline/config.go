@@ -8,7 +8,6 @@ type Config struct {
 	Input      Input       `yaml:"input"`
 	Stages     []Stage     `yaml:"stages"`
 	Targetings []Targeting `yaml:"targetings"`
-	Formats    []Format    `yaml:"formats"`
 	Output     Output      `yaml:"output"`
 }
 
@@ -23,11 +22,6 @@ type Stage struct {
 }
 
 type Targeting struct {
-	Name   string         `yaml:"name"`
-	Config map[string]any `yaml:"config"`
-}
-
-type Format struct {
 	Name   string         `yaml:"name"`
 	Config map[string]any `yaml:"config"`
 }

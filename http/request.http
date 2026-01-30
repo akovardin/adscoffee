@@ -1,0 +1,6 @@
+### test web
+GET http://localhost:9090/kodikapusta/123
+
+
+### test static
+GET http://localhost:9090/static/123

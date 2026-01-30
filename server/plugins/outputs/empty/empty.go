@@ -35,9 +35,6 @@ func (r *Empty) Copy(cfg map[string]any) plugins.Output {
 	return &Empty{}
 }
 
-func (r *Empty) Formats(ff []plugins.Format) {
-}
-
 func (rtb *Empty) Do(ctx context.Context, state *plugins.State) error {
 	return nil
 }

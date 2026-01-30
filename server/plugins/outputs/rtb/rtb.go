@@ -35,10 +35,6 @@ func (r *Rtb) Copy(cfg map[string]any) plugins.Output {
 	return &Rtb{}
 }
 
-func (r *Rtb) Formats(ff []plugins.Format) {
-	// set formats
-}
-
 func (rtb *Rtb) Do(ctx context.Context, state *plugins.State) error {
 	return nil
 }

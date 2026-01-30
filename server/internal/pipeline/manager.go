@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
-	"go.ads.coffee/platform/server/internal/formats"
 	"go.ads.coffee/platform/server/internal/inputs"
 	"go.ads.coffee/platform/server/internal/outputs"
 	"go.ads.coffee/platform/server/internal/stages"
@@ -22,7 +21,6 @@ func NewManager(
 	outputs *outputs.Outputs,
 	stages *stages.Stages,
 	targetings *targetings.Targetings,
-	formats *formats.Formats,
 ) *Manager {
 	m := &Manager{}
 	for _, c := range pipelines {
@@ -30,12 +28,6 @@ func NewManager(
 
 		for _, t := range c.Targetings {
 			tt = append(tt, targetings.Get(t.Name, t.Config))
-		}
-
-		ff := []plugins.Format{}
-
-		for _, f := range c.Formats {
-			ff = append(ff, formats.Get(f.Name, f.Config))
 		}
 
 		ss := []plugins.Stage{}
@@ -50,16 +42,12 @@ func NewManager(
 			}
 		}
 
-		out := outputs.Get(c.Output.Name, c.Output.Config)
-		out.Formats(ff)
-
 		m.pipelines = append(m.pipelines, NewPipeline(
 			c.Name,
 			c.Route,
 			inputs.Get(c.Input.Name, c.Input.Config),
-			out,
+			outputs.Get(c.Output.Name, c.Output.Config),
 			ss,
-			ff,
 		))
 	}
 

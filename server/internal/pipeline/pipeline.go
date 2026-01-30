@@ -21,15 +21,13 @@ func NewPipeline(
 	input plugins.Input,
 	output plugins.Output,
 	stages []plugins.Stage,
-	formats []plugins.Format,
 ) *Pipeline {
 	return &Pipeline{
-		name:    name,
-		route:   route,
-		input:   input,
-		output:  output,
-		stages:  stages,
-		formats: formats,
+		name:   name,
+		route:  route,
+		input:  input,
+		output: output,
+		stages: stages,
 	}
 }
 

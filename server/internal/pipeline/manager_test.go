@@ -10,7 +10,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
-	"go.ads.coffee/platform/server/internal/formats"
 	"go.ads.coffee/platform/server/internal/inputs"
 	"go.ads.coffee/platform/server/internal/outputs"
 	"go.ads.coffee/platform/server/internal/stages"
@@ -91,8 +90,8 @@ func (m *mockFormat) Copy(cfg map[string]any) plugins.Format {
 	return &mockFormat{name: m.name}
 }
 
-func (m *mockFormat) Render(ctx context.Context, state *plugins.State) error {
-	return nil
+func (m *mockFormat) Render(ctx context.Context, state *plugins.State) (any, error) {
+	return nil, nil
 }
 
 type mockOutput struct {
@@ -141,12 +140,6 @@ func TestNewManager(t *testing.T) {
 	}
 	targetings := targetings.New(targetingList)
 
-	formatList := []plugins.Format{
-		&mockFormat{name: "formats.native"},
-		&mockFormat{name: "formats.banner"},
-	}
-	formats := formats.New(formatList)
-
 	cfg := []Config{
 		{
 			Name:  "dsp",
@@ -163,10 +156,6 @@ func TestNewManager(t *testing.T) {
 				{Name: "targetings.apps", Config: map[string]any{}},
 				{Name: "targetings.geo", Config: map[string]any{}},
 			},
-			Formats: []Format{
-				{Name: "formats.native", Config: map[string]any{}},
-				{Name: "formats.banner", Config: map[string]any{}},
-			},
 			Output: Output{
 				Name:   "outputs.rtb",
 				Config: map[string]any{},
@@ -174,7 +163,7 @@ func TestNewManager(t *testing.T) {
 		},
 	}
 
-	manager := NewManager(cfg, inputs, outputs, stages, targetings, formats)
+	manager := NewManager(cfg, inputs, outputs, stages, targetings)
 
 	assert.NotNil(t, manager)
 	assert.Len(t, manager.pipelines, 1)
@@ -205,11 +194,6 @@ func TestManager_Mount(t *testing.T) {
 	}
 	targetings := targetings.New(targetingList)
 
-	formatList := []plugins.Format{
-		&mockFormat{name: "formats.native"},
-	}
-	formats := formats.New(formatList)
-
 	cfg := []Config{
 		{
 			Name:  "dsp",
@@ -224,9 +208,6 @@ func TestManager_Mount(t *testing.T) {
 			Targetings: []Targeting{
 				{Name: "targetings.apps", Config: map[string]any{}},
 			},
-			Formats: []Format{
-				{Name: "formats.native", Config: map[string]any{}},
-			},
 			Output: Output{
 				Name:   "outputs.rtb",
 				Config: map[string]any{},
@@ -234,7 +215,7 @@ func TestManager_Mount(t *testing.T) {
 		},
 	}
 
-	manager := NewManager(cfg, inputs, outputs, stages, targetings, formats)
+	manager := NewManager(cfg, inputs, outputs, stages, targetings)
 
 	router := chi.NewRouter()
 
@@ -266,11 +247,6 @@ func TestManager_MountHandlers(t *testing.T) {
 	}
 	targetings := targetings.New(targetingList)
 
-	formatList := []plugins.Format{
-		&mockFormat{name: "formats.native"},
-	}
-	formats := formats.New(formatList)
-
 	// Create config with multiple pipelines
 	cfg := []Config{
 		{
@@ -285,9 +261,6 @@ func TestManager_MountHandlers(t *testing.T) {
 			},
 			Targetings: []Targeting{
 				{Name: "targetings.apps", Config: map[string]any{}},
-			},
-			Formats: []Format{
-				{Name: "formats.native", Config: map[string]any{}},
 			},
 			Output: Output{
 				Name:   "outputs.rtb",
@@ -307,9 +280,6 @@ func TestManager_MountHandlers(t *testing.T) {
 			Targetings: []Targeting{
 				{Name: "targetings.apps", Config: map[string]any{}},
 			},
-			Formats: []Format{
-				{Name: "formats.native", Config: map[string]any{}},
-			},
 			Output: Output{
 				Name:   "outputs.rtb",
 				Config: map[string]any{},
@@ -317,7 +287,7 @@ func TestManager_MountHandlers(t *testing.T) {
 		},
 	}
 
-	manager := NewManager(cfg, inputs, outputs, stages, targetings, formats)
+	manager := NewManager(cfg, inputs, outputs, stages, targetings)
 
 	router := chi.NewRouter()
 
@@ -363,11 +333,6 @@ func TestManager_MountWithPipelineDo(t *testing.T) {
 	}
 	targetings := targetings.New(targetingList)
 
-	formatList := []plugins.Format{
-		&mockFormat{name: "formats.native"},
-	}
-	formats := formats.New(formatList)
-
 	// Create config with a single pipeline
 	cfg := []Config{
 		{
@@ -383,9 +348,6 @@ func TestManager_MountWithPipelineDo(t *testing.T) {
 			Targetings: []Targeting{
 				{Name: "targetings.apps", Config: map[string]any{}},
 			},
-			Formats: []Format{
-				{Name: "formats.native", Config: map[string]any{}},
-			},
 			Output: Output{
 				Name:   "outputs.rtb",
 				Config: map[string]any{},
@@ -393,7 +355,7 @@ func TestManager_MountWithPipelineDo(t *testing.T) {
 		},
 	}
 
-	manager := NewManager(cfg, inputs, outputs, stages, targetings, formats)
+	manager := NewManager(cfg, inputs, outputs, stages, targetings)
 
 	router := chi.NewRouter()
 

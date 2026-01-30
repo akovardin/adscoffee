@@ -80,7 +80,6 @@ func TestPipeline_Do(t *testing.T) {
 		mockInput,
 		mockOutput,
 		[]plugins.Stage{mockStage1, mockStage2},
-		nil,
 	)
 
 	ctx := context.Background()
@@ -108,7 +107,6 @@ func TestPipeline_DoWithNoStages(t *testing.T) {
 		mockInput,
 		mockOutput,
 		[]plugins.Stage{},
-		nil,
 	)
 
 	ctx := context.Background()
@@ -131,7 +129,6 @@ func TestPipeline_NameAndRoute(t *testing.T) {
 		&testMockInput{name: "test-input"},
 		&testMockOutput{name: "test-output"},
 		[]plugins.Stage{},
-		nil,
 	)
 
 	assert.Equal(t, "test-pipeline", pipeline.Name(), "Pipeline name should match")
