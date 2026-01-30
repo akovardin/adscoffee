@@ -78,22 +78,6 @@ func (m *mockTargeting) Copy(cfg map[string]any) plugins.Targeting {
 func (m *mockTargeting) Filter() {
 }
 
-type mockFormat struct {
-	name string
-}
-
-func (m *mockFormat) Name() string {
-	return m.name
-}
-
-func (m *mockFormat) Copy(cfg map[string]any) plugins.Format {
-	return &mockFormat{name: m.name}
-}
-
-func (m *mockFormat) Render(ctx context.Context, state *plugins.State) (any, error) {
-	return nil, nil
-}
-
 type mockOutput struct {
 	name    string
 	formats []plugins.Format

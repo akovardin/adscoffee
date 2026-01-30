@@ -7,12 +7,11 @@ import (
 )
 
 type Pipeline struct {
-	name    string
-	route   string
-	input   plugins.Input
-	output  plugins.Output
-	stages  []plugins.Stage
-	formats []plugins.Format
+	name   string
+	route  string
+	input  plugins.Input
+	output plugins.Output
+	stages []plugins.Stage
 }
 
 func NewPipeline(
