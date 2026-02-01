@@ -74,8 +74,8 @@ pipelines:
       - name: targetings.geo
     output:
       name: outputs.web
-      config:
-        example: example
+      config:   
+        base: example
 
   - name: static
     route: /static/{placement}
@@ -95,7 +95,7 @@ pipelines:
     output:
       name: outputs.static
       config:
-        example: example
+        base: example
 
   - name: tracker
     route: /tracker

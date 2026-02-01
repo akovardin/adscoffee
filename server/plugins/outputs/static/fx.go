@@ -21,7 +21,9 @@ var Module = fx.Module(
 		formats.NewBanner,
 
 		fx.Annotate(
-			formats.NewBanner,
+			func(b *formats.Banner) plugins.Format {
+				return b
+			},
 			fx.As(new(plugins.Format)),
 			fx.ResultTags(`group:"outputs.static.formats"`),
 		),

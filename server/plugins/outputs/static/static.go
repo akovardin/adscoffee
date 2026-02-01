@@ -27,8 +27,13 @@ func (w *Static) Name() string {
 }
 
 func (w *Static) Copy(cfg map[string]any) plugins.Output {
+	ff := map[string]plugins.Format{}
+	for k, f := range w.formats {
+		ff[k] = f.Copy(cfg)
+	}
+
 	return &Static{
-		formats: w.formats,
+		formats: ff,
 	}
 }
 

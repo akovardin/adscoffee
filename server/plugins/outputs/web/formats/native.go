@@ -8,7 +8,9 @@ import (
 
 const TypeNative = "native"
 
-type Native struct{}
+type Native struct {
+	base string
+}
 
 func NewNative() *Native {
 	return &Native{}
@@ -19,8 +21,20 @@ func (b *Native) Name() string {
 }
 
 type NativeResponse struct {
-	Title string `json:"title"`
-	Img   string `json:"img"`
+	Description string   `json:"description"`
+	Title       string   `json:"information"`
+	Image       string   `json:"image"`
+	Target      string   `json:"target"`
+	Impressions []string `json:"impressions"`
+	Clicks      []string `json:"click"`
+}
+
+func (b *Native) Copy(cfg map[string]any) plugins.Format {
+	base, _ := cfg["base"].(string)
+
+	return &Native{
+		base: base,
+	}
 }
 
 func (b *Native) Render(ctx context.Context, state *plugins.State) (any, error) {
@@ -32,8 +46,10 @@ func (b *Native) Render(ctx context.Context, state *plugins.State) (any, error) 
 		}
 
 		items = append(items, NativeResponse{
-			Title: b.Title,
-			Img:   b.Image.Full("example"),
+			Title:       b.Title,
+			Description: b.Description,
+			Target:      b.Target,
+			Image:       b.Image.Full("example"),
 		})
 	}
 

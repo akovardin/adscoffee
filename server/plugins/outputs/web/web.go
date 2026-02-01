@@ -23,8 +23,13 @@ func (w *Web) Name() string {
 }
 
 func (w *Web) Copy(cfg map[string]any) plugins.Output {
+	ff := []plugins.Format{}
+	for _, f := range w.formats {
+		ff = append(ff, f.Copy(cfg))
+	}
+
 	return &Web{
-		formats: w.formats,
+		formats: ff,
 	}
 }
 

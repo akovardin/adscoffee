@@ -9,7 +9,9 @@ import (
 
 const TypeBanner = "banner"
 
-type Banner struct{}
+type Banner struct {
+	base string
+}
 
 func NewBanner() *Banner {
 	return &Banner{}
@@ -17,6 +19,14 @@ func NewBanner() *Banner {
 
 func (b *Banner) Name() string {
 	return "banner"
+}
+
+func (b *Banner) Copy(cfg map[string]any) plugins.Format {
+	base, _ := cfg["base"].(string)
+
+	return &Banner{
+		base: base,
+	}
 }
 
 func (b *Banner) Render(ctx context.Context, state *plugins.State) (any, error) {
