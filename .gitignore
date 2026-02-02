@@ -3,3 +3,5 @@
 data/*
 backup.sql
 geoip/*
+admin/cmd/admin/__debug*
+server/cmd/server/__debug*
