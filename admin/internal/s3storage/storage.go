@@ -18,15 +18,28 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/opentracing/opentracing-go/log"
 	"github.com/qor5/x/v3/oss"
 )
 
+// S3Service interface for S3 operations
+type S3Service interface {
+	GetObjectWithContext(ctx context.Context, input *s3.GetObjectInput, opts ...request.Option) (*s3.GetObjectOutput, error)
+	PutObjectWithContext(ctx context.Context, input *s3.PutObjectInput, opts ...request.Option) (*s3.PutObjectOutput, error)
+	DeleteObjectWithContext(ctx context.Context, input *s3.DeleteObjectInput, opts ...request.Option) (*s3.DeleteObjectOutput, error)
+	DeleteObjectsWithContext(ctx context.Context, input *s3.DeleteObjectsInput, opts ...request.Option) (*s3.DeleteObjectsOutput, error)
+	ListObjectsV2WithContext(ctx context.Context, input *s3.ListObjectsV2Input, opts ...request.Option) (*s3.ListObjectsV2Output, error)
+	GetObjectRequest(input *s3.GetObjectInput) (*request.Request, *s3.GetObjectOutput)
+	CopyObjectWithContext(ctx context.Context, input *s3.CopyObjectInput, opts ...request.Option) (*s3.CopyObjectOutput, error)
+	SelectObjectContentWithContext(ctx context.Context, input *s3.SelectObjectContentInput, opts ...request.Option) (*s3.SelectObjectContentOutput, error)
+}
+
 // Client S3 storage
 type Client struct {
-	S3     *s3.S3
+	S3     S3Service
 	Config Config
 }
 
@@ -56,7 +69,7 @@ func New(config Config) *Client {
 		config.SessionToken,
 	)
 	sess := session.Must(session.NewSession(awsConfig))
-	client.S3 = s3.New(sess)
+	client.S3 = s3.New(sess) // *s3.S3 implements S3Service
 
 	return client
 }
