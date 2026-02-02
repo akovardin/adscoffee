@@ -15,6 +15,7 @@ import (
 	"go.ads.coffee/platform/server/internal/repos/banners"
 	"go.ads.coffee/platform/server/internal/repos/placements"
 	"go.ads.coffee/platform/server/internal/server"
+	"go.ads.coffee/platform/server/internal/sessions"
 	"go.ads.coffee/platform/server/plugins"
 )
 
@@ -24,6 +25,7 @@ func main() {
 		logger.Module,
 		server.Module,
 		database.Module,
+		sessions.Module,
 		plugins.Module,
 
 		// repos

@@ -38,9 +38,13 @@ func (r *Rotattion) Copy(cfg map[string]any) plugins.Stage {
 }
 
 func (r *Rotattion) Do(ctx context.Context, state *plugins.State) error {
-	winners, _, err := r.rotate(state.Candidates)
+	winners, ok, err := r.rotate(state.Candidates)
 	if err != nil {
 		return err
+	}
+
+	if !ok {
+		return nil
 	}
 
 	state.Winners = []ads.Banner{winners}

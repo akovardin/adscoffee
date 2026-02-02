@@ -57,14 +57,12 @@ pipelines:
     output:
       name: outputs.rtb
 
-  - name: kodikapusta
-    route: /kodikapusta/{placement}
+  - name: native
+    route: /native/{placement}
     input:
       name: inputs.web
     stages:
       - name: stages.banners
-        config:
-          example: example
       - name: stages.limits
       - name: stages.targeting
       - name: stages.rotation
@@ -77,23 +75,20 @@ pipelines:
       config:   
         base: example
 
-  - name: static
-    route: /static/{placement}
+  - name: banner
+    route: /banner/{placement}/{action}
     input:
-      name: inputs.web
+      name: inputs.static # load from cache
     stages:
       - name: stages.banners
-        config:
-          example: example
       - name: stages.limits
       - name: stages.targeting
       - name: stages.rotation
-      - name: stages.mediation
     targetings:
       - name: targetings.apps
       - name: targetings.geo
     output:
-      name: outputs.static
+      name: outputs.static # save to cache
       config:
         base: example
 
