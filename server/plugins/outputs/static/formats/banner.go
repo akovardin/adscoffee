@@ -1,3 +1,4 @@
+// nolint:errcheck
 package formats
 
 import (
@@ -22,7 +23,6 @@ import (
 )
 
 type Banner struct {
-	base string
 }
 
 func NewBanner() *Banner {

@@ -1,3 +1,4 @@
+//nolint:staticcheck
 package s3storage
 
 import (
