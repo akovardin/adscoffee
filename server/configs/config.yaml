@@ -78,7 +78,7 @@ pipelines:
   - name: banner
     route: /banner/{placement}/{action}
     input:
-      name: inputs.static # load from cache
+      name: inputs.static
     stages:
       - name: stages.banners
       - name: stages.limits
@@ -90,7 +90,7 @@ pipelines:
     output:
       name: outputs.static # save to cache
       config:
-        base: example
+        base: http://ads.coffee
 
   - name: tracker
     route: /tracker

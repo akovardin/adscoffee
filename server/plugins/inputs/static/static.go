@@ -2,6 +2,7 @@ package static
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
@@ -11,6 +12,11 @@ import (
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 	"go.ads.coffee/platform/server/internal/repos/banners"
 	"go.ads.coffee/platform/server/internal/sessions"
+)
+
+const (
+	actionClick = "click"
+	actionKey   = "action"
 )
 
 var Module = fx.Module(
@@ -25,10 +31,15 @@ var Module = fx.Module(
 	),
 )
 
+type Analytics interface {
+	LogClick()
+}
+
 type Static struct {
-	logger   *zap.Logger
-	cache    *banners.Cache
-	sessions *sessions.Sessions
+	logger    *zap.Logger
+	cache     *banners.Cache
+	sessions  *sessions.Sessions
+	analytics Analytics
 }
 
 func New(
@@ -57,32 +68,7 @@ func (s *Static) Copy(cfg map[string]any) plugins.Input {
 
 func (s *Static) Do(ctx context.Context, state *plugins.State) bool {
 	action := chi.URLParam(state.Request, "action")
-	state.WithValue("action", action)
-
-	if session, ok := s.sessions.LoadWithExpire(state.Request); ok {
-		// banner := session.Value
-
-		banner, ok := s.cache.One(ctx, session.Value)
-		if !ok {
-			s.logger.Warn("error on load banner from cache")
-
-			return false
-		}
-
-		switch action {
-		case "img":
-			//render img
-
-			state.Response.Write([]byte(banner.Image.Full("")))
-
-		case "click":
-			// redirect to url
-
-			state.Response.Write([]byte(banner.Target))
-		}
-
-		return false // дальше не идем
-	}
+	state.WithValue(actionKey, action)
 
 	// нужно получить данные пользователя из запроса
 
@@ -104,6 +90,36 @@ func (s *Static) Do(ctx context.Context, state *plugins.State) bool {
 			},
 		},
 	}
+
+	// проверяем есть ли в сессии баннер для экшена click
+	// если баннер в сессии, то редиректим на трекер url
+	if action == actionClick {
+		session, ok := s.sessions.LoadWithExpire(state.Request)
+		if !ok {
+			s.logger.Warn("error on load banner from cache")
+
+			state.Response.WriteHeader(http.StatusNotFound)
+
+			return false
+		}
+
+		banner, ok := s.cache.One(ctx, session.Value)
+		if !ok {
+			s.logger.Warn("error on load banner from cache")
+
+			state.Response.WriteHeader(http.StatusNotFound)
+
+			return false
+		}
+
+		s.analytics.LogClick()
+
+		http.Redirect(state.Response, state.Request, banner.Target, http.StatusSeeOther)
+
+		return false
+	}
+
+	// эешен img будет обрабатываться в outputs.static
 
 	return true
 }

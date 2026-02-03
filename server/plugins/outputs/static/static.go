@@ -3,27 +3,55 @@ package static
 import (
 	"context"
 	"fmt"
+	"net/http"
 
+	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 	"go.ads.coffee/platform/server/internal/sessions"
+	"go.ads.coffee/platform/server/plugins/outputs/static/formats"
+	"go.uber.org/fx"
 )
 
+const (
+	baseUrlKey = "base"
+	actionImg  = "img"
+	actionKey  = "action"
+)
+
+var Module = fx.Module(
+	"outputs.static",
+
+	fx.Provide(
+		New,
+		formats.NewBanner,
+	),
+)
+
+type Analytics interface {
+	LogImpression(ctx context.Context)
+}
+
+type Banner interface {
+	Banner(ctx context.Context, base string, banner ads.Banner, w http.ResponseWriter) error
+}
+
+type Session interface {
+	Start(r *http.Request, value string) error
+}
+
 type Static struct {
-	formats  map[string]plugins.Format
-	sessions *sessions.Sessions
+	base      string
+	sessions  Session
+	analytics Analytics
+	format    Banner
 }
 
 func New(
-	formats []plugins.Format,
+	format *formats.Banner,
 	sessions *sessions.Sessions,
 ) *Static {
-	ff := map[string]plugins.Format{}
-	for _, v := range formats {
-		ff[v.Name()] = v
-	}
-
 	return &Static{
-		formats:  ff,
+		format:   format,
 		sessions: sessions,
 	}
 }
@@ -33,44 +61,38 @@ func (w *Static) Name() string {
 }
 
 func (w *Static) Copy(cfg map[string]any) plugins.Output {
-	ff := map[string]plugins.Format{}
-	for k, f := range w.formats {
-		ff[k] = f.Copy(cfg)
-	}
+	base := cfg[baseUrlKey].(string)
 
 	return &Static{
-		formats:  ff,
-		sessions: w.sessions,
+		base:      base,
+		sessions:  w.sessions,
+		analytics: w.analytics,
 	}
 }
 
 func (w *Static) Do(ctx context.Context, state *plugins.State) error {
-	action := state.Value("action").(string)
+	action := state.Value(actionKey).(string)
+
+	// сюда мы попадаем только для экшена img
+	if action != actionImg {
+		state.Response.WriteHeader(http.StatusNotFound)
+
+		return nil
+	}
+
+	if len(state.Winners) == 0 {
+		state.Response.WriteHeader(http.StatusNotFound)
+
+		return nil
+	}
+
 	banner := state.Winners[0]
 
 	if err := w.sessions.Start(state.Request, banner.ID); err != nil {
 		return fmt.Errorf("error on start session: %w", err)
 	}
 
-	switch action {
-	case "img":
-		//render img
+	w.analytics.LogImpression(ctx)
 
-		state.Response.Write([]byte(banner.Image.Full("")))
-
-	case "click":
-		// redirect to url
-
-		state.Response.Write([]byte(banner.Target))
-	}
-
-	// data, err := w.formats["banner"].Render(ctx, state)
-
-	// if err != nil {
-	// 	return fmt.Errorf("error on render format: %w", err)
-	// }
-
-	// _, err = state.Response.Write([]byte(data.(string)))
-
-	return nil
+	return w.format.Banner(ctx, w.base, banner, state.Response)
 }
