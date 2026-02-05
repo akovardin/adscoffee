@@ -10,7 +10,6 @@ import (
 	"github.com/qor5/web/v3"
 	"github.com/qor5/x/v3/i18n"
 	. "github.com/qor5/x/v3/ui/vuetify"
-	v "github.com/qor5/x/v3/ui/vuetify"
 	h "github.com/theplant/htmlgo"
 )
 
@@ -141,7 +140,7 @@ func (b *MenuOrderBuilder) buildUnorderedMenus(ctx *web.EventContext, inOrderMap
 }
 
 func (b *MenuOrderBuilder) separator() h.HTMLComponent {
-	return v.VDivider()
+	return h.Div(h.Hr().Style("margin:20px; height: 1px;border-top: 1px solid #eee"))
 }
 
 func (b *MenuOrderBuilder) buildMenuItem(name string, isSub bool, groupName string, ctx *web.EventContext, inOrderMap map[string]menuOrderItem) h.HTMLComponent {

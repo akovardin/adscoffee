@@ -119,6 +119,7 @@ require (
 	github.com/mroth/weightedrand/v2 v2.1.0
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.23.2
+	github.com/urfave/cli/v3 v3.6.2
 	go.uber.org/dig v1.19.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0

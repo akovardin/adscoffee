@@ -416,6 +416,9 @@ github.com/twmb/franz-go/plugin/kzap
 # github.com/ua-parser/uap-go v0.0.0-20240611065828-3a4781585db6
 ## explicit
 github.com/ua-parser/uap-go/uaparser
+# github.com/urfave/cli/v3 v3.6.2
+## explicit; go 1.22
+github.com/urfave/cli/v3
 # github.com/wI2L/jsondiff v0.6.0
 ## explicit; go 1.21
 github.com/wI2L/jsondiff

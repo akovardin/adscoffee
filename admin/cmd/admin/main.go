@@ -2,7 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/qor5/admin/v3/presets"
@@ -11,6 +14,7 @@ import (
 	"github.com/qor5/x/v3/login"
 	v "github.com/qor5/x/v3/ui/vuetify"
 	h "github.com/theplant/htmlgo"
+	"github.com/urfave/cli/v3"
 	"go.uber.org/fx"
 	"golang.org/x/text/language"
 	"gorm.io/gorm"
@@ -22,36 +26,102 @@ import (
 	"go.ads.coffee/platform/admin/internal/modules/ads"
 	"go.ads.coffee/platform/admin/internal/modules/media"
 	"go.ads.coffee/platform/admin/internal/modules/users"
+	umodels "go.ads.coffee/platform/admin/internal/modules/users/models"
 	"go.ads.coffee/platform/admin/internal/s3storage"
 	"go.ads.coffee/platform/admin/internal/server"
 )
 
 func main() {
-	fx.New(
-		fx.Provide(
-			func() prometheus.Registerer {
-				// default prometheus
-				return prometheus.DefaultRegisterer
+	cmd := &cli.Command{
+		Name: "kodikapusta",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{Name: "config", Aliases: []string{"c"}},
+		},
+		Commands: []*cli.Command{
+			{
+				Name:    "serve",
+				Aliases: []string{"s"},
+				Action: func(ctx context.Context, cmd *cli.Command) error {
+					fx.New(
+						fx.Provide(
+							func() prometheus.Registerer {
+								// default prometheus
+								return prometheus.DefaultRegisterer
+							},
+						),
+						fx.Provide(
+							func() (config.Config, error) {
+								cfg := cmd.String("config")
+								if cfg == "" {
+									cfg = "admin/configs/config.yaml"
+								}
+
+								return config.New(cfg)
+							},
+						),
+						database.Module,
+						logger.Module,
+						s3storage.Module,
+						server.Module,
+
+						ads.Module,
+						users.Module,
+						media.Module,
+
+						fx.Provide(
+							configure,
+							auth,
+						),
+						fx.Invoke(
+							serve,
+						),
+					).Run()
+
+					return nil
+				},
 			},
-		),
-		config.Module,
-		database.Module,
-		logger.Module,
-		s3storage.Module,
-		server.Module,
+			{
+				Name:    "user",
+				Aliases: []string{"u"},
+				Action: func(ctx context.Context, cmd *cli.Command) error {
+					fx.New(
+						fx.Provide(
+							func() prometheus.Registerer {
+								// default prometheus
+								return prometheus.DefaultRegisterer
+							},
+						),
+						fx.Provide(
+							func() (config.Config, error) {
+								cfg := cmd.String("config")
+								if cfg == "" {
+									cfg = "admin/configs/config.yaml"
+								}
 
-		ads.Module,
-		users.Module,
-		media.Module,
+								return config.New(cfg)
+							},
+						),
+						database.Module,
+						logger.Module,
+						s3storage.Module,
+						server.Module,
 
-		fx.Provide(
-			configure,
-			auth,
-		),
-		fx.Invoke(
-			serve,
-		),
-	).Run()
+						ads.Module,
+						users.Module,
+						media.Module,
+
+						fx.Invoke(
+							user,
+						),
+					).Run()
+
+					return nil
+				},
+			},
+		},
+	}
+
+	cmd.Run(context.Background(), os.Args)
 }
 
 func serve(lc fx.Lifecycle, srv *server.Server) {
@@ -117,4 +187,21 @@ func configure(
 		})
 
 	return b
+}
+
+func user(db *gorm.DB) {
+	fmt.Println("add user: admin, password")
+
+	u := umodels.User{
+		Name: "admin",
+	}
+	u.Account = "admin"
+	u.Password = "password"
+	u.EncryptPassword()
+
+	if err := db.Model(&u).Save(&u).Error; err != nil {
+		log.Fatal(err)
+	}
+
+	os.Exit(0)
 }

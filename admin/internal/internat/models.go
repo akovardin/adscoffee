@@ -242,8 +242,8 @@ var Messages_ru_RU_ModelsI18nModuleKey = &Messages_ModelsI18nModuleKey{
 	WorkersStatus:    "Status",
 	WorkersCreatedAt: "Created At",
 
-	Network:       "Ендпоинт",
-	Networks:      "Ендпоинты",
+	Network:       "Эндпоинт",
+	Networks:      "Эндпоинты",
 	NetworksName:  "Название",
 	NetworksTitle: "Заголовок",
 }

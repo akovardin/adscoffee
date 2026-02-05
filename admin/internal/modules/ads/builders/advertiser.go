@@ -76,7 +76,6 @@ func (m *Advertiser) Configure(b *presets.Builder) {
 				{"OrdContract"},
 				{"Start", "End"},
 				{"Active"},
-				{"OrdEnable"},
 			},
 		},
 		&presets.FieldsSection{
