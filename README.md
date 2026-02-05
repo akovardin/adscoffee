@@ -66,3 +66,11 @@ Integration Clients (SDK / Libraries):
 - [ ] Ad Mediation
 
 Caffeine is more than just a tool. It is an attempt to make the advertising ecosystem healthier, more open, and more beneficial for those who create real value on the internet.
+
+## Install
+
+Как добавить нового пользователя в админку? Для этого нужно запустить команду:
+
+```
+go run admin/cmd/admin/main.go u
+```
