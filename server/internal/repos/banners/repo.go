@@ -86,12 +86,16 @@ join advertisers ON (campaigns.advertiser_id = advertisers.id)
 where
     banners.active = true 
     and banners.deleted_at is NULL
+    and banners.archived_at is NULL
     and bgroups.active = true 
 	and bgroups.deleted_at is NULL
+	and bgroups.archived_at is NULL
     and campaigns.active = true 
 	and campaigns.deleted_at is NULL
+	and campaigns.archived_at is NULL
     and advertisers.active = true
 	and advertisers.deleted_at is NULL
+	and advertisers.archived_at is NULL
     and (banners."end" is null or banners."end" >  NOW() or banners."end" < '2001-01-02 00:00:00')
     and (campaigns."end" is null or campaigns."end" >  NOW() or campaigns."end" < '2001-01-02 00:00:00')
     and (bgroups."end" is null or bgroups."end" >  NOW() or bgroups."end" < '2001-01-02 00:00:00')

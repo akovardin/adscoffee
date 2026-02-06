@@ -43,6 +43,7 @@ type Banner struct {
 
 	Timetable       string
 	ExpectedWinRate float64
+	ArchivedAt      *time.Time
 }
 
 func (original Banner) Copy(db *gorm.DB, group int) (Banner, error) {
