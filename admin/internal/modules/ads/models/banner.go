@@ -43,7 +43,8 @@ type Banner struct {
 
 	Timetable       string
 	ExpectedWinRate float64
-	ArchivedAt      *time.Time
+
+	ArchivedAt *time.Time
 }
 
 func (original Banner) Copy(db *gorm.DB, group int) (Banner, error) {
@@ -80,4 +81,14 @@ func (original Banner) Copy(db *gorm.DB, group int) (Banner, error) {
 	}
 
 	return copy, nil
+}
+
+func (original Banner) Archive(db *gorm.DB, archive *time.Time) error {
+	original.ArchivedAt = archive
+
+	if err := db.Save(original).Error; err != nil {
+		return fmt.Errorf("failed archive: %w", err)
+	}
+
+	return nil
 }

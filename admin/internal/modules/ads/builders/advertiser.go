@@ -2,6 +2,8 @@ package builders
 
 import (
 	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/qor5/admin/v3/presets"
 	"github.com/qor5/web/v3"
@@ -27,7 +29,11 @@ func NewAdvertiser(logger *zap.Logger, db *gorm.DB) *Advertiser {
 	}
 }
 
-const copyAdvertiserEvent = "copyAdvertiser"
+const (
+	copyAdvertiserEvent      = "copyAdvertiser"
+	archiveAdvertiserEvent   = "archiveAdvertiser"
+	unarchiveAdvertiserEvent = "unarchiveAdvertiser"
+)
 
 func (m *Advertiser) Configure(b *presets.Builder) {
 	ma := b.Model(&models.Advertiser{}).
@@ -47,6 +53,19 @@ func (m *Advertiser) Configure(b *presets.Builder) {
 		)
 	})
 
+	mal.Field("Active").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
+		c := obj.(*models.Advertiser)
+
+		color := "red"
+		text := "выключен"
+		if c.Active {
+			text = "включен"
+			color = "green"
+		}
+
+		return h.Td().Children(h.Span(text).Style("color:" + color))
+	})
+
 	man := mal.RowMenu()
 
 	// Добавляем обработчик копирования
@@ -64,8 +83,38 @@ func (m *Advertiser) Configure(b *presets.Builder) {
 			)
 		})
 
+	man.RowMenuItem("Archive").
+		ComponentFunc(func(obj interface{}, id string, ctx *web.EventContext) h.HTMLComponent {
+			item := obj.(*models.Advertiser)
+			if item.ArchivedAt == nil {
+				return v.VListItem(
+					web.Slot(
+						v.VIcon("mdi-archive-arrow-down"), // Используем иконку копирования
+					).Name("prepend"),
+					v.VListItemTitle(
+						h.Text("Архивировать"),
+					),
+				).Attr("@click",
+					web.Plaid().EventFunc(archiveAdvertiserEvent).Query("id", id).Go(),
+				)
+			} else {
+				return v.VListItem(
+					web.Slot(
+						v.VIcon("mdi-archive-arrow-up"), // Используем иконку копирования
+					).Name("prepend"),
+					v.VListItemTitle(
+						h.Text("Разархивировать"),
+					),
+				).Attr("@click",
+					web.Plaid().EventFunc(unarchiveAdvertiserEvent).Query("id", id).Go(),
+				)
+			}
+		})
+
 	// Регистрируем обработчик события копирования
 	ma.RegisterEventFunc(copyAdvertiserEvent, m.copyAdvertiser)
+	ma.RegisterEventFunc(archiveAdvertiserEvent, m.archiveAdvertiser)
+	ma.RegisterEventFunc(unarchiveAdvertiserEvent, m.unarchiveAdvertiser)
 
 	mae := ma.Editing(
 		&presets.FieldsSection{
@@ -151,7 +200,6 @@ func (m *Advertiser) copyAdvertiser(ctx *web.EventContext) (r web.EventResponse,
 		Active:    false,
 
 		OrdContract: original.OrdContract,
-		OrdEnable:   original.OrdEnable,
 	}
 
 	// Сохраняем копию в базу данных
@@ -160,7 +208,60 @@ func (m *Advertiser) copyAdvertiser(ctx *web.EventContext) (r web.EventResponse,
 	}
 
 	// Обновляем список
-	r.Reload = true
+	r.Emit(
+		presets.NotifModelsUpdated(&models.Advertiser{}),
+		presets.PayloadModelsUpdated{Ids: []string{id, strconv.Itoa(int(copyAdvertiser.ID))}},
+	)
+
+	return r, nil
+}
+
+func (m *Advertiser) archiveAdvertiser(ctx *web.EventContext) (r web.EventResponse, err error) {
+	id := ctx.R.FormValue("id")
+	if id == "" {
+		return r, fmt.Errorf("id is required")
+	}
+
+	// Находим оригинальную запись
+	var original models.Advertiser
+	if err := m.db.First(&original, id).Error; err != nil {
+		return r, fmt.Errorf("failed to find campaign: %w", err)
+	}
+
+	now := time.Now()
+	if err := original.Archive(m.db, &now); err != nil {
+		return r, fmt.Errorf("failed to archive campaign: %w", err)
+	}
+	// Обновляем список
+	r.Emit(
+		presets.NotifModelsUpdated(&models.Advertiser{}),
+		presets.PayloadModelsUpdated{Ids: []string{id}},
+	)
+
+	return r, nil
+}
+
+func (m *Advertiser) unarchiveAdvertiser(ctx *web.EventContext) (r web.EventResponse, err error) {
+	id := ctx.R.FormValue("id")
+	if id == "" {
+		return r, fmt.Errorf("id is required")
+	}
+
+	// Находим оригинальную запись
+	var original models.Advertiser
+	if err := m.db.First(&original, id).Error; err != nil {
+		return r, fmt.Errorf("failed to find advertiser: %w", err)
+	}
+
+	if err := original.Archive(m.db, nil); err != nil {
+		return r, fmt.Errorf("failed to unarchive advertiser: %w", err)
+	}
+
+	// Обновляем список
+	r.Emit(
+		presets.NotifModelsUpdated(&models.Advertiser{}),
+		presets.PayloadModelsUpdated{Ids: []string{id}},
+	)
 
 	return r, nil
 }

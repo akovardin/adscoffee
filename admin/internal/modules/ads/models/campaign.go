@@ -25,6 +25,8 @@ type Campaign struct {
 
 	AdvertiserID int
 	Advertiser   Advertiser
+
+	ArchivedAt *time.Time
 }
 
 func (original Campaign) Copy(db *gorm.DB, advertiser int) (Campaign, error) {
@@ -60,4 +62,28 @@ func (original Campaign) Copy(db *gorm.DB, advertiser int) (Campaign, error) {
 	}
 
 	return copy, nil
+}
+
+func (original Campaign) Archive(db *gorm.DB, archive *time.Time) error {
+	original.ArchivedAt = archive
+
+	if err := db.Save(original).Error; err != nil {
+		return fmt.Errorf("failed archive: %w", err)
+	}
+
+	groups := []Bgroup{}
+	if err := db.Model(Bgroup{}).
+		Where("campaign_id = ?", original.ID).
+		Find(&groups).Error; err != nil {
+
+		return fmt.Errorf("error on get groups: %w", err)
+	}
+
+	for _, g := range groups {
+		if err := g.Archive(db, archive); err != nil {
+			return fmt.Errorf("err on archive groups: %w", err)
+		}
+	}
+
+	return nil
 }
