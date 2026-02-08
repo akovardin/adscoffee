@@ -3,11 +3,14 @@ package builders
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/qor5/admin/v3/presets"
+	"github.com/qor5/admin/v3/presets/gorm2op"
 	"github.com/qor5/web/v3"
 	v "github.com/qor5/x/v3/ui/vuetify"
+	"github.com/qor5/x/v3/ui/vuetifyx"
 	"github.com/sunfmin/reflectutils"
 	h "github.com/theplant/htmlgo"
 	"go.uber.org/zap"
@@ -41,13 +44,112 @@ func (m *Advertiser) Configure(b *presets.Builder) {
 		// Label("Рекламодатели").
 		RightDrawerWidth("1000")
 
-	mal := ma.Listing("ID", "Title", "Start", "End", "Active")
+	mal := ma.Listing("ID", "Title", "Start", "End", "Active").
+		SearchFunc(func(ctx *web.EventContext, params *presets.SearchParams) (result *presets.SearchResult, err error) {
+			exist := false
+			for _, v := range params.SQLConditions {
+				if strings.Contains(v.Query, "archived_at is not null") {
+					exist = true
+					break
+				}
+
+				if strings.Contains(v.Query, "(archived_at is not null or archived_at is null)") {
+					exist = true
+					break
+				}
+			}
+
+			if !exist {
+				qdb := m.db.Where("archived_at is null")
+				return gorm2op.DataOperator(qdb).Search(ctx, params)
+			} else {
+				qdb := m.db.Where("")
+				return gorm2op.DataOperator(qdb).Search(ctx, params)
+			}
+		}).
+		SearchColumns("Title").
+		SelectableColumns(true).
+		OrderableFields([]*presets.OrderableField{
+			{
+				FieldName: "ID",
+				DBColumn:  "id",
+			},
+			{
+				FieldName: "Title",
+				DBColumn:  "title",
+			},
+			{
+				FieldName: "Start",
+				DBColumn:  "start",
+			},
+			{
+				FieldName: "End",
+				DBColumn:  "end",
+			},
+		})
+
+	mal.FilterDataFunc(func(ctx *web.EventContext) vuetifyx.FilterData {
+		return []*vuetifyx.FilterItem{
+			{
+				Key:          "archived",
+				Label:        "Архив",
+				ItemType:     vuetifyx.ItemTypeSelect,
+				SQLCondition: "archived_at is null",
+				Options: []*vuetifyx.SelectItem{
+					{
+
+						Text:         "В архиве",
+						Value:        "is_archived",
+						SQLCondition: "archived_at is not null",
+					},
+					{
+						Text:         "Все",
+						Value:        "all",
+						SQLCondition: "(archived_at is not null or archived_at is null)",
+					},
+				},
+			},
+			{
+				Key:      "active",
+				Label:    "Активность",
+				ItemType: vuetifyx.ItemTypeSelect,
+				Options: []*vuetifyx.SelectItem{
+					{
+
+						Text:         "Включен",
+						Value:        "is_active",
+						SQLCondition: "active = true",
+					},
+					{
+						Text:         "Выключен",
+						Value:        "not_active",
+						SQLCondition: "active = false",
+					},
+				},
+			},
+			{
+				Key:          "created",
+				Label:        "Создан",
+				ItemType:     vuetifyx.ItemTypeDate,
+				SQLCondition: `created_at %s ?`,
+			},
+		}
+	})
 
 	mal.Field("Title").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
 		c := obj.(*models.Advertiser)
+
+		style := ""
+		text := ""
+		if c.ArchivedAt != nil {
+			style = "color:#bb0"
+			text = " - архив"
+		}
+
 		return h.Td().Children(
 			h.A().
-				Text(c.Title).
+				Text(c.Title+text).
+				Style(style).
 				Attr("onclick", "event.stopPropagation();").
 				Href(fmt.Sprintf("/admin/campaigns?f_advertiser=%d", c.ID)),
 		)
