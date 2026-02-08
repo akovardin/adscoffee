@@ -227,6 +227,10 @@ func (client Client) GetEndpoint(ctx context.Context) string {
 		endpoint = strings.TrimPrefix(endpoint, prefix)
 	}
 
+	if strings.Contains(endpoint, "localhost") {
+		return endpoint + "/" + client.Config.Bucket + "/"
+	}
+
 	return client.Config.Bucket + "." + endpoint
 }
 

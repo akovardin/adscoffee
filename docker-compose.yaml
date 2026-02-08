@@ -130,3 +130,30 @@ services:
       nofile:
         soft: 262144
         hard: 262144
+
+  # https://oneuptime.com/blog/post/2026-01-27-minio-s3-compatible-storage/view
+  # https://github.com/bitnami/containers/tree/main/bitnami/minio
+  # https://www.datacamp.com/tutorial/minio-docker
+  # https://github.com/kminehart/minio-s3-client-example/blob/main/main.go
+  s3:
+    image: minio/minio
+    environment:
+      - MINIO_ROOT_USER=root
+      - MINIO_ROOT_PASSWORD=rootpass123
+      - MINIO_DEFAULT_BUCKETS=bucket
+      - MINIO_REGION=RU
+    volumes:
+      - minio-volume:/data
+    ports:
+      - "9222:9000"
+      - "9223:9001"
+    command: [ "server", "--console-address", ":9001", "/data" ]
+    networks:
+      default:
+        aliases:
+          - adscoffee.localhost:9222
+
+
+volumes:
+  minio-volume:
+    driver: local

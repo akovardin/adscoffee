@@ -10,8 +10,9 @@ database:
   dbname: admin_dev
 
 s3storage:
-  bucket: "platform"
-  s3Endpoint: "https://hb.vkcloud-storage.ru"
-  accessId: "xxxx"
-  accessKey: "xxxx"
-  region: "ru-msk"
+  bucket: "adscoffee"
+  s3Endpoint: "http://localhost:9222"
+  accessId: "root"
+  accessKey: "rootpass123"
+  region: "RU"
+  s3ForcePathStyle: true
