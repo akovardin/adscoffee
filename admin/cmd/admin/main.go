@@ -121,7 +121,9 @@ func main() {
 		},
 	}
 
-	cmd.Run(context.Background(), os.Args)
+	if err := cmd.Run(context.Background(), os.Args); err != nil {
+		panic(err)
+	}
 }
 
 func serve(lc fx.Lifecycle, srv *server.Server) {
