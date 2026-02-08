@@ -35,7 +35,7 @@ func main() {
 	cmd := &cli.Command{
 		Name: "kodikapusta",
 		Flags: []cli.Flag{
-			&cli.BoolFlag{Name: "config", Aliases: []string{"c"}},
+			&cli.StringFlag{Name: "config", Aliases: []string{"c"}},
 		},
 		Commands: []*cli.Command{
 			{

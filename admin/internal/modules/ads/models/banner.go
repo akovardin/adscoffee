@@ -41,8 +41,7 @@ type Banner struct {
 	BgroupID int
 	Bgroup   Bgroup
 
-	Timetable       string
-	ExpectedWinRate float64
+	Timetable string
 
 	ArchivedAt *time.Time
 }

@@ -10,7 +10,7 @@ database:
   dbname: admin_dev
 
 s3storage:
-  bucket: "adexproadmin"
+  bucket: "platform"
   s3Endpoint: "https://hb.vkcloud-storage.ru"
   accessId: "xxxx"
   accessKey: "xxxx"

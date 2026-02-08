@@ -238,7 +238,6 @@ func (m *Banner) Configure(b *presets.Builder) {
 			Title: "Price",
 			Rows: [][]string{
 				{"Price"},
-				{"ExpectedWinRate"},
 			},
 		},
 		&presets.FieldsSection{
