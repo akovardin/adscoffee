@@ -4,7 +4,7 @@ server:
 redis-pool:
   main:
     enabled: true
-    key_prefix: "adexprodsp"
+    key_prefix: "adscoffee"
     cluster_addrs: ["127.0.0.1:7001"]
     username: ''
     password: ''

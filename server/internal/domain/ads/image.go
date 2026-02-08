@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-const base = "//adexproadmin.hb.vkcloud-storage.ru"
+const base = "//platform.hb.vkcloud-storage.ru"
 
 type Image struct {
 	Url string `json:"url"`

@@ -135,6 +135,7 @@ services:
   # https://github.com/bitnami/containers/tree/main/bitnami/minio
   # https://www.datacamp.com/tutorial/minio-docker
   # https://github.com/kminehart/minio-s3-client-example/blob/main/main.go
+  # http://localhost:9223/browser/adscoffee/
   s3:
     image: minio/minio
     environment:
@@ -148,10 +149,6 @@ services:
       - "9222:9000"
       - "9223:9001"
     command: [ "server", "--console-address", ":9001", "/data" ]
-    networks:
-      default:
-        aliases:
-          - adscoffee.localhost:9222
 
 
 volumes:

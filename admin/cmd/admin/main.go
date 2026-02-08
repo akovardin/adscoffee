@@ -149,7 +149,7 @@ func configure(
 
 	// Set up the project name, ORM and Homepage
 	b.URIPrefix("/admin").
-		// BrandTitle("AdEx").
+		// BrandTitle("Кофеин").
 		DataOperator(gorm2op.DataOperator(db)).
 		HomePageFunc(func(ctx *web.EventContext) (r web.PageResponse, err error) {
 			r.Body = v.VContainer(

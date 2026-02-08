@@ -121,7 +121,7 @@ type Messages_ModelsI18nModuleKey struct {
 }
 
 var Messages_en_EN_ModelsI18nModuleKey = &Messages_ModelsI18nModuleKey{
-	Admin: "AdEx",
+	Admin: "Caffeine",
 	New:   "New",
 
 	MediaLibrary: "Media Library",
@@ -137,7 +137,7 @@ var Messages_en_EN_ModelsI18nModuleKey = &Messages_ModelsI18nModuleKey{
 }
 
 var Messages_ru_RU_ModelsI18nModuleKey = &Messages_ModelsI18nModuleKey{
-	Admin: "AdEx",
+	Admin: "Caffeine",
 	New:   "Новый",
 
 	MediaLibrary: "Библиотека медиа",
