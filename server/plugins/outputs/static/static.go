@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"go.ads.coffee/platform/server/internal/analytics"
 	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 	"go.ads.coffee/platform/server/internal/sessions"
@@ -22,7 +23,11 @@ var Module = fx.Module(
 	"outputs.static",
 
 	fx.Provide(
-		New,
+		fx.Annotate(
+			New,
+			fx.As(new(plugins.Output)),
+			fx.ResultTags(`group:"outputs"`),
+		),
 		formats.NewBanner,
 	),
 )
@@ -49,10 +54,12 @@ type Static struct {
 func New(
 	format *formats.Banner,
 	sessions *sessions.Sessions,
+	analytics *analytics.Analytics,
 ) *Static {
 	return &Static{
-		format:   format,
-		sessions: sessions,
+		format:    format,
+		sessions:  sessions,
+		analytics: analytics,
 	}
 }
 
@@ -61,10 +68,15 @@ func (w *Static) Name() string {
 }
 
 func (w *Static) Copy(cfg map[string]any) plugins.Output {
-	base := cfg[baseUrlKey].(string)
+	base := ""
+
+	if cfg != nil {
+		base = cfg[baseUrlKey].(string)
+	}
 
 	return &Static{
 		base:      base,
+		format:    w.format,
 		sessions:  w.sessions,
 		analytics: w.analytics,
 	}

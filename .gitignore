@@ -6,3 +6,7 @@ geoip/*
 admin/cmd/admin/__debug*
 server/cmd/server/__debug*
 admin/configs/prod.yaml
+admin/configs/dev.yaml
+server/configs/prod.yaml
+server/configs/dev.yaml
+Taskfile.prod.yml

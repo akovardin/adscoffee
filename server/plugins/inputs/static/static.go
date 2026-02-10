@@ -8,6 +8,7 @@ import (
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 
+	"go.ads.coffee/platform/server/internal/analytics"
 	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 	"go.ads.coffee/platform/server/internal/repos/banners"
@@ -32,7 +33,7 @@ var Module = fx.Module(
 )
 
 type Analytics interface {
-	LogClick()
+	LogClick(ctx context.Context)
 }
 
 type Static struct {
@@ -46,11 +47,13 @@ func New(
 	logger *zap.Logger,
 	cache *banners.Cache,
 	sessions *sessions.Sessions,
+	analytics *analytics.Analytics,
 ) *Static {
 	return &Static{
-		logger:   logger,
-		cache:    cache,
-		sessions: sessions,
+		logger:    logger,
+		cache:     cache,
+		sessions:  sessions,
+		analytics: analytics,
 	}
 }
 
@@ -112,7 +115,7 @@ func (s *Static) Do(ctx context.Context, state *plugins.State) bool {
 			return false
 		}
 
-		s.analytics.LogClick()
+		s.analytics.LogClick(ctx)
 
 		http.Redirect(state.Response, state.Request, banner.Target, http.StatusSeeOther)
 
