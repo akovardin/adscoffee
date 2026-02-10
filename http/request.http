@@ -5,3 +5,8 @@ GET http://localhost:9090/kodikapusta/123
 ### test static
 GET http://localhost:9090/banner/123/img
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36
+
+
+### test static
+GET http://localhost:9090/banner/123/click
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36

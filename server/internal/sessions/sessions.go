@@ -53,7 +53,7 @@ func (s *Sessions) LoadWithoutExpire(r *http.Request) (Session, bool) {
 
 func (s *Sessions) Start(r *http.Request, value string) error {
 	token := s.identifier(r)
-	expires := time.Now().Add(10 * time.Second)
+	expires := time.Now().Add(10 * time.Minute)
 
 	s.sessions.Store(token, Session{
 		Value:  value,

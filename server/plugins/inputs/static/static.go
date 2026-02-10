@@ -63,9 +63,10 @@ func (s *Static) Name() string {
 
 func (s *Static) Copy(cfg map[string]any) plugins.Input {
 	return &Static{
-		cache:    s.cache,
-		logger:   s.logger,
-		sessions: s.sessions,
+		cache:     s.cache,
+		logger:    s.logger,
+		sessions:  s.sessions,
+		analytics: s.analytics,
 	}
 }
 
