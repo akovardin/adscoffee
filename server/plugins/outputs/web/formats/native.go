@@ -41,15 +41,14 @@ func (b *Native) Render(ctx context.Context, state *plugins.State) (any, error) 
 	items := []NativeResponse{}
 
 	for _, b := range state.Winners {
-		if b.Format != TypeNative {
-			continue
-		}
-
 		items = append(items, NativeResponse{
 			Title:       b.Title,
 			Description: b.Description,
 			Target:      b.Target,
-			Image:       b.Image.Full("example"),
+			Image:       b.Image.Full(""),
+
+			Impressions: []string{}, // TODO: make trackers
+			Clicks:      []string{},
 		})
 	}
 

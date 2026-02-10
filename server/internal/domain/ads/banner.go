@@ -46,8 +46,6 @@ type Banner struct {
 
 	Erid string
 
-	Format string
-
 	GroupID      string `gorm:"bgroup_id"`
 	CampaignID   string `gorm:"campaign_id"`
 	AdvertiserID string `gorm:"advertiser_id"`

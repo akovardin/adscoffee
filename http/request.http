@@ -1,5 +1,5 @@
 ### test web
-GET http://localhost:9090/kodikapusta/123
+GET http://localhost:9090/native/123
 
 
 ### test static

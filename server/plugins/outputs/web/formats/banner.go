@@ -37,10 +37,6 @@ func (b *Banner) Render(ctx context.Context, state *plugins.State) (any, error) 
 	items := []BannerResponse{}
 
 	for _, b := range state.Winners {
-		if b.Format != TypeBanner {
-			continue
-		}
-
 		items = append(items, BannerResponse{
 			Title: b.Title,
 			Img:   b.Image.Full("example"),

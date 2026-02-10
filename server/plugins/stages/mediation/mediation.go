@@ -47,7 +47,6 @@ func (t *Mediation) Do(ctx context.Context, state *plugins.State) error {
 			Price:   u.Price,
 			Type:    ads.CreativeTypeMediator,
 			Network: u.Network,
-			Format:  u.Format,
 		})
 	}
 

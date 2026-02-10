@@ -9,10 +9,17 @@ import (
 )
 
 type Web struct {
-	formats []plugins.Format
+	format  string
+	formats map[string]plugins.Format
 }
 
-func New(formats []plugins.Format) *Web {
+func New(ff []plugins.Format) *Web {
+	formats := map[string]plugins.Format{}
+
+	for _, f := range ff {
+		formats[f.Name()] = f
+	}
+
 	return &Web{
 		formats: formats,
 	}
@@ -23,27 +30,32 @@ func (w *Web) Name() string {
 }
 
 func (w *Web) Copy(cfg map[string]any) plugins.Output {
-	ff := []plugins.Format{}
+	format := "native" // default format
+	if cfg != nil {
+		format = cfg["format"].(string)
+	}
+
+	dest := make(map[string]plugins.Format, len(w.formats))
 	for _, f := range w.formats {
-		ff = append(ff, f.Copy(cfg))
+		dest[f.Name()] = f.Copy(cfg)
 	}
 
 	return &Web{
-		formats: ff,
+		format:  format,
+		formats: dest,
 	}
 }
 
 //nolint:errcheck
 func (w *Web) Do(ctx context.Context, state *plugins.State) error {
-	result := map[string]any{}
+	format, ok := w.formats[w.format]
+	if !ok {
+		return fmt.Errorf("format %s not found", w.format)
+	}
 
-	for _, f := range w.formats {
-		val, err := f.Render(ctx, state)
-		if err != nil {
-			return fmt.Errorf("error on render format: %w", err)
-		}
-
-		result[f.Name()] = val
+	result, err := format.Render(ctx, state)
+	if err != nil {
+		return fmt.Errorf("error on render format: %w", err)
 	}
 
 	data, err := json.Marshal(result)
