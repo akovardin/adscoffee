@@ -33,7 +33,7 @@ var Module = fx.Module(
 )
 
 type Analytics interface {
-	LogImpression(ctx context.Context)
+	LogImpression(ctx context.Context, data ads.TrackerInfo) error
 }
 
 type Banner interface {
@@ -104,7 +104,8 @@ func (w *Static) Do(ctx context.Context, state *plugins.State) error {
 		return fmt.Errorf("error on start session: %w", err)
 	}
 
-	w.analytics.LogImpression(ctx)
+	// check error
+	_ = w.analytics.LogImpression(ctx, ads.TrackerInfo{})
 
 	return w.format.Banner(ctx, w.base, banner, state.Response)
 }

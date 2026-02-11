@@ -3,10 +3,12 @@ package analytics
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"go.ads.coffee/platform/pkg/kafkapool"
 	"go.ads.coffee/platform/pkg/telemetry"
 	"go.ads.coffee/platform/server/internal/domain/ads"
+	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
 type Analytics struct {
@@ -55,10 +57,72 @@ func (r *Analytics) Log(ctx context.Context, name string, event ads.Event) error
 	return nil
 }
 
-func (a *Analytics) LogImpression(ctx context.Context) {
-
+func (r *Analytics) LogRequest(ctx context.Context, state *plugins.State) error {
+	return r.Log(
+		ctx,
+		ads.ActionRequest,
+		ads.Event{
+			RequestID: state.RequestID,
+			Timestamp: time.Now().Unix(),
+			Action:    ads.ActionRequest,
+			GAID:      "",
+			OAID:      "",
+			// Country:   rc.Request.Country(),
+			// Region:    rc.Request.Region(),
+			// City:      rc.Request.City(),
+			// Network:   rc.Network,
+			// Make: rc.Request.Make(),
+		},
+	)
 }
 
-func (a *Analytics) LogClick(ctx context.Context) {
+func (r *Analytics) LogResponse(ctx context.Context, w ads.Banner, state *plugins.State) error {
+	return r.Log(
+		ctx,
+		ads.ActionResponse,
+		ads.Event{
+			RequestID: state.RequestID,
+			ClickID:   state.ClickID,
+			Timestamp: time.Now().Unix(),
+			Action:    ads.ActionResponse,
 
+			BannerID:     w.ID,
+			GroupID:      w.GroupID,
+			CampaignID:   w.CampaignID,
+			AdvertiserID: w.AdvertiserID,
+
+			GAID: "",
+			OAID: "",
+			// Country: rc.Request.Country(),
+			// Region:  rc.Request.Region(),
+			// City:    rc.Request.City(),
+			// Network:   rc.Network,
+			Price: float64(w.Price),
+		},
+	)
+}
+
+func (r *Analytics) LogWin(ctx context.Context, data ads.TrackerInfo) error {
+	data.Action = ads.ActionWin
+	return r.Log(ctx, ads.ActionWin, ads.Event(data))
+}
+
+func (r *Analytics) LogConversion(ctx context.Context, data ads.TrackerInfo) error {
+	data.Action = ads.ActionConversion
+	return r.Log(ctx, ads.ActionConversion, ads.Event(data))
+}
+
+func (r *Analytics) LogImpression(ctx context.Context, data ads.TrackerInfo) error {
+	money.WithLabelValues(
+		ads.ActionImpression,
+		data.Network,
+	).Add(data.Price)
+
+	data.Action = ads.ActionImpression
+	return r.Log(ctx, ads.ActionImpression, ads.Event(data))
+}
+
+func (r *Analytics) LogClick(ctx context.Context, data ads.TrackerInfo) error {
+	data.Action = ads.ActionCLick
+	return r.Log(ctx, ads.ActionCLick, ads.Event(data))
 }

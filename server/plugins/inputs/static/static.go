@@ -33,7 +33,7 @@ var Module = fx.Module(
 )
 
 type Analytics interface {
-	LogClick(ctx context.Context)
+	LogClick(ctx context.Context, data ads.TrackerInfo) error
 }
 
 type Static struct {
@@ -116,7 +116,8 @@ func (s *Static) Do(ctx context.Context, state *plugins.State) bool {
 			return false
 		}
 
-		s.analytics.LogClick(ctx)
+		// check err
+		_ = s.analytics.LogClick(ctx, ads.TrackerInfo{})
 
 		http.Redirect(state.Response, state.Request, banner.Target, http.StatusSeeOther)
 

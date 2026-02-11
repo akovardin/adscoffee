@@ -8,6 +8,8 @@ import (
 )
 
 type State struct {
+	RequestID  string
+	ClickID    string
 	Request    *http.Request
 	Response   http.ResponseWriter
 	User       *User
