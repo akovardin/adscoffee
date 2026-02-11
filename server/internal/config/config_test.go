@@ -1,3 +1,4 @@
+//nolint:errcheck,staticcheck
 package config
 
 import (
