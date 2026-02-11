@@ -60,7 +60,7 @@ Integration Clients (SDK / Libraries):
 ## What is Currently Implemented
 
 - [x] Plugin System
-- [ ] Admin Panel for Ad Configuration
+- [x] Admin Panel for Ad Configuration
 - [ ] Ad Selection Server
 - [ ] Analytics and Statistics Display
 - [ ] Client for Displaying Ads in Applications
