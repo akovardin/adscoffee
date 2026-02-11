@@ -354,7 +354,7 @@ func (m *Banner) Configure(b *presets.Builder) {
 		ComponentFunc(timetable.Component).
 		SetterFunc(timetable.Setter)
 
-	targeting := components.NewTargeting(m.logger, m.db)
+	targeting := components.NewTargeting(m.logger)
 	mbe.Field("Targeting").
 		ComponentFunc(targeting.Component).
 		SetterFunc(targeting.Setter)

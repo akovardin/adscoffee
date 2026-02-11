@@ -302,7 +302,7 @@ func (m *Campaign) Configure(b *presets.Builder) {
 		ComponentFunc(timetable.Component).
 		SetterFunc(timetable.Setter)
 
-	targeting := components.NewTargeting(m.logger, m.db)
+	targeting := components.NewTargeting(m.logger)
 	mce.Field("Targeting").
 		ComponentFunc(targeting.Component).
 		SetterFunc(targeting.Setter)

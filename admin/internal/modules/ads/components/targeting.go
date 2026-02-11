@@ -10,20 +10,17 @@ import (
 	"github.com/sunfmin/reflectutils"
 	h "github.com/theplant/htmlgo"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 
 	"go.ads.coffee/platform/admin/internal/modules/ads/models"
 )
 
 type Targeting struct {
 	logger *zap.Logger
-	db     *gorm.DB
 }
 
-func NewTargeting(logger *zap.Logger, db *gorm.DB) *Targeting {
+func NewTargeting(logger *zap.Logger) *Targeting {
 	return &Targeting{
 		logger: logger,
-		db:     db,
 	}
 }
 
