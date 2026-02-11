@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 	"go.ads.coffee/platform/server/internal/inputs"
 	"go.ads.coffee/platform/server/internal/outputs"
@@ -60,8 +61,10 @@ func (m *Manager) Mount(router *chi.Mux) {
 			ctx := r.Context()
 
 			state := &plugins.State{
-				Request:  r,
-				Response: w,
+				RequestID: uuid.NewString(),
+				ClickID:   uuid.NewString(),
+				Request:   r,
+				Response:  w,
 			}
 
 			if err := p.Do(ctx, state); err != nil {

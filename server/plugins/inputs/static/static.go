@@ -124,7 +124,5 @@ func (s *Static) Do(ctx context.Context, state *plugins.State) bool {
 		return false
 	}
 
-	// эешен img будет обрабатываться в outputs.static
-
 	return true
 }
