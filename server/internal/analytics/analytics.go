@@ -40,7 +40,6 @@ func New(pool *kafkapool.Pool, tel *telemetry.Telemetry) (*Analytics, error) {
 func (r *Analytics) Log(ctx context.Context, name string, event ads.Event) error {
 	actions.WithLabelValues(
 		name,
-		event.Network,
 	).Inc()
 
 	data, err := event.JSON()
@@ -115,7 +114,6 @@ func (r *Analytics) LogConversion(ctx context.Context, data ads.TrackerInfo) err
 func (r *Analytics) LogImpression(ctx context.Context, data ads.TrackerInfo) error {
 	money.WithLabelValues(
 		ads.ActionImpression,
-		data.Network,
 	).Add(data.Price)
 
 	data.Action = ads.ActionImpression

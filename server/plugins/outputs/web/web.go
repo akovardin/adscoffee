@@ -5,15 +5,22 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"go.ads.coffee/platform/server/internal/analytics"
+	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
-type Web struct {
-	format  string
-	formats map[string]plugins.Format
+type Analytics interface {
+	LogResponse(ctx context.Context, w ads.Banner, state *plugins.State) error
 }
 
-func New(ff []plugins.Format) *Web {
+type Web struct {
+	format    string
+	formats   map[string]plugins.Format
+	analytics Analytics
+}
+
+func New(ff []plugins.Format, analytics *analytics.Analytics) *Web {
 	formats := map[string]plugins.Format{}
 
 	for _, f := range ff {
@@ -21,7 +28,8 @@ func New(ff []plugins.Format) *Web {
 	}
 
 	return &Web{
-		formats: formats,
+		analytics: analytics,
+		formats:   formats,
 	}
 }
 
@@ -41,8 +49,9 @@ func (w *Web) Copy(cfg map[string]any) plugins.Output {
 	}
 
 	return &Web{
-		format:  format,
-		formats: dest,
+		analytics: w.analytics,
+		format:    format,
+		formats:   dest,
 	}
 }
 
@@ -64,6 +73,10 @@ func (w *Web) Do(ctx context.Context, state *plugins.State) error {
 	}
 
 	_, err = state.Response.Write(data)
+
+	if len(state.Winners) > 0 {
+		w.analytics.LogResponse(ctx, state.Winners[0], state)
+	}
 
 	return err
 }

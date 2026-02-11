@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
 
+	"go.ads.coffee/platform/server/internal/analytics"
 	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
@@ -22,11 +23,18 @@ var Module = fx.Module(
 	),
 )
 
-type Web struct {
+type Analytics interface {
+	LogRequest(ctx context.Context, state *plugins.State) error
 }
 
-func New() *Web {
-	return &Web{}
+type Web struct {
+	analytics Analytics
+}
+
+func New(analytics *analytics.Analytics) *Web {
+	return &Web{
+		analytics: analytics,
+	}
 }
 
 func (s *Web) Name() string {
@@ -34,10 +42,12 @@ func (s *Web) Name() string {
 }
 
 func (s *Web) Copy(cfg map[string]any) plugins.Input {
-	return &Web{}
+	return &Web{
+		analytics: s.analytics,
+	}
 }
 
-func (stages *Web) Do(ctx context.Context, state *plugins.State) bool {
+func (s *Web) Do(ctx context.Context, state *plugins.State) bool {
 	// нужно получить данные пользователя из запроса
 
 	state.User = &plugins.User{}
@@ -58,6 +68,9 @@ func (stages *Web) Do(ctx context.Context, state *plugins.State) bool {
 			},
 		},
 	}
+
+	// check error
+	_ = s.analytics.LogRequest(ctx, state)
 
 	return true
 }

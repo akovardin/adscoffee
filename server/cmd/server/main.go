@@ -4,11 +4,17 @@ import (
 	"context"
 	"os"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/urfave/cli/v3"
 	"go.uber.org/fx"
 
+	"go.ads.coffee/platform/pkg/circuitbreaker"
 	"go.ads.coffee/platform/pkg/database"
+	"go.ads.coffee/platform/pkg/health"
+	"go.ads.coffee/platform/pkg/kafkapool"
 	"go.ads.coffee/platform/pkg/logger"
+	"go.ads.coffee/platform/pkg/redispool"
+	"go.ads.coffee/platform/pkg/telemetry"
 	"go.ads.coffee/platform/server/internal/analytics"
 	"go.ads.coffee/platform/server/internal/config"
 	"go.ads.coffee/platform/server/internal/repos/banners"
@@ -31,6 +37,12 @@ func main() {
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					fx.New(
 						fx.Provide(
+							func() prometheus.Registerer {
+								// default prometheus
+								return prometheus.DefaultRegisterer
+							},
+						),
+						fx.Provide(
 							func() (config.Config, error) {
 								cfg := cmd.String("config")
 								if cfg == "" {
@@ -45,6 +57,11 @@ func main() {
 						database.Module,
 						sessions.Module,
 						analytics.Module,
+						telemetry.Module,
+						health.Module,
+						circuitbreaker.Module,
+						redispool.Module,
+						kafkapool.Module,
 						plugins.Module,
 
 						// repos
