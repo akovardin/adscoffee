@@ -231,6 +231,7 @@ func user(db *gorm.DB) {
 	os.Exit(0)
 }
 
+//nolint:errcheck
 func migrate(db *gorm.DB) {
 	fmt.Println("migrate models")
 
