@@ -113,7 +113,7 @@ func TestNative_Render_WithOneWinner(t *testing.T) {
 	assert.Equal(t, "Test Native Ad", item.Title)
 	assert.Equal(t, "This is a test native advertisement", item.Description)
 	assert.Equal(t, "https://example.com/click", item.Target)
-	assert.Equal(t, "https:/test/image.jpg", item.Image) // base URL is prepended
+	assert.Equal(t, "/test/image.jpg", item.Image) // base URL is prepended
 
 	// Check that trackers are empty arrays
 	assert.Empty(t, item.Impressions)
@@ -163,7 +163,7 @@ func TestNative_Render_WithMultipleWinners(t *testing.T) {
 	assert.Equal(t, "First Native Ad", item1.Title)
 	assert.Equal(t, "This is the first test native advertisement", item1.Description)
 	assert.Equal(t, "https://example.com/click1", item1.Target)
-	assert.Equal(t, "https:/test/image1.jpg", item1.Image)
+	assert.Equal(t, "/test/image1.jpg", item1.Image)
 
 	// Check that trackers are empty arrays
 	assert.Empty(t, item1.Impressions)
@@ -174,7 +174,7 @@ func TestNative_Render_WithMultipleWinners(t *testing.T) {
 	assert.Equal(t, "Second Native Ad", item2.Title)
 	assert.Equal(t, "This is the second test native advertisement", item2.Description)
 	assert.Equal(t, "https://example.com/click2", item2.Target)
-	assert.Equal(t, "https:/test/image2.jpg", item2.Image)
+	assert.Equal(t, "/test/image2.jpg", item2.Image)
 
 	// Check that trackers are empty arrays
 	assert.Empty(t, item2.Impressions)
@@ -217,7 +217,7 @@ func TestNative_Render_WithEmptyFields(t *testing.T) {
 	assert.Equal(t, "", item.Title)
 	assert.Equal(t, "", item.Description)
 	assert.Equal(t, "", item.Target)
-	assert.Equal(t, "https:", item.Image) // Just the protocol prefix
+	assert.Equal(t, "", item.Image) // Just the protocol prefix
 
 	// Check that trackers are empty arrays
 	assert.Empty(t, item.Impressions)

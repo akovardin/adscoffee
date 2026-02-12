@@ -26,8 +26,12 @@ func NewImage(data string) (Image, error) {
 }
 
 func (i Image) Full(cdn string) string {
-	if cdn == "" {
+	if cdn == "" && strings.HasPrefix(i.Url, "//") {
 		return "https:" + i.Url
+	}
+
+	if cdn == "" {
+		return i.Url
 	}
 
 	img := strings.ReplaceAll(i.Url, base, cdn)
