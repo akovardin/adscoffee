@@ -18,16 +18,7 @@ var Module = fx.Module(
 			fx.ParamTags(`group:"outputs.web.formats"`),
 		),
 
-		formats.NewBanner,
 		formats.NewNative,
-
-		fx.Annotate(
-			func(b *formats.Banner) plugins.Format {
-				return b
-			},
-			fx.As(new(plugins.Format)),
-			fx.ResultTags(`group:"outputs.web.formats"`),
-		),
 
 		fx.Annotate(
 			func(n *formats.Native) plugins.Format {
