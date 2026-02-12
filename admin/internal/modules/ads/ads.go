@@ -20,6 +20,8 @@ type Ads struct {
 	campaign   *builders.Campaign
 	advertiser *builders.Advertiser
 	network    *builders.Network
+	placement  *builders.Placement
+	unit       *builders.Unit
 }
 
 func New(
@@ -30,6 +32,8 @@ func New(
 	campaign *builders.Campaign,
 	advertiser *builders.Advertiser,
 	network *builders.Network,
+	placement *builders.Placement,
+	unit *builders.Unit,
 ) *Ads {
 	return &Ads{
 		logger:     logger,
@@ -39,6 +43,8 @@ func New(
 		campaign:   campaign,
 		advertiser: advertiser,
 		network:    network,
+		placement:  placement,
+		unit:       unit,
 	}
 }
 
@@ -62,8 +68,11 @@ func (m *Ads) Configure(b *presets.Builder) {
 	m.group.Configure(b)
 	m.banner.Configure(b)
 	m.network.Configure(b)
+	m.placement.Configure(b)
+	m.unit.Configure(b)
 }
 
+// TODO mowe to different command
 func (u *Ads) Migrate() {
 	err := u.db.AutoMigrate(
 		&models.Advertiser{},

@@ -15,5 +15,7 @@ var Module = fx.Module(
 		builders.NewCampaign,
 		builders.NewAdvertiser,
 		builders.NewNetwork,
+		builders.NewPlacement,
+		builders.NewUnit,
 	),
 )

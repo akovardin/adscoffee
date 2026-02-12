@@ -24,6 +24,7 @@ import (
 	"go.ads.coffee/platform/admin/internal/internat"
 	"go.ads.coffee/platform/admin/internal/logger"
 	"go.ads.coffee/platform/admin/internal/modules/ads"
+	amodels "go.ads.coffee/platform/admin/internal/modules/ads/models"
 	"go.ads.coffee/platform/admin/internal/modules/media"
 	"go.ads.coffee/platform/admin/internal/modules/users"
 	umodels "go.ads.coffee/platform/admin/internal/modules/users/models"
@@ -86,12 +87,6 @@ func main() {
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					fx.New(
 						fx.Provide(
-							func() prometheus.Registerer {
-								// default prometheus
-								return prometheus.DefaultRegisterer
-							},
-						),
-						fx.Provide(
 							func() (config.Config, error) {
 								cfg := cmd.String("config")
 								if cfg == "" {
@@ -112,6 +107,32 @@ func main() {
 
 						fx.Invoke(
 							user,
+						),
+					).Run()
+
+					return nil
+				},
+			},
+			{
+				Name:    "migrate",
+				Aliases: []string{"m"},
+				Action: func(ctx context.Context, cmd *cli.Command) error {
+					fx.New(
+						fx.Provide(
+							func() (config.Config, error) {
+								cfg := cmd.String("config")
+								if cfg == "" {
+									cfg = "admin/configs/config.yaml"
+								}
+
+								return config.New(cfg)
+							},
+						),
+						database.Module,
+						logger.Module,
+
+						fx.Invoke(
+							migrate,
 						),
 					).Run()
 
@@ -204,6 +225,15 @@ func user(db *gorm.DB) {
 	if err := db.Model(&u).Save(&u).Error; err != nil {
 		log.Fatal(err)
 	}
+
+	os.Exit(0)
+}
+
+func migrate(db *gorm.DB) {
+	fmt.Println("migrate models")
+
+	db.AutoMigrate(&amodels.Placement{})
+	db.AutoMigrate(&amodels.Unit{})
 
 	os.Exit(0)
 }
