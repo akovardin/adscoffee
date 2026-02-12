@@ -194,6 +194,8 @@ func configure(
 		"media-library",
 		"users",
 		"separator",
+		"placement",
+		"units",
 		"networks",
 	)
 
