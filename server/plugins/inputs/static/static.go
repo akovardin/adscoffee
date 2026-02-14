@@ -36,10 +36,18 @@ type Analytics interface {
 	LogClick(ctx context.Context, data ads.TrackerInfo) error
 }
 
+type Cache interface {
+	One(ctx context.Context, id string) (ads.Banner, bool)
+}
+
+type Session interface {
+	LoadWithExpire(r *http.Request) (sessions.Session, bool)
+}
+
 type Static struct {
 	logger    *zap.Logger
-	cache     *banners.Cache
-	sessions  *sessions.Sessions
+	cache     Cache
+	sessions  Session
 	analytics Analytics
 }
 
