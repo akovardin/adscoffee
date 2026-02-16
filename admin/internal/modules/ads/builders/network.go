@@ -21,7 +21,7 @@ func NewNetwork(logger *zap.Logger, db *gorm.DB) *Network {
 	}
 }
 
-func (n *Network) Configure(b *presets.Builder) {
+func (n *Network) Configure(b *presets.Builder) *presets.ModelBuilder {
 	mn := b.Model(&models.Network{}).
 		MenuIcon("mdi-lan").
 		// Label("Рекламодатели").
@@ -39,4 +39,6 @@ func (n *Network) Configure(b *presets.Builder) {
 		}
 		return
 	})
+
+	return mn
 }

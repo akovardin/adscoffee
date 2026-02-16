@@ -38,7 +38,7 @@ const (
 	unarchiveGroupEvent = "unarchiveGroup"
 )
 
-func (m *Group) Configure(b *presets.Builder) {
+func (m *Group) Configure(b *presets.Builder) *presets.ModelBuilder {
 	mg := b.Model(&models.Bgroup{}).
 		MenuIcon("mdi-lightbulb-group").
 		// Label("Группы").
@@ -319,6 +319,8 @@ func (m *Group) Configure(b *presets.Builder) {
 	mge.Field("Capping").
 		ComponentFunc(capping.Component).
 		SetterFunc(capping.Setter)
+
+	return mg
 }
 
 // Функция для копирования группы

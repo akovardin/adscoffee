@@ -37,7 +37,7 @@ const (
 	unarchiveCampaignEvent = "unarchiveCampaign"
 )
 
-func (m *Campaign) Configure(b *presets.Builder) {
+func (m *Campaign) Configure(b *presets.Builder) *presets.ModelBuilder {
 	mc := b.Model(&models.Campaign{}).
 		MenuIcon("mdi-bullseye-arrow").
 		// Label("Кампании").
@@ -316,6 +316,8 @@ func (m *Campaign) Configure(b *presets.Builder) {
 	mce.Field("Capping").
 		ComponentFunc(capping.Component).
 		SetterFunc(capping.Setter)
+
+	return mc
 }
 
 func (m *Campaign) copyCampaign(ctx *web.EventContext) (r web.EventResponse, err error) {

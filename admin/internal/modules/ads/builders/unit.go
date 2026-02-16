@@ -21,7 +21,7 @@ func NewUnit(logger *zap.Logger, db *gorm.DB) *Unit {
 	}
 }
 
-func (n *Unit) Configure(b *presets.Builder) {
+func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 	mn := b.Model(&models.Unit{}).
 		MenuIcon("mdi-lan").
 		// Label("Рекламодатели").
@@ -37,4 +37,6 @@ func (n *Unit) Configure(b *presets.Builder) {
 		}
 		return
 	})
+
+	return mn
 }
