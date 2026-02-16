@@ -76,3 +76,10 @@ Caffeine is more than just a tool. It is an attempt to make the advertising ecos
 ```
 go run admin/cmd/admin/main.go u
 ```
+
+## Start in Docker
+
+Где смотреть панели управления
+
+- Dagu - http://localhost:8088/
+- KafkaUI - http://localhost:8090/

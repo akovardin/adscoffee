@@ -10,3 +10,5 @@ admin/configs/dev.yaml
 server/configs/prod.yaml
 server/configs/dev.yaml
 Taskfile.prod.yml
+analytics/dagu/data
+analytics/dagu/suspend
