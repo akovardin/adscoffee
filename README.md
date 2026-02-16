@@ -61,7 +61,7 @@ Integration Clients (SDK / Libraries):
 
 - [x] Plugin System
 - [x] Admin Panel for Ad Configuration
-- [ ] Ad Selection Server
+- [x] Ad Selection Server
 - [ ] Analytics and Statistics Display
 - [ ] Client for Displaying Ads in Applications
 - [ ] Client for Displaying Ads on Websites
@@ -70,6 +70,50 @@ Integration Clients (SDK / Libraries):
 Caffeine is more than just a tool. It is an attempt to make the advertising ecosystem healthier, more open, and more beneficial for those who create real value on the internet.
 
 ## Install
+
+Для начала нужно установит все зависимости. Они описаны в docker-compose.yml и их можно запстить командой task docker-up 
+
+```sh
+task docker-up
+```
+
+После этого можно запускать необзодимые сервисы платформы. 
+
+Запуск админки
+
+```json
+ {
+    "name": "admin-dev",
+    "type": "go",
+    "request": "launch",
+    "mode": "auto",
+    "program": "admin/cmd/admin",
+    "cwd": "${workspaceFolder}",
+    "args": [
+        "serve",
+        "-config=admin/configs/dev.yaml"
+    ]
+}
+
+```
+
+Запуск рекламного сервера
+
+```json
+{
+    "name": "server-dev",
+    "type": "go",
+    "request": "launch",
+    "mode": "auto",
+    "program": "server/cmd/server",
+    "cwd": "${workspaceFolder}",
+    "args": [
+        "serve",
+        "-config=server/configs/dev.yaml"
+    ]
+},
+```
+
 
 Как добавить нового пользователя в админку? Для этого нужно запустить команду:
 
