@@ -37,16 +37,15 @@ func (s *Server) Serve() error {
 
 	mux := http.NewServeMux()
 	mux.Handle("/", s.pb)
-	// mux.Handle("/duAction1", http.HandlerFunc() func(w http.ResponseWriter, r *http.Request) {
-
-	// })
 
 	s.lb.Mount(mux)
 
-	http.Handle("/", s.lb.Middleware()(mux))
-	// http.Handle("/", mux)
+	handler := s.lb.Middleware()(mux)
 
-	s.srv = &http.Server{Addr: s.config.Port}
+	s.srv = &http.Server{
+		Addr:    s.config.Port,
+		Handler: handler,
+	}
 
 	ln, err := net.Listen("tcp", s.srv.Addr)
 	if err != nil {
@@ -54,7 +53,7 @@ func (s *Server) Serve() error {
 	}
 
 	go func() {
-		if err := s.srv.Serve(ln); err != nil {
+		if err := s.srv.Serve(ln); err != nil && err != http.ErrServerClosed {
 			s.logger.Error("app server", zap.Error(err))
 		}
 	}()
