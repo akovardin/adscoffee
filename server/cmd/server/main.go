@@ -107,6 +107,7 @@ func start(lc fx.Lifecycle, server *server.Server) {
 	})
 }
 
-func caches(banners *banners.Cache) {
+func caches(banners *banners.Cache, placements *placements.Cache) {
 	go banners.Start(context.Background())
+	go placements.Start(context.Background())
 }

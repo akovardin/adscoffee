@@ -10,9 +10,13 @@ import (
 	"go.ads.coffee/platform/server/internal/domain/ads"
 )
 
+type Banners interface {
+	All(ctx context.Context) ([]ads.Banner, error)
+}
+
 type Cache struct {
 	logger *zap.Logger
-	repo   *Repo
+	repo   Banners
 
 	lock        sync.RWMutex
 	banners     []ads.Banner
