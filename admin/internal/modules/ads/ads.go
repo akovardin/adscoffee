@@ -81,6 +81,8 @@ func (u *Ads) Migrate() {
 		&models.Bgroup{},
 		&models.Audience{},
 		&models.Network{},
+		&models.Unit{},
+		&models.Placement{},
 	)
 	if err != nil {
 		panic(err)

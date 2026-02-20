@@ -24,7 +24,6 @@ import (
 	"go.ads.coffee/platform/admin/internal/internat"
 	"go.ads.coffee/platform/admin/internal/logger"
 	"go.ads.coffee/platform/admin/internal/modules/ads"
-	amodels "go.ads.coffee/platform/admin/internal/modules/ads/models"
 	"go.ads.coffee/platform/admin/internal/modules/media"
 	"go.ads.coffee/platform/admin/internal/modules/users"
 	umodels "go.ads.coffee/platform/admin/internal/modules/users/models"
@@ -232,11 +231,11 @@ func user(db *gorm.DB) {
 }
 
 //nolint:errcheck
-func migrate(db *gorm.DB) {
+func migrate(ads *ads.Ads, users *users.Users) {
 	fmt.Println("migrate models")
 
-	db.AutoMigrate(&amodels.Placement{})
-	db.AutoMigrate(&amodels.Unit{})
+	ads.Migrate()
+	users.Migrate()
 
 	os.Exit(0)
 }

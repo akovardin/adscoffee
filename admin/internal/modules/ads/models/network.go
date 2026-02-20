@@ -7,4 +7,5 @@ type Network struct {
 
 	Title string
 	Name  string
+	Data  string
 }

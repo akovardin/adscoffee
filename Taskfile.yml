@@ -4,7 +4,7 @@ version: '3'
 
 vars:
   PG_CONNECT: user=admin password=123 dbname=admin_dev host=localhost port=6432 sslmode=disable
-  
+
 tasks:  
   gitpush:
     cmds:
@@ -44,3 +44,8 @@ tasks:
   migration-down:
     cmds:
       - goose -dir ./migrations/postgres postgres  "{{.PG_CONNECT}}" down
+
+
+  build:
+    cmds:
+      - uc build -f services-compose.yaml
