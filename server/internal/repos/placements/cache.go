@@ -9,9 +9,13 @@ import (
 	"go.uber.org/zap"
 )
 
+type Placements interface {
+	All(ctx context.Context) ([]ads.Placement, error)
+}
+
 type Cache struct {
 	logger *zap.Logger
-	repo   *Repo
+	repo   Placements
 
 	lock          sync.RWMutex
 	placements    []ads.Placement
