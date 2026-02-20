@@ -5,7 +5,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 
 ADD . /app
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -v -o /server ./cmd/server
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -v -o /server .server/cmd/server
 
 # Tests
 FROM build-stage AS run-test-stage

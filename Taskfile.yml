@@ -4,7 +4,7 @@ version: '3'
 
 vars:
   PG_CONNECT: user=admin password=123 dbname=admin_dev host=localhost port=6432 sslmode=disable
-
+  
 tasks:  
   gitpush:
     cmds:
@@ -19,11 +19,7 @@ tasks:
 
   lint:
     cmds:
-      - golangci-lint run
-
-  qor-install:
-    cmds:
-      - go install github.com/qor5/admin/v3/cmd/qor5@latest
+      - golangci-lint run ./...
 
   docker-up:
     cmds:

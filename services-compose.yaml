@@ -1,0 +1,4 @@
+services:
+  platform-server:
+    build:
+      dockerfile: Dockerfile.server
