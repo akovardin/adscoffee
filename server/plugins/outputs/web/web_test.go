@@ -227,7 +227,7 @@ func TestWeb_Do_WithWinners_AnalyticsCalled(t *testing.T) {
 	mockResponseWriter.On("Write", mock.Anything).Return(len(responseData), nil)
 
 	winnerBanner := ads.Banner{
-		ID:    "1",
+		ID:    1,
 		Title: "Test Banner",
 		Price: 100,
 	}

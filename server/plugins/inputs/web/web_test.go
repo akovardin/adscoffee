@@ -104,7 +104,7 @@ func TestWeb_Do(t *testing.T) {
 
 	// Проверяем, что placement содержит единицу рекламы
 	assert.Len(t, state.Placement.Units, 1)
-	assert.Equal(t, "yandex-1", state.Placement.Units[0].ID)
+	assert.Equal(t, uint(0), state.Placement.Units[0].ID)
 	assert.Equal(t, "yandex", state.Placement.Units[0].Network)
 	assert.Equal(t, 10, state.Placement.Units[0].Price)
 	assert.Equal(t, "banner", state.Placement.Units[0].Format)

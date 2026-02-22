@@ -129,7 +129,7 @@ func TestStatic_Do_SessionStartError(t *testing.T) {
 
 	// Create a test banner
 	banner := ads.Banner{
-		ID: "test-banner-id",
+		ID: 1,
 	}
 
 	state := &plugins.State{
@@ -139,7 +139,7 @@ func TestStatic_Do_SessionStartError(t *testing.T) {
 	}
 
 	// Set up mock expectations
-	mockSession.On("Start", req, "test-banner-id").Return(fmt.Errorf("session error"))
+	mockSession.On("Start", req, "1").Return(fmt.Errorf("session error"))
 
 	err := static.Do(context.Background(), state)
 	assert.Error(t, err)
@@ -172,7 +172,7 @@ func TestStatic_Do_Success(t *testing.T) {
 
 	// Create a test banner
 	banner := ads.Banner{
-		ID: "test-banner-id",
+		ID: 1,
 	}
 
 	state := &plugins.State{
@@ -182,7 +182,7 @@ func TestStatic_Do_Success(t *testing.T) {
 	}
 
 	// Set up mock expectations
-	mockSession.On("Start", req, "test-banner-id").Return(nil)
+	mockSession.On("Start", req, "1").Return(nil)
 	mockAnalytics.On("LogImpression", mock.Anything, ads.TrackerInfo{}).Return(nil)
 	mockBanner.On("Banner", mock.Anything, "http://example.com", banner, rr).Return(nil)
 

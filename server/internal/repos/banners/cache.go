@@ -20,14 +20,14 @@ type Cache struct {
 
 	lock        sync.RWMutex
 	banners     []ads.Banner
-	bannersById map[string]ads.Banner
+	bannersById map[uint]ads.Banner
 }
 
 func NewCache(logger *zap.Logger, repo *Repo) *Cache {
 	return &Cache{
 		logger:      logger,
 		repo:        repo,
-		bannersById: map[string]ads.Banner{},
+		bannersById: map[uint]ads.Banner{},
 	}
 }
 
@@ -41,7 +41,7 @@ func (c *Cache) All(ctx context.Context) []ads.Banner {
 	return banners
 }
 
-func (c *Cache) One(ctx context.Context, id string) (ads.Banner, bool) {
+func (c *Cache) One(ctx context.Context, id uint) (ads.Banner, bool) {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 

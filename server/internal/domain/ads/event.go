@@ -7,7 +7,7 @@ type Event struct {
 	Action       string  `json:"action"`
 	RequestID    string  `json:"request_id"`
 	ClickID      string  `json:"click_id"`
-	BannerID     string  `json:"banner_id"`
+	BannerID     uint    `json:"banner_id"`
 	GroupID      string  `json:"group_id"`
 	CampaignID   string  `json:"campaign_id"`
 	AdvertiserID string  `json:"advertiser_id"`

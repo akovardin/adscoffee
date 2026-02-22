@@ -57,13 +57,13 @@ func TestBanners_Copy(t *testing.T) {
 func TestBanners_Do(t *testing.T) {
 	testBanners := []ads.Banner{
 		{
-			ID:     "1",
+			ID:     1,
 			Title:  "Test Banner 1",
 			Price:  100,
 			Active: true,
 		},
 		{
-			ID:     "2",
+			ID:     2,
 			Title:  "Test Banner 2",
 			Price:  200,
 			Active: false,

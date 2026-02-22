@@ -13,7 +13,8 @@ const (
 )
 
 type Banner struct {
-	ID     string
+	ID uint
+
 	Title  string
 	Price  int
 	Active bool

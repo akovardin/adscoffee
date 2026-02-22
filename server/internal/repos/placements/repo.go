@@ -2,6 +2,7 @@ package placements
 
 import (
 	"context"
+	"time"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -24,5 +25,14 @@ func NewRepo(logger *zap.Logger, db *gorm.DB) *Repo {
 }
 
 func (b *Repo) All(ctx context.Context) ([]ads.Placement, error) {
-	return nil, nil
+	rows := []ads.Placement{}
+
+	err := b.db.Model(ads.Placement{}).
+		Where("deleted_at is not nil and start > ? and end < ? and active = true", time.Now()).
+		Find(&rows).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return rows, nil
 }

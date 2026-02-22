@@ -109,7 +109,7 @@ where
 	for _, row := range rows {
 		banner, err := toModel(row)
 		if err != nil {
-			b.logger.Warn("error on convert row to model", zap.Error(err), zap.String("id", row.ID))
+			b.logger.Warn("error on convert row to model", zap.Error(err), zap.Uint("id", row.ID))
 
 			continue
 		}

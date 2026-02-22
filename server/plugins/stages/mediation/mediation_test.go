@@ -40,7 +40,7 @@ func TestMediation_Do(t *testing.T) {
 				ID: "test-placement",
 				Units: []ads.Unit{
 					{
-						ID:      "1",
+						ID:      1,
 						Title:   "Test Unit",
 						Price:   100,
 						Network: "test-network",
@@ -53,7 +53,7 @@ func TestMediation_Do(t *testing.T) {
 		err := mediation.Do(ctx, state)
 		assert.NoError(t, err)
 		assert.Len(t, state.Winners, 1)
-		assert.Equal(t, "1", state.Winners[0].ID)
+		assert.Equal(t, uint(1), state.Winners[0].ID)
 		assert.Equal(t, "Test Unit", state.Winners[0].Title)
 		assert.Equal(t, 100, state.Winners[0].Price)
 		assert.Equal(t, ads.CreativeTypeMediator, state.Winners[0].Type)
@@ -68,13 +68,13 @@ func TestMediation_Do(t *testing.T) {
 				ID: "test-placement",
 				Units: []ads.Unit{
 					{
-						ID:      "1",
+						ID:      1,
 						Title:   "Unit 1",
 						Price:   100,
 						Network: "network-1",
 					},
 					{
-						ID:      "2",
+						ID:      2,
 						Title:   "Unit 2",
 						Price:   200,
 						Network: "network-2",
@@ -87,7 +87,7 @@ func TestMediation_Do(t *testing.T) {
 		err := mediation.Do(ctx, state)
 		assert.NoError(t, err)
 		assert.Len(t, state.Winners, 1)
-		assert.Contains(t, []string{"1", "2"}, state.Winners[0].ID)
+		assert.Contains(t, []uint{1, 2}, state.Winners[0].ID)
 	})
 
 	t.Run("no units", func(t *testing.T) {
@@ -104,7 +104,7 @@ func TestMediation_Do(t *testing.T) {
 		// the rotate function returns ok=false, but the Do method
 		// still sets state.Winners to a slice with an empty banner
 		assert.Len(t, state.Winners, 1)
-		assert.Equal(t, "", state.Winners[0].ID)
+		assert.Equal(t, uint(0), state.Winners[0].ID)
 	})
 
 	t.Run("existing winners", func(t *testing.T) {
@@ -115,7 +115,7 @@ func TestMediation_Do(t *testing.T) {
 				ID: "test-placement",
 				Units: []ads.Unit{
 					{
-						ID:      "1",
+						ID:      1,
 						Title:   "Test Unit",
 						Price:   100,
 						Network: "test-network",
@@ -124,7 +124,7 @@ func TestMediation_Do(t *testing.T) {
 			},
 			Winners: []ads.Banner{
 				{
-					ID:    "existing",
+					ID:    2,
 					Title: "Existing Banner",
 					Price: 50,
 				},
@@ -135,7 +135,7 @@ func TestMediation_Do(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Len(t, state.Winners, 1)
 		// Should select from both existing winners and placement units
-		assert.Contains(t, []string{"existing", "1"}, state.Winners[0].ID)
+		assert.Contains(t, []uint{2, 1}, state.Winners[0].ID)
 	})
 
 	t.Run("no existing winners and no units", func(t *testing.T) {
@@ -152,7 +152,7 @@ func TestMediation_Do(t *testing.T) {
 		// the rotate function returns ok=false, but the Do method
 		// still sets state.Winners to a slice with an empty banner
 		assert.Len(t, state.Winners, 1)
-		assert.Equal(t, "", state.Winners[0].ID)
+		assert.Equal(t, uint(0), state.Winners[0].ID)
 	})
 }
 
@@ -169,7 +169,7 @@ func TestMediation_rotate(t *testing.T) {
 	t.Run("single candidate", func(t *testing.T) {
 		candidates := []ads.Banner{
 			{
-				ID:    "1",
+				ID:    1,
 				Title: "Test Banner",
 				Price: 100,
 			},
@@ -184,23 +184,23 @@ func TestMediation_rotate(t *testing.T) {
 	t.Run("multiple candidates with different prices", func(t *testing.T) {
 		candidates := []ads.Banner{
 			{
-				ID:    "1",
+				ID:    1,
 				Title: "Banner 1",
 				Price: 100,
 			},
 			{
-				ID:    "2",
+				ID:    2,
 				Title: "Banner 2",
 				Price: 200,
 			},
 			{
-				ID:    "3",
+				ID:    3,
 				Title: "Banner 3",
 				Price: 300,
 			},
 		}
 
-		results := make(map[string]int)
+		results := make(map[uint]int)
 		for i := 0; i < 1000; i++ {
 			banner, ok, err := m.rotate(candidates)
 			assert.NoError(t, err)
@@ -211,19 +211,19 @@ func TestMediation_rotate(t *testing.T) {
 		assert.Len(t, results, 3)
 
 		// Higher price banners should be selected more often
-		assert.Greater(t, results["3"], results["2"])
-		assert.Greater(t, results["2"], results["1"])
+		assert.Greater(t, results[3], results[2])
+		assert.Greater(t, results[2], results[1])
 	})
 
 	t.Run("candidates with zero price", func(t *testing.T) {
 		candidates := []ads.Banner{
 			{
-				ID:    "1",
+				ID:    1,
 				Title: "Banner 1",
 				Price: 0,
 			},
 			{
-				ID:    "2",
+				ID:    2,
 				Title: "Banner 2",
 				Price: 100,
 			},
@@ -234,7 +234,7 @@ func TestMediation_rotate(t *testing.T) {
 			banner, ok, err := m.rotate(candidates)
 			assert.NoError(t, err)
 			assert.True(t, ok)
-			if banner.ID == "1" {
+			if banner.ID == 1 {
 				zeroCount++
 			}
 		}
@@ -246,12 +246,12 @@ func TestMediation_rotate(t *testing.T) {
 	t.Run("all candidates with zero price", func(t *testing.T) {
 		candidates := []ads.Banner{
 			{
-				ID:    "1",
+				ID:    1,
 				Title: "Banner 1",
 				Price: 0,
 			},
 			{
-				ID:    "2",
+				ID:    2,
 				Title: "Banner 2",
 				Price: 0,
 			},
@@ -266,23 +266,23 @@ func TestMediation_rotate(t *testing.T) {
 	t.Run("candidates with equal prices", func(t *testing.T) {
 		candidates := []ads.Banner{
 			{
-				ID:    "1",
+				ID:    1,
 				Title: "Banner 1",
 				Price: 100,
 			},
 			{
-				ID:    "2",
+				ID:    2,
 				Title: "Banner 2",
 				Price: 100,
 			},
 			{
-				ID:    "3",
+				ID:    3,
 				Title: "Banner 3",
 				Price: 100,
 			},
 		}
 
-		results := make(map[string]int)
+		results := make(map[uint]int)
 		for i := 0; i < 1000; i++ {
 			banner, ok, err := m.rotate(candidates)
 			assert.NoError(t, err)
@@ -291,8 +291,8 @@ func TestMediation_rotate(t *testing.T) {
 		}
 
 		// All banners should be selected approximately equally
-		assert.InDelta(t, results["1"], results["2"], 100)
-		assert.InDelta(t, results["2"], results["3"], 100)
-		assert.InDelta(t, results["1"], results["3"], 100)
+		assert.InDelta(t, results[1], results[2], 100)
+		assert.InDelta(t, results[2], results[3], 100)
+		assert.InDelta(t, results[1], results[3], 100)
 	})
 }

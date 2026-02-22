@@ -1,7 +1,8 @@
 package ads
 
 type Unit struct {
-	ID      string
+	ID uint
+
 	Title   string
 	Network string
 	Price   int

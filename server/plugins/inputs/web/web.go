@@ -61,7 +61,6 @@ func (s *Web) Do(ctx context.Context, state *plugins.State) bool {
 		ID: placement,
 		Units: []ads.Unit{
 			{
-				ID:      "yandex-1",
 				Network: "yandex",
 				Price:   10,
 				Format:  "banner",

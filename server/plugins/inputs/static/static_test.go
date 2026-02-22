@@ -21,7 +21,7 @@ type MockCache struct {
 	mock.Mock
 }
 
-func (m *MockCache) One(ctx context.Context, id string) (ads.Banner, bool) {
+func (m *MockCache) One(ctx context.Context, id uint) (ads.Banner, bool) {
 	args := m.Called(ctx, id)
 	banner, _ := args.Get(0).(ads.Banner)
 	return banner, args.Bool(1)
@@ -176,7 +176,7 @@ func TestStatic_Do_ViewAction(t *testing.T) {
 
 	// Check that placement contains one ad unit
 	assert.Len(t, state.Placement.Units, 1)
-	assert.Equal(t, "yandex-1", state.Placement.Units[0].ID)
+	assert.Equal(t, uint(1), state.Placement.Units[0].ID)
 	assert.Equal(t, "yandex", state.Placement.Units[0].Network)
 	assert.Equal(t, 10, state.Placement.Units[0].Price)
 	assert.Equal(t, "banner", state.Placement.Units[0].Format)
@@ -278,11 +278,11 @@ func TestStatic_Do_ClickAction_BannerNotFound(t *testing.T) {
 
 	// Set up mock expectations
 	reqForMock := req.Clone(ctx)
-	sess := sessions.Session{Value: "banner-id"}
+	sess := sessions.Session{Value: "1"}
 	session.On("LoadWithExpire", mock.MatchedBy(func(r *http.Request) bool {
 		return r.URL == reqForMock.URL
 	})).Return(sess, true)
-	cache.On("One", ctx, "banner-id").Return(ads.Banner{}, false)
+	cache.On("One", ctx, uint(1)).Return(ads.Banner{}, false)
 
 	// Call the function under test
 	result := static.Do(ctx, state)
@@ -334,12 +334,12 @@ func TestStatic_Do_ClickAction_Success(t *testing.T) {
 
 	// Set up mock expectations
 	reqForMock := req.Clone(ctx)
-	sess := sessions.Session{Value: "banner-id"}
+	sess := sessions.Session{Value: "1"}
 	banner := ads.Banner{Target: "https://example.com/target"}
 	session.On("LoadWithExpire", mock.MatchedBy(func(r *http.Request) bool {
 		return r.URL == reqForMock.URL
 	})).Return(sess, true)
-	cache.On("One", ctx, "banner-id").Return(banner, true)
+	cache.On("One", ctx, uint(1)).Return(banner, true)
 	analytics.On("LogClick", ctx, ads.TrackerInfo{}).Return(nil)
 
 	// Call the function under test

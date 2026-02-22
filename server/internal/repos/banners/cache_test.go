@@ -30,13 +30,13 @@ func TestCacheAll(t *testing.T) {
 	cache := &Cache{
 		logger:      logger,
 		banners:     []ads.Banner{},
-		bannersById: map[string]ads.Banner{},
+		bannersById: map[uint]ads.Banner{},
 	}
 
 	// Add some test data
 	banners := []ads.Banner{
-		{ID: "1", Title: "Banner 1"},
-		{ID: "2", Title: "Banner 2"},
+		{ID: 1, Title: "Banner 1"},
+		{ID: 2, Title: "Banner 2"},
 	}
 
 	cache.lock.Lock()
@@ -61,24 +61,24 @@ func TestCacheOne(t *testing.T) {
 	cache := &Cache{
 		logger:      logger,
 		banners:     []ads.Banner{},
-		bannersById: map[string]ads.Banner{},
+		bannersById: map[uint]ads.Banner{},
 	}
 
 	// Add some test data
-	banner := ads.Banner{ID: "1", Title: "Test Banner"}
+	banner := ads.Banner{ID: 1, Title: "Test Banner"}
 	cache.lock.Lock()
-	cache.bannersById["1"] = banner
+	cache.bannersById[1] = banner
 	cache.lock.Unlock()
 
 	// Test the One method with existing banner
-	result, ok := cache.One(context.Background(), "1")
+	result, ok := cache.One(context.Background(), 1)
 
 	// Check that the result is correct
 	assert.True(t, ok)
 	assert.Equal(t, "Test Banner", result.Title)
 
 	// Test the One method with non-existing banner
-	_, ok = cache.One(context.Background(), "2")
+	_, ok = cache.One(context.Background(), 2)
 	assert.False(t, ok)
 }
 
@@ -92,13 +92,13 @@ func TestCacheReload(t *testing.T) {
 		logger:      logger,
 		repo:        repo,
 		banners:     []ads.Banner{},
-		bannersById: map[string]ads.Banner{},
+		bannersById: map[uint]ads.Banner{},
 	}
 
 	// Set up mock expectations
 	banners := []ads.Banner{
-		{ID: "1", Title: "Banner 1"},
-		{ID: "2", Title: "Banner 2"},
+		{ID: 1, Title: "Banner 1"},
+		{ID: 2, Title: "Banner 2"},
 	}
 	repo.On("All", mock.Anything).Return(banners, nil)
 
@@ -114,8 +114,8 @@ func TestCacheReload(t *testing.T) {
 	assert.Equal(t, "Banner 2", cache.banners[1].Title)
 
 	assert.Len(t, cache.bannersById, 2)
-	assert.Equal(t, "Banner 1", cache.bannersById["1"].Title)
-	assert.Equal(t, "Banner 2", cache.bannersById["2"].Title)
+	assert.Equal(t, "Banner 1", cache.bannersById[1].Title)
+	assert.Equal(t, "Banner 2", cache.bannersById[2].Title)
 
 	// Verify mock expectations
 	repo.AssertExpectations(t)
@@ -131,12 +131,12 @@ func TestCacheStart(t *testing.T) {
 		logger:      logger,
 		repo:        repo,
 		banners:     []ads.Banner{},
-		bannersById: map[string]ads.Banner{},
+		bannersById: map[uint]ads.Banner{},
 	}
 
 	// Set up mock expectations
 	banners := []ads.Banner{
-		{ID: "1", Title: "Banner 1"},
+		{ID: 1, Title: "Banner 1"},
 	}
 	repo.On("All", mock.Anything).Return(banners, nil)
 

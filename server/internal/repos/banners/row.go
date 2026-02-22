@@ -3,7 +3,7 @@ package banners
 import "time"
 
 type Row struct {
-	ID     string
+	ID     uint
 	Title  string
 	Price  int
 	Active bool

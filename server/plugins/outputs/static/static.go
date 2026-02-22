@@ -100,7 +100,7 @@ func (w *Static) Do(ctx context.Context, state *plugins.State) error {
 
 	banner := state.Winners[0]
 
-	if err := w.sessions.Start(state.Request, banner.ID); err != nil {
+	if err := w.sessions.Start(state.Request, fmt.Sprintf("%d", banner.ID)); err != nil {
 		return fmt.Errorf("error on start session: %w", err)
 	}
 

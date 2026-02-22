@@ -20,7 +20,7 @@ func TestRotattion_rotate(t *testing.T) {
 	t.Run("single candidate", func(t *testing.T) {
 		candidates := []ads.Banner{
 			{
-				ID:    "1",
+				ID:    1,
 				Title: "Test Banner",
 				Price: 100,
 			},
@@ -35,23 +35,23 @@ func TestRotattion_rotate(t *testing.T) {
 	t.Run("multiple candidates", func(t *testing.T) {
 		candidates := []ads.Banner{
 			{
-				ID:    "1",
+				ID:    1,
 				Title: "Banner 1",
 				Price: 100,
 			},
 			{
-				ID:    "2",
+				ID:    2,
 				Title: "Banner 2",
 				Price: 200,
 			},
 			{
-				ID:    "3",
+				ID:    3,
 				Title: "Banner 3",
 				Price: 300,
 			},
 		}
 
-		results := make(map[string]int)
+		results := make(map[uint]int)
 		for i := 0; i < 1000; i++ {
 			banner, ok, err := r.rotate(candidates)
 			assert.NoError(t, err)
@@ -61,19 +61,19 @@ func TestRotattion_rotate(t *testing.T) {
 
 		assert.Len(t, results, 3)
 
-		assert.Greater(t, results["3"], results["2"])
-		assert.Greater(t, results["2"], results["1"])
+		assert.Greater(t, results[3], results[2])
+		assert.Greater(t, results[2], results[1])
 	})
 
 	t.Run("candidates with zero price", func(t *testing.T) {
 		candidates := []ads.Banner{
 			{
-				ID:    "1",
+				ID:    1,
 				Title: "Banner 1",
 				Price: 0,
 			},
 			{
-				ID:    "2",
+				ID:    2,
 				Title: "Banner 2",
 				Price: 100,
 			},
@@ -84,7 +84,7 @@ func TestRotattion_rotate(t *testing.T) {
 			banner, ok, err := r.rotate(candidates)
 			assert.NoError(t, err)
 			assert.True(t, ok)
-			if banner.ID == "1" {
+			if banner.ID == 1 {
 				zeroCount++
 			}
 		}

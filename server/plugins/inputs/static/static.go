@@ -3,6 +3,7 @@ package static
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
@@ -37,7 +38,7 @@ type Analytics interface {
 }
 
 type Cache interface {
-	One(ctx context.Context, id string) (ads.Banner, bool)
+	One(ctx context.Context, id uint) (ads.Banner, bool)
 }
 
 type Session interface {
@@ -95,7 +96,7 @@ func (s *Static) Do(ctx context.Context, state *plugins.State) bool {
 		ID: placement,
 		Units: []ads.Unit{
 			{
-				ID:      "yandex-1",
+				ID:      1,
 				Network: "yandex",
 				Price:   10,
 				Format:  "banner",
@@ -115,7 +116,8 @@ func (s *Static) Do(ctx context.Context, state *plugins.State) bool {
 			return false
 		}
 
-		banner, ok := s.cache.One(ctx, session.Value)
+		id, _ := strconv.Atoi(session.Value)
+		banner, ok := s.cache.One(ctx, uint(id))
 		if !ok {
 			s.logger.Warn("error on load banner from cache")
 
