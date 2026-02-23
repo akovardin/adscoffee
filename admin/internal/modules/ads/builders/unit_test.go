@@ -43,7 +43,7 @@ func TestUnit_Configure(t *testing.T) {
 
 	// Check that the listing fields are set correctly
 	listing := modelBuilder.Listing()
-	assert.Equal(t, []interface{}{"Name", "NetworkID"}, listing.FieldNames())
+	assert.Equal(t, []interface{}{"Name", "NetworkID", "Active"}, listing.FieldNames())
 }
 
 func TestUnit_Validation(t *testing.T) {
