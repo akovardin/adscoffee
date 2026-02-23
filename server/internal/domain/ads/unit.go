@@ -7,4 +7,5 @@ type Unit struct {
 	Network string
 	Price   int
 	Format  string
+	Active  bool
 }

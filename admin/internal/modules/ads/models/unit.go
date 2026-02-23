@@ -6,8 +6,7 @@ type Unit struct {
 	gorm.Model
 
 	Name      string
-	
-
 	NetworkID int
 	Network   Network
+	Active    bool
 }

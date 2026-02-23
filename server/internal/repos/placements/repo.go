@@ -2,7 +2,6 @@ package placements
 
 import (
 	"context"
-	"time"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -28,7 +27,7 @@ func (b *Repo) All(ctx context.Context) ([]ads.Placement, error) {
 	rows := []ads.Placement{}
 
 	err := b.db.Model(ads.Placement{}).
-		Where("deleted_at is not nil and start > ? and end < ? and active = true", time.Now()).
+		Where("deleted_at is not null and active = true").
 		Find(&rows).Error
 	if err != nil {
 		return nil, err

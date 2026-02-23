@@ -66,16 +66,16 @@ func (c *Cache) Start(ctx context.Context) {
 }
 
 func (c *Cache) reload() {
-	banners, err := c.repo.All(context.Background())
+	placements, err := c.repo.All(context.Background())
 	if err != nil {
-		c.logger.Error("error on get banners from repo", zap.Error(err))
+		c.logger.Error("error on get placements from repo", zap.Error(err))
 
 		return
 	}
 
 	c.lock.Lock()
-	c.placements = banners
-	for _, banner := range banners {
+	c.placements = placements
+	for _, banner := range placements {
 		c.placementById[banner.ID] = banner
 	}
 	c.lock.Unlock()

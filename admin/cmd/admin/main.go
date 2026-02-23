@@ -129,6 +129,8 @@ func main() {
 						),
 						database.Module,
 						logger.Module,
+						ads.Module,
+						users.Module,
 
 						fx.Invoke(
 							migrate,

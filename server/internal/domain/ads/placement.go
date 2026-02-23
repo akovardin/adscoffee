@@ -8,5 +8,6 @@ import "gorm.io/gorm"
 type Placement struct {
 	gorm.Model
 
-	Units []Unit `gorm:"many2many:placement_units;"`
+	Active bool
+	Units  []Unit `gorm:"many2many:placement_units;"`
 }

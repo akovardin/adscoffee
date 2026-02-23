@@ -114,10 +114,16 @@ task docker-up
 },
 ```
 
+Запускаем миграции для создания таблиц в базе данных    
+
+```sh
+go run admin/cmd/admin/main.go -c ./admin/configs/dev.yaml m  
+```
+
 
 Как добавить нового пользователя в админку? Для этого нужно запустить команду:
 
-```
+```sh
 go run admin/cmd/admin/main.go u
 ```
 
