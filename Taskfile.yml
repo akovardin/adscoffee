@@ -3,6 +3,7 @@
 version: '3'
 
 vars:
+  SERVICE_GROUP: adscoffee
   PG_CONNECT: user=admin password=123 dbname=admin_dev host=localhost port=6432 sslmode=disable
 
 tasks:  
@@ -23,29 +24,45 @@ tasks:
 
   docker-up:
     cmds:
-      - docker-compose up -d
+      - docker-compose -f dev-compose.yaml up -d
 
   docker-down:
     cmds:
-      - docker-compose down
-
-  migration-status:
+      - docker-compose -f dev-compose.yaml down
+  
+  migrate:
     cmds:
-      - goose -dir ./migrations/postgres postgres "{{.PG_CONNECT}}" status
+      - go run admin/cmd/admin/main.go -c ./admin/configs/config.yaml m
 
-  migration-create:
+  docker-build-server:
     cmds:
-      - goose -dir ./migrations/postgres postgres  "{{.PG_CONNECT}}" create {{.MIGRATION_NAME}} sql
+      - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platfom-server:latest -f Dockerfile.server .
 
-  migration-up:
+  docker-publish-server:
     cmds:
-      - goose -dir ./migrations/postgres postgres  "{{.PG_CONNECT}}" up
+      - docker push registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platfom-server:latest
 
-  migration-down:
+  docker-run-server:
     cmds:
-      - goose -dir ./migrations/postgres postgres  "{{.PG_CONNECT}}" down
+     - docker run -p 8091:8081 -d registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platfom-server:latest serve -c=configs/dev.yaml
 
 
-  build:
+  docker-build-admin:
     cmds:
-      - uc build -f services-compose.yaml
+      - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platfom-admin:latest -f Dockerfile.server .
+
+  docker-publish-admin:
+    cmds:
+      - docker push registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platfom-admin:latest
+
+  docker-run-admin:
+    cmds:
+     - docker run -p 8091:8081 -d registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platfom-admin:latest serve -c=configs/dev.yaml
+
+  deploy:
+    cmds:
+      - task: docker-build-server
+      - task: docker-build-admin
+      - task: docker-publish-server
+      - task: docker-publish-admin
+      # - task: docker-serve

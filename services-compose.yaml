@@ -1,4 +1,45 @@
 services:
+  platform-redis:
+    image: redis/redis-stack-server:latest
+    ports: 
+      - 6379:6379
+
+  platform-kafka:
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka
+    ports:
+      - "19092:19092"
+      - "19093:19093"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_BROKER_ID: 1
+      # Изменено: теперь только один узел выполняет роль и брокера, и контроллера
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      # Изменено: только один voter (сам себя)
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@platform-kafka:19093'
+      KAFKA_LISTENERS: 'PLAINTEXT_INTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:19093,PLAINTEXT_EXTERNAL://0.0.0.0:19092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_INTERNAL://platform-kafka:9092,PLAINTEXT_EXTERNAL://localhost:19092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT,PLAINTEXT_EXTERNAL:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT_INTERNAL'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+  
   platform-server:
-    build:
-      dockerfile: Dockerfile.server
+    image: registry.gitflic.ru/project/kovardin/adscoffee/platform-server:latest
+    command: [ "serve", "-c=configs/prod.yaml" ]
+    volumes:
+      - /opt/platfom/server/configs:/configs
+    ports: 
+      - 8081:8081
+
+  platform-admin:
+    image: registry.gitflic.ru/project/kovardin/adscoffee/platform-admin:latest
+    command: [ "serve", "-c=configs/prod.yaml" ]
+    volumes:
+      - /opt/platfom/admin/configs:/configs
+    ports: 
+      - 8082:8082

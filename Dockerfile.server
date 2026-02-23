@@ -17,10 +17,9 @@ ENV TZ="Europe/Moscow"
 WORKDIR /
 
 COPY --from=build-stage /server /server
-COPY configs/* /configs/
 RUN apt-get update
 RUN apt-get install -y ca-certificates
 
 EXPOSE 8081
 
-ENTRYPOINT [ "/server"]
+ENTRYPOINT ["/server"]
