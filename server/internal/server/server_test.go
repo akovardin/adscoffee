@@ -28,21 +28,23 @@ func TestNew(t *testing.T) {
 	mockMgr := &mockManager{}
 
 	server := &Server{
-		srv:     &http.Server{Addr: addr},
+		srv:     &http.Server{Addr: Config{Port: ":9090"}.Port},
 		manager: mockMgr,
 	}
 
 	assert.NotNil(t, server)
 	assert.Equal(t, mockMgr, server.manager)
 	assert.NotNil(t, server.srv)
-	assert.Equal(t, addr, server.srv.Addr)
+	assert.Equal(t, ":9090", server.srv.Addr)
 }
 
 func TestServer_StartSuccess(t *testing.T) {
 	mockMgr := &mockManager{}
 
+	cfg := Config{Port: ":9090"}
 	server := &Server{
-		srv:     &http.Server{Addr: addr},
+		config:  cfg,
+		srv:     &http.Server{Addr: cfg.Port},
 		manager: mockMgr,
 	}
 
@@ -55,7 +57,7 @@ func TestServer_StartSuccess(t *testing.T) {
 
 	time.Sleep(100 * time.Millisecond)
 
-	conn, err := net.DialTimeout("tcp", addr, time.Second)
+	conn, err := net.DialTimeout("tcp", ":9090", time.Second)
 	assert.NoError(t, err)
 	err = conn.Close()
 	assert.NoError(t, err)
@@ -75,8 +77,10 @@ func TestServer_Shutdown(t *testing.T) {
 
 	mockMgr := &mockManager{}
 
+	cfg := Config{Port: ":9090"}
 	server := &Server{
-		srv:     &http.Server{Addr: addr},
+		config:  cfg,
+		srv:     &http.Server{Addr: cfg.Port},
 		manager: mockMgr,
 	}
 
@@ -101,8 +105,10 @@ func TestServer_Integration(t *testing.T) {
 
 	mockMgr := &mockManager{}
 
+	cfg := Config{Port: ":9090"}
 	server := &Server{
-		srv:     &http.Server{Addr: addr},
+		config:  cfg,
+		srv:     &http.Server{Addr: cfg.Port},
 		manager: mockMgr,
 	}
 
@@ -112,7 +118,7 @@ func TestServer_Integration(t *testing.T) {
 
 	time.Sleep(100 * time.Millisecond)
 
-	resp, err := http.Get("http://localhost" + addr)
+	resp, err := http.Get("http://localhost:9090")
 	if err == nil {
 		resp.Body.Close()
 	}

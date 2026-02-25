@@ -48,10 +48,7 @@ tasks:
     cmds:
      - docker run -p 8091:8081 -d -v /opt/platform/server/configs:/configs registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-server:latest serve -c=configs/dev.yaml
 
-  configs-server:
-    cmds:
-      - scp ./server/configs/prod.yaml {{ .SERVER }}:/opt/platform/server/configs/prod.yaml
-
+  
   docker-build-admin:
     cmds:
       - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:latest -f Dockerfile.admin .
@@ -75,6 +72,10 @@ tasks:
       - sup {{ .NETWORK }} docker-pull-server
       - sup {{ .NETWORK }} docker-stop-server
       - sup {{ .NETWORK }} docker-start-server
+
+  configs-server:
+    cmds:
+      - scp ./server/configs/prod.yaml {{ .SERVER }}:/opt/platform/server/configs/prod.yaml
 
 
   configs-admin:

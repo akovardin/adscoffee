@@ -13,6 +13,7 @@ import (
 	"go.ads.coffee/platform/pkg/redispool"
 	"go.ads.coffee/platform/pkg/telemetry"
 	"go.ads.coffee/platform/server/internal/pipeline"
+	"go.ads.coffee/platform/server/internal/server"
 )
 
 type Config struct {
@@ -20,6 +21,7 @@ type Config struct {
 
 	Pipelines []pipeline.Config `yaml:"pipelines"`
 
+	Server         server.Config                     `yaml:"server"`
 	Health         health.Config                     `yaml:"health"`
 	CircuitBreaker map[string]*circuitbreaker.Config `yaml:"circuit-breaker"`
 	RedisPool      map[string]*redispool.Config      `yaml:"redis-pool"`

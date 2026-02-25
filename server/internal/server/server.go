@@ -11,20 +11,20 @@ import (
 	"go.ads.coffee/platform/server/internal/pipeline"
 )
 
-const addr = ":9090"
-
 type Manager interface {
 	Mount(router *chi.Mux)
 }
 
 type Server struct {
+	config  Config
 	srv     *http.Server
 	manager Manager
 }
 
-func New(manager *pipeline.Manager) *Server {
+func New(config Config, manager *pipeline.Manager) *Server {
 	return &Server{
-		srv:     &http.Server{Addr: addr},
+		config:  config,
+		srv:     &http.Server{Addr: config.Port},
 		manager: manager,
 	}
 }
@@ -36,12 +36,12 @@ func (s *Server) Start(ctx context.Context) error {
 
 	http.Handle("/", router)
 
-	ln, err := net.Listen("tcp", addr)
+	ln, err := net.Listen("tcp", s.config.Port)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Served at http://localhost" + addr)
+	fmt.Println("Served at http://localhost" + s.config.Port)
 
 	go func() {
 		if err := s.srv.Serve(ln); err != nil {

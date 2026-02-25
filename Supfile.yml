@@ -14,7 +14,7 @@ commands:
     run: docker stop platform-server || true && docker rm platform-server || true
 
   docker-start-server:
-    run: docker run -p 8071:8081 --name platform-server -d -v /opt/platform/server/configs:/configs registry.gitflic.ru/project/kovardin/adscoffee/platform-server:latest serve -c=/configs/prod.yaml
+    run: docker run -p 8071:8081 --network platform_default --name platform-server -d -v /opt/platform/server/configs:/configs registry.gitflic.ru/project/kovardin/adscoffee/platform-server:latest serve -c=/configs/prod.yaml
 
 
   docker-pull-admin:
@@ -24,7 +24,7 @@ commands:
     run: docker stop platform-admin || true && docker rm platform-admin || true
 
   docker-start-admin:
-    run: docker run -p 8072:8082 --name platform-admin -d -v /opt/platform/admin/configs:/configs registry.gitflic.ru/project/kovardin/adscoffee/platform-admin:latest serve -c=/configs/prod.yaml
+    run: docker run -p 8072:8082  --network platform_default --name platform-admin -d -v /opt/platform/admin/configs:/configs registry.gitflic.ru/project/kovardin/adscoffee/platform-admin:latest serve -c=/configs/prod.yaml
 
 
   letsencrypt:
