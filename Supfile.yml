@@ -1,0 +1,33 @@
+networks:
+  production:
+    hosts:
+      - root@188.68.222.18
+
+commands:
+  nginx:
+    run: systemctl restart nginx
+
+  docker-pull-server:
+    run: docker pull registry.gitflic.ru/project/kovardin/adscoffee/platform-server:latest
+
+  docker-stop-server:
+    run: docker stop platform-server || true && docker rm platform-server || true
+
+  docker-start-server:
+    run: docker run -p 8071:8081 --name platform-server -d -v /opt/platform/server/configs:/configs registry.gitflic.ru/project/kovardin/adscoffee/platform-server:latest serve -c=/configs/prod.yaml
+
+
+  docker-pull-admin:
+    run: docker pull registry.gitflic.ru/project/kovardin/adscoffee/platform-admin:latest
+
+  docker-stop-admin:
+    run: docker stop platform-admin || true && docker rm platform-admin || true
+
+  docker-start-admin:
+    run: docker run -p 8072:8082 --name platform-admin -d -v /opt/platform/admin/configs:/configs registry.gitflic.ru/project/kovardin/adscoffee/platform-admin:latest serve -c=/configs/prod.yaml
+
+
+  letsencrypt:
+    run: >
+      letsencrypt certonly -a webroot --webroot-path=/var/www/platform.ads.coffee/web -d platform.ads.coffee
+      letsencrypt certonly -a webroot --webroot-path=/var/www/admin.ads.coffee/web -d admin.ads.coffee

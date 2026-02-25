@@ -27,19 +27,19 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_DEFAULT_REPLICATION_FACTOR: 1
       KAFKA_MIN_INSYNC_REPLICAS: 1
-  
-  platform-server:
-    image: registry.gitflic.ru/project/kovardin/adscoffee/platform-server:latest
-    command: [ "serve", "-c=configs/prod.yaml" ]
-    volumes:
-      - /opt/platfom/server/configs:/configs
-    ports: 
-      - 8081:8081
 
-  platform-admin:
-    image: registry.gitflic.ru/project/kovardin/adscoffee/platform-admin:latest
-    command: [ "serve", "-c=configs/prod.yaml" ]
+  platform-clickhouse:
+    image: clickhouse/clickhouse-server:24.1
+    ports:
+      - "8123:8123"
+      - "9000:9000"
     volumes:
-      - /opt/platfom/admin/configs:/configs
-    ports: 
-      - 8082:8082
+      - ./data/clickhouse/data:/var/lib/clickhouse
+      - ./data/clickhouse/users.xml:/etc/clickhouse-server/users.d/docker.xml
+      - ./data/clickhouse/init:/docker-entrypoint-initdb.d
+    environment:
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144

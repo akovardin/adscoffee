@@ -54,7 +54,7 @@ tasks:
 
   docker-build-admin:
     cmds:
-      - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:latest -f Dockerfile.server .
+      - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:latest -f Dockerfile.admin .
 
   docker-publish-admin:
     cmds:
@@ -62,7 +62,7 @@ tasks:
 
   docker-run-admin:
     cmds:
-     - docker run -p 8091:8081 -d -v /opt/platform/admin/configs:/configs registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:latest serve -c=configs/dev.yaml
+     - docker run -p 8092:8082 -d -v /opt/platform/admin/configs:/configs registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:latest serve -c=configs/dev.yaml
 
   docker-serve-admin:
     cmds:
