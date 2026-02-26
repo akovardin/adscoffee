@@ -1,15 +1,15 @@
 services:
   platform-redis:
     image: redis/redis-stack-server:latest
-    ports: 
-      - 6379:6379
+    # ports: 
+    #   - 6379:6379
 
   platform-kafka:
     image: confluentinc/cp-kafka:7.8.0
     hostname: kafka
-    ports:
-      - "19092:19092"
-      - "19093:19093"
+    # ports:
+    #   - "19092:19092"
+    #   - "19093:19093"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_BROKER_ID: 1
@@ -28,18 +28,31 @@ services:
       KAFKA_DEFAULT_REPLICATION_FACTOR: 1
       KAFKA_MIN_INSYNC_REPLICAS: 1
 
-  platform-clickhouse:
-    image: clickhouse/clickhouse-server:24.1
+  platform-kafka-ui:
+    image: provectuslabs/kafka-ui:latest
     ports:
-      - "8123:8123"
-      - "9000:9000"
-    volumes:
-      - ./data/clickhouse/data:/var/lib/clickhouse
-      - ./data/clickhouse/users.xml:/etc/clickhouse-server/users.d/docker.xml
-      - ./data/clickhouse/init:/docker-entrypoint-initdb.d
+      - "8090:8080"
     environment:
-      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
-    ulimits:
-      nofile:
-        soft: 262144
-        hard: 262144
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: platform-kafka:9092
+      AUTH_TYPE: "LOGIN_FORM"
+      SPRING_SECURITY_USER_NAME: admin
+      SPRING_SECURITY_USER_PASSWORD: password
+    depends_on:
+      - platform-kafka
+
+  # clickhouse:
+  #   image: clickhouse/clickhouse-server:24.1
+  #   # ports:
+  #   #   - "8123:8123"
+  #   #   - "9000:9000"
+  #   volumes:
+  #     - /opt/platform/clickhouse/data:/var/lib/clickhouse
+  #     - /opt/platform/clickhouse/users.xml:/etc/clickhouse-server/users.d/docker.xml
+  #     - /opt/platform/clickhouse/init:/docker-entrypoint-initdb.d
+  #   environment:
+  #     CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+  #   ulimits:
+  #     nofile:
+  #       soft: 262144
+  #       hard: 262144

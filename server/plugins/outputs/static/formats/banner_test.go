@@ -13,6 +13,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/qor5/admin/v3/media/media_library"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"go.ads.coffee/platform/server/internal/domain/ads"
@@ -94,7 +95,7 @@ func TestBanner_Banner_Success(t *testing.T) {
 	testBanner := ads.Banner{
 		Title:       "Test Banner",
 		Description: "This is a test banner",
-		Image:       ads.Image{Url: testServer.URL + "/test/image.png"},
+		Image:       media_library.MediaBox{Url: testServer.URL + "/test/image.png"},
 	}
 
 	// Create a response recorder
@@ -127,7 +128,7 @@ func TestBanner_Banner_FileError(t *testing.T) {
 	testBanner := ads.Banner{
 		Title:       "Test Banner",
 		Description: "This is a test banner",
-		Image:       ads.Image{Url: "http://example.com/test/image.png"},
+		Image:       media_library.MediaBox{Url: "http://example.com/test/image.png"},
 	}
 
 	// Create a response recorder

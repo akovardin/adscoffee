@@ -2,7 +2,10 @@ package ads
 
 import (
 	"strconv"
+	"strings"
 	"time"
+
+	"github.com/qor5/admin/v3/media/media_library"
 )
 
 const (
@@ -35,8 +38,8 @@ type Banner struct {
 	CampaignCapping   Capping
 	AdvertiserCapping Capping
 
-	Image        Image
-	Icon         Image
+	Image        media_library.MediaBox
+	Icon         media_library.MediaBox
 	Clicktracker string
 	Imptracker   string
 	Target       string
@@ -47,23 +50,37 @@ type Banner struct {
 
 	Erid string
 
-	GroupID      string `gorm:"bgroup_id"`
-	CampaignID   string `gorm:"campaign_id"`
-	AdvertiserID string `gorm:"advertiser_id"`
+	GroupID      string
+	CampaignID   string
+	AdvertiserID string
 
-	BannerStart time.Time `gorm:"banner_start"`
-	BannerEnd   time.Time `gorm:"banner_end"`
+	BannerStart time.Time
+	BannerEnd   time.Time
 
-	GroupStart time.Time `gorm:"bgroup_start"`
-	GroupEnd   time.Time `gorm:"bgroup_end"`
+	GroupStart time.Time
+	GroupEnd   time.Time
 
-	CampaignStart time.Time `gorm:"campaign_start"`
-	CampaignEnd   time.Time `gorm:"campaign_end"`
+	CampaignStart time.Time
+	CampaignEnd   time.Time
 
-	AdvertiserStart time.Time `gorm:"advertiser_start"`
-	AdvertiserEnd   time.Time `gorm:"advertiser_end"`
+	AdvertiserStart time.Time
+	AdvertiserEnd   time.Time
 }
 
 func (b Banner) PriceFormated() string {
 	return strconv.FormatFloat(float64(b.Price), 'f', -1, 64)
+}
+
+func (b Banner) Media(style string) string {
+	if b.Image.Url == "" {
+		return ""
+	}
+
+	u := b.Image.URL(style)
+
+	if strings.Contains(u, "http:") || strings.Contains(u, "https:") {
+		return u // TODO: replace to cdn
+	}
+
+	return "https:" + u // TODO: replace to cdn
 }

@@ -1,6 +1,10 @@
 package banners
 
-import "time"
+import (
+	"time"
+
+	"github.com/qor5/admin/v3/media/media_library"
+)
 
 type Row struct {
 	ID     uint
@@ -28,8 +32,8 @@ type Row struct {
 	CampaignCapping   string `gorm:"column:campaign_capping"`
 	AdvertiserCapping string `gorm:"column:advertiser_capping"`
 
-	Image        string
-	Icon         string
+	Image        media_library.MediaBox `sql:"type:text;"`
+	Icon         media_library.MediaBox `sql:"type:text;"`
 	Clicktracker string
 	Imptracker   string
 	Target       string

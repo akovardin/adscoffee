@@ -151,6 +151,9 @@ func toModel(row Row) (ads.Banner, error) {
 
 		AdvertiserStart: row.AdvertiserStart,
 		AdvertiserEnd:   row.AdvertiserEnd,
+
+		Image: row.Image,
+		Icon:  row.Icon,
 	}
 
 	var err error
@@ -232,15 +235,6 @@ func toModel(row Row) (ads.Banner, error) {
 	}
 
 	if banner.AdvertiserCapping, err = ads.NewCapping(row.AdvertiserCapping); err != nil {
-		return ads.Banner{}, err
-	}
-
-	// images
-	if banner.Image, err = ads.NewImage(row.Image); err != nil {
-		return ads.Banner{}, err
-	}
-
-	if banner.Icon, err = ads.NewImage(row.Icon); err != nil {
 		return ads.Banner{}, err
 	}
 

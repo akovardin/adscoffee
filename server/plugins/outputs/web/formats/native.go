@@ -29,7 +29,7 @@ type NativeResponse struct {
 	Image       string   `json:"image"`
 	Target      string   `json:"target"`
 	Impressions []string `json:"impressions"`
-	Clicks      []string `json:"click"`
+	Clicks      []string `json:"clicks"`
 }
 
 func (f *Native) Copy(cfg map[string]any) plugins.Format {
@@ -49,25 +49,35 @@ func (f *Native) Render(ctx context.Context, state *plugins.State) (any, error) 
 			return nil, err
 		}
 
+		clicktrackers := []string{
+			click,
+		}
+
+		if b.Clicktracker != "" {
+			clicktrackers = append(clicktrackers, b.Clicktracker)
+		}
+
 		impression, err := f.tracker(b, state, ads.ActionImpression)
 		if err != nil {
 			return nil, err
+		}
+
+		impressiontrackers := []string{
+			impression,
+		}
+
+		if b.Imptracker != "" {
+			impressiontrackers = append(impressiontrackers, b.Imptracker)
 		}
 
 		items = append(items, NativeResponse{
 			Title:       b.Title,
 			Description: b.Description,
 			Target:      b.Target,
-			Image:       b.Image.Full(""),
+			Image:       b.Media("image"),
 
-			Impressions: []string{
-				b.Clicktracker,
-				click,
-			},
-			Clicks: []string{
-				b.Imptracker,
-				impression,
-			},
+			Impressions: impressiontrackers,
+			Clicks:      clicktrackers,
 		})
 	}
 
