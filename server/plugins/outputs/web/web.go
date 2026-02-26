@@ -8,6 +8,7 @@ import (
 	"go.ads.coffee/platform/server/internal/analytics"
 	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
+	"go.uber.org/zap"
 )
 
 type Analytics interface {
@@ -18,9 +19,10 @@ type Web struct {
 	format    string
 	formats   map[string]plugins.Format
 	analytics Analytics
+	logger    *zap.Logger
 }
 
-func New(ff []plugins.Format, analytics *analytics.Analytics) *Web {
+func New(ff []plugins.Format, logger *zap.Logger, analytics *analytics.Analytics) *Web {
 	formats := map[string]plugins.Format{}
 
 	for _, f := range ff {
@@ -52,6 +54,7 @@ func (w *Web) Copy(cfg map[string]any) plugins.Output {
 		analytics: w.analytics,
 		format:    format,
 		formats:   dest,
+		logger:    w.logger,
 	}
 }
 
@@ -75,7 +78,9 @@ func (w *Web) Do(ctx context.Context, state *plugins.State) error {
 	_, err = state.Response.Write(data)
 
 	if len(state.Winners) > 0 {
-		w.analytics.LogResponse(ctx, state.Winners[0], state)
+		if err := w.analytics.LogResponse(ctx, state.Winners[0], state); err != nil {
+			w.logger.Error("error on log response", zap.Error(err))
+		}
 	}
 
 	return err

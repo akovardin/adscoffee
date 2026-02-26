@@ -40,17 +40,18 @@ func New(logger *zap.Logger, analytics *analytics.Analytics) *Web {
 	}
 }
 
-func (s *Web) Name() string {
+func (w *Web) Name() string {
 	return "inputs.web"
 }
 
-func (s *Web) Copy(cfg map[string]any) plugins.Input {
+func (w *Web) Copy(cfg map[string]any) plugins.Input {
 	return &Web{
-		analytics: s.analytics,
+		analytics: w.analytics,
+		logger:    w.logger,
 	}
 }
 
-func (s *Web) Do(ctx context.Context, state *plugins.State) bool {
+func (w *Web) Do(ctx context.Context, state *plugins.State) bool {
 	// нужно получить данные пользователя из запроса
 
 	state.User = &plugins.User{}
@@ -72,8 +73,8 @@ func (s *Web) Do(ctx context.Context, state *plugins.State) bool {
 	}
 
 	// check error
-	if err := s.analytics.LogRequest(ctx, state); err != nil {
-		s.logger.Error("error on log request", zap.Error(err))
+	if err := w.analytics.LogRequest(ctx, state); err != nil {
+		w.logger.Error("error on log request", zap.Error(err))
 	}
 
 	return true

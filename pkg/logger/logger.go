@@ -6,7 +6,7 @@ import (
 
 func New() *zap.Logger {
 	cfg := zap.NewProductionConfig()
-	cfg.Level = zap.NewAtomicLevelAt(zap.ErrorLevel)
+	cfg.Level = zap.NewAtomicLevelAt(zap.InfoLevel)
 
 	logger, err := cfg.Build()
 	if err != nil {
