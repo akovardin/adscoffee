@@ -9,14 +9,16 @@ import (
 	"go.ads.coffee/platform/pkg/telemetry"
 	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
+	"go.uber.org/zap"
 )
 
 type Analytics struct {
 	tel      *telemetry.Telemetry
 	producer *kafkapool.Producer
+	logger   *zap.Logger
 }
 
-func New(pool *kafkapool.Pool, tel *telemetry.Telemetry) (*Analytics, error) {
+func New(logger *zap.Logger, pool *kafkapool.Pool, tel *telemetry.Telemetry) (*Analytics, error) {
 	if err := tel.Register(actions, money); err != nil {
 		return nil, err
 	}
@@ -34,6 +36,7 @@ func New(pool *kafkapool.Pool, tel *telemetry.Telemetry) (*Analytics, error) {
 	return &Analytics{
 		tel:      tel,
 		producer: producer,
+		logger:   logger,
 	}, nil
 }
 
@@ -48,10 +51,12 @@ func (r *Analytics) Log(ctx context.Context, name string, event ads.Event) error
 	}
 	// write to kafka
 	r.producer.SendAsync(
-		context.WithoutCancel(ctx), // нужно проверить на отмену по таймауту
+		context.WithoutCancel(ctx),
 		name,
 		data,
 	)
+
+	r.logger.Info("write to analytics", zap.Any("event", event))
 
 	return nil
 }

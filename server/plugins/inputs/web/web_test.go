@@ -8,7 +8,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"go.ads.coffee/platform/server/internal/analytics"
+	"go.uber.org/zap"
+
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
@@ -20,14 +21,6 @@ type MockAnalytics struct {
 func (m *MockAnalytics) LogRequest(ctx context.Context, state *plugins.State) error {
 	args := m.Called(ctx, state)
 	return args.Error(0)
-}
-
-func TestNew(t *testing.T) {
-	// Вызываем тестируемую функцию
-	web := New(&analytics.Analytics{})
-
-	// Проверяем результат
-	assert.NotNil(t, web)
 }
 
 func TestWeb_Name(t *testing.T) {
@@ -48,6 +41,7 @@ func TestWeb_Copy(t *testing.T) {
 	// Создаем экземпляр Web
 	web := &Web{
 		analytics: mockAnalytics,
+		logger:    zap.NewNop(),
 	}
 
 	// Подготавливаем конфигурацию
@@ -73,6 +67,7 @@ func TestWeb_Do(t *testing.T) {
 	// Создаем экземпляр Web
 	web := &Web{
 		analytics: mockAnalytics,
+		logger:    zap.NewNop(),
 	}
 
 	// Подготавливаем контекст и состояние

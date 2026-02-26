@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
+	"go.uber.org/zap"
 
 	"go.ads.coffee/platform/server/internal/analytics"
 	"go.ads.coffee/platform/server/internal/domain/ads"
@@ -29,11 +30,13 @@ type Analytics interface {
 
 type Web struct {
 	analytics Analytics
+	logger    *zap.Logger
 }
 
-func New(analytics *analytics.Analytics) *Web {
+func New(logger *zap.Logger, analytics *analytics.Analytics) *Web {
 	return &Web{
 		analytics: analytics,
+		logger:    logger,
 	}
 }
 
@@ -69,7 +72,9 @@ func (s *Web) Do(ctx context.Context, state *plugins.State) bool {
 	}
 
 	// check error
-	_ = s.analytics.LogRequest(ctx, state)
+	if err := s.analytics.LogRequest(ctx, state); err != nil {
+		s.logger.Error("error on log request", zap.Error(err))
+	}
 
 	return true
 }
