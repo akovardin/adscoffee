@@ -2,7 +2,7 @@ package ads
 
 const (
 	ActionImpression = "impression"
-	ActionCLick      = "click"
+	ActionClick      = "click"
 	ActionConversion = "conversion"
 	ActionLoose      = "loose"
 	ActionWin        = "win"

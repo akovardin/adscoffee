@@ -121,6 +121,6 @@ func (r *Analytics) LogImpression(ctx context.Context, data ads.TrackerInfo) err
 }
 
 func (r *Analytics) LogClick(ctx context.Context, data ads.TrackerInfo) error {
-	data.Action = ads.ActionCLick
-	return r.Log(ctx, ads.ActionCLick, ads.Event(data))
+	data.Action = ads.ActionClick
+	return r.Log(ctx, ads.ActionClick, ads.Event(data))
 }

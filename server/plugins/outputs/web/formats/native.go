@@ -2,7 +2,10 @@ package formats
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 
+	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
@@ -29,7 +32,7 @@ type NativeResponse struct {
 	Clicks      []string `json:"click"`
 }
 
-func (b *Native) Copy(cfg map[string]any) plugins.Format {
+func (f *Native) Copy(cfg map[string]any) plugins.Format {
 	base, _ := cfg["base"].(string)
 
 	return &Native{
@@ -37,20 +40,55 @@ func (b *Native) Copy(cfg map[string]any) plugins.Format {
 	}
 }
 
-func (b *Native) Render(ctx context.Context, state *plugins.State) (any, error) {
+func (f *Native) Render(ctx context.Context, state *plugins.State) (any, error) {
 	items := []NativeResponse{}
 
 	for _, b := range state.Winners {
+		click, err := f.tracker(b, state, ads.ActionClick)
+		if err != nil {
+			return nil, err
+		}
+
+		impression, err := f.tracker(b, state, ads.ActionImpression)
+		if err != nil {
+			return nil, err
+		}
+
 		items = append(items, NativeResponse{
 			Title:       b.Title,
 			Description: b.Description,
 			Target:      b.Target,
 			Image:       b.Image.Full(""),
 
-			Impressions: []string{}, // TODO: make trackers
-			Clicks:      []string{},
+			Impressions: []string{
+				b.Clicktracker,
+				click,
+			},
+			Clicks: []string{
+				b.Imptracker,
+				impression,
+			},
 		})
 	}
 
 	return items, nil
+}
+
+func (f *Native) tracker(w ads.Banner, state *plugins.State, action string) (string, error) {
+	info := ads.TrackerInfo{
+		Action:       action,
+		BannerID:     w.ID,
+		GroupID:      w.GroupID,
+		CampaignID:   w.CampaignID,
+		AdvertiserID: w.AdvertiserID,
+		ClickID:      state.ClickID,
+		RequestID:    state.RequestID,
+	}
+
+	data, err := json.Marshal(info)
+	if err != nil {
+		return "", err
+	}
+
+	return f.base + "/tracker/" + base64.URLEncoding.EncodeToString(data) + ".gif", nil
 }
