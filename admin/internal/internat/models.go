@@ -118,6 +118,18 @@ type Messages_ModelsI18nModuleKey struct {
 	Networks      string
 	NetworksName  string
 	NetworksTitle string
+
+	// Placement
+	Placement        string
+	Placements       string
+	PlacementsName   string
+	PlacementsActive string
+
+	// Unit
+	Unit        string
+	Units       string
+	UnitsName   string
+	UnitsActive string
 }
 
 var Messages_en_EN_ModelsI18nModuleKey = &Messages_ModelsI18nModuleKey{
@@ -242,8 +254,18 @@ var Messages_ru_RU_ModelsI18nModuleKey = &Messages_ModelsI18nModuleKey{
 	WorkersStatus:    "Status",
 	WorkersCreatedAt: "Created At",
 
-	Network:       "Эндпоинт",
-	Networks:      "Эндпоинты",
+	Network:       "Рекламная сеть",
+	Networks:      "Рекламные сети",
 	NetworksName:  "Название",
 	NetworksTitle: "Заголовок",
+
+	Placement:        "Плейсмент",
+	Placements:       "Плейсменты",
+	PlacementsName:   "Название",
+	PlacementsActive: "Активен",
+
+	Unit:        "Юнит",
+	Units:       "Юниты",
+	UnitsName:   "Название",
+	UnitsActive: "Активен",
 }

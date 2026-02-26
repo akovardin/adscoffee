@@ -6,72 +6,44 @@
 [![Go Build](https://github.com/akovardin/adscoffee/actions/workflows/go.yml/badge.svg)](https://github.com/akovardin/adscoffee/actions)
 [![Go Coverage](https://github.com/akovardin/adscoffee/wiki/coverage.svg)](https://raw.githack.com/wiki/akovardin/adscoffee/coverage.html)
 
-## Open-Source Ad Platform for Developers
+## Открытая рекламная платформа для разработчиков
 
-Caffeine is a full-featured open-source advertising platform built to give developers, publishers, and open-source communities complete control over monetizing their projects. We offer a transparent, customizable, and ethical alternative to major ad networks.
+Кофеин — это полнофункциональная рекламная платформа с открытым исходным кодом, созданная для того, чтобы дать разработчикам, издателям и сообществам открытого ПО полный контроль над монетизацией своих проектов. Мы предлагаем прозрачную, настраиваемую и этичную альтернативу крупным рекламным сетям.
 
-The philosophy of Caffeine is built on four fundamental principles.
+Философия Кофеина строится на четырёх фундаментальных принципах.
 
-Transparency is the foundation of trust. The platform's entire source code is open for independent audit. You will always know exactly how the ad selection algorithm works, what data is collected, and how it is processed. No hidden algorithms or "black boxes."
+Прозрачность — это основа доверия. Весь исходный код платформы открыт для независимого аудита. Вы всегда будете точно знать, как работает алгоритм выбора рекламы, какие данные собираются и каким образом они обрабатываются. Никаких скрытых алгоритмов или «чёрных ящиков».
 
-Control is entirely in your hands. You independently manage all aspects of monetization: from the design and placement of ad units to the fine-tuning of targeting and ad frequency. The platform is your tool, not a set of imposed rules.
+Контроль полностью в ваших руках. Вы самостоятельно управляете всеми аспектами монетизации: от дизайна и размещения рекламных блоков до тонкой настройки таргетинга и частоты показа. Платформа — это ваш инструмент, а не набор навязанных правил.
 
-Ethics is at the core of our approach to the user. The system is designed with respect for the audience. You can easily set strict rules for ad quality and relevance, avoid intrusive formats, and guaranteed comply with regulatory standards such as GDPR.
+Этика лежит в основе нашего подхода к пользователю. Система спроектирована с уважением к аудитории. Вы сможете легко устанавливать строгие правила к качеству и уместности рекламы, избегать навязчивых форматов и гарантированно соблюдать регуляторные нормы, такие как GDPR.
 
-Community is our key audience and goal. Caffeine is specifically created to support the open-knowledge ecosystem. The platform is ideally suited for monetizing documentation, GitHub projects, personal blogs, and niche applications, areas where large commercial networks are often ineffective or excessive.
+Сообщество — это наша ключевая аудитория и цель. Кофеин специально создан для поддержки экосистемы открытого знания. Платформа идеально подходит для монетизации документации, проектов на GitHub, личных блогов и нишевых приложений, там, где крупные коммерческие сети часто оказываются неэффективными или избыточными.
 
-## Who is Caffeine For?
+## Текущая функциональность
 
-1.  Open-Source Developers: Monetize documentation pages, demo sites, or repositories without breaking community trust.
-2.  Small Publishers and Bloggers: Get an alternative to AdSense with greater flexibility and no entry barriers.
-3.  Game and App Developers (Web, Mobile, Desktop): Use it as a primary ad network or as your own system for direct advertisers.
-4.  Corporate and Internal Projects: Display relevant internal announcements (about new services, events) to employees or partners.
-5.  Researchers and Students: A perfect testbed for studying targeting algorithms, mediation, and ad campaign analysis.
+Ядро системы:
 
-## Current Functionality (Core Features)
+- Модульная архитектура на основе плагинов: Легко расширяйте функциональность (добавляйте новые форматы, источники данных, системы аналитики) без изменения ядра.
+- Сервер подбора рекламы (Ad Server): Принимает запросы от клиентов и возвращает наиболее релевантное рекламное объявление.
+- Административная панель: Удобный интерфейс для управления рекламными кампаниями и креативами.
+- Аналитика и отчетность на базе clickhouse и redash
 
-Core System:
+## Что сейчас реализовано
 
-- Modular Plugin-Based Architecture: Easily extend functionality (add new formats, data sources, analytics systems) without changing the core.
-- Ad Server: Accepts requests from clients and returns the most relevant ad.
-- Administrative Panel: A user-friendly interface for managing ad campaigns and creatives.
-- Analytics and Reporting based on ClickHouse and Redash.
+- [x] Система плагинов
+- [x] Админка для настройки рекламы
+- [ ] Сервер для подбора рекламы
+- [ ] Аналитика и отображение статистики
+- [ ] Клиент для показа рекламы в приложениях
+- [ ] Клиент для показа рекламы на сайте
+- [ ] Медиация рекламы
 
-Integration Clients (SDK / Libraries):
+## Разработка и запуск
 
-- Web Client: A lightweight JS library for embedding ads on websites.
-- Client for Native Applications: A universal client adaptable for mobile (iOS/Android) and desktop (Windows, macOS, Linux) applications.
+Для разработки и тладки используется docker-compose и [taskfile](https://taskfile.dev/).
 
-## Technology Stack
-
-- Backend: Go (high performance, static typing for reliability).
-- Frontend (Admin Panel): Uses qor5 with custom improvements.
-- Data Storage: PostgreSQL, ClickHouse, Redis.
-- Client Libraries: JavaScript (Web) with the possibility of creating wrappers for other languages.
-
-## Why You Should Consider Caffeine
-
-- Eliminate the "Black Box": You see all the logic of operation, instead of trusting unclear algorithms.
-- Flexibility: Adapt the platform to your unique needs, be it a special ad format or integration with an internal CRM.
-- Savings: Don't pay huge commissions to intermediaries (often 30-50%). Pay only for hosting and infrastructure.
-- User Trust: Honest advertising and transparency increase audience loyalty.
-- Future Development: You participate in the platform's evolution. Your pull requests and ideas shape the project's future.
-
-## What is Currently Implemented
-
-- [x] Plugin System
-- [x] Admin Panel for Ad Configuration
-- [x] Ad Selection Server
-- [ ] Analytics and Statistics Display
-- [ ] Client for Displaying Ads in Applications
-- [ ] Client for Displaying Ads on Websites
-- [ ] Ad Mediation
-
-Caffeine is more than just a tool. It is an attempt to make the advertising ecosystem healthier, more open, and more beneficial for those who create real value on the internet.
-
-## Install
-
-Для начала нужно установит все зависимости. Они описаны в docker-compose.yml и их можно запстить командой task docker-up 
+Для начала нужно установит все зависимости. Они описаны в docker-compose.yml и их можно запустить командой task docker-up 
 
 ```sh
 task docker-up
@@ -81,37 +53,14 @@ task docker-up
 
 Запуск админки
 
-```json
- {
-    "name": "admin-dev",
-    "type": "go",
-    "request": "launch",
-    "mode": "auto",
-    "program": "admin/cmd/admin",
-    "cwd": "${workspaceFolder}",
-    "args": [
-        "serve",
-        "-config=admin/configs/dev.yaml"
-    ]
-}
-
+```
+go run ./admin/cmd/admin/main.go serve -config=./admin/configs/config.yaml
 ```
 
 Запуск рекламного сервера
 
-```json
-{
-    "name": "server-dev",
-    "type": "go",
-    "request": "launch",
-    "mode": "auto",
-    "program": "server/cmd/server",
-    "cwd": "${workspaceFolder}",
-    "args": [
-        "serve",
-        "-config=server/configs/dev.yaml"
-    ]
-},
+```
+go run ./server/cmd/server/main.go serve -config=./server/configs/config.yaml
 ```
 
 Запускаем миграции для создания таблиц в базе данных    
@@ -120,16 +69,12 @@ task docker-up
 go run admin/cmd/admin/main.go -c ./admin/configs/dev.yaml m  
 ```
 
-
-Как добавить нового пользователя в админку? Для этого нужно запустить команду:
+Для добавления нового пользователя в админку нужно запустить команду:
 
 ```sh
 go run admin/cmd/admin/main.go u
 ```
 
-## Start in Docker
+## Структура
 
-Где смотреть панели управления
-
-- Dagu - http://localhost:8088/
-- KafkaUI - http://localhost:8090/
+Все начинается с Placement (размещение). На каждом размещении можно указать несколько Unit (блок рекламной сетки). Unit может быть как блоком любой сторонней сетки, так и блоком кофеина. Если нужно показывать только рекламу кофеина, то можно указать только unit кофеина. 
