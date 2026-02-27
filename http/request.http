@@ -1,5 +1,5 @@
 ### test web
-GET http://localhost:8081/native/123
+GET http://localhost:8081/native/1
 
 
 ### test static
