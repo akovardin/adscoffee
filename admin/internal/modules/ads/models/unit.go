@@ -5,8 +5,15 @@ import "gorm.io/gorm"
 type Unit struct {
 	gorm.Model
 
-	Name      string
+	Name  string
+	Price int
+
 	NetworkID int
 	Network   Network
-	Active    bool
+
+	PlacementID int
+	Placement   Placement
+
+	Data   string
+	Active bool
 }

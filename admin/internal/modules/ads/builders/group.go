@@ -248,8 +248,8 @@ func (m *Group) Configure(b *presets.Builder) *presets.ModelBuilder {
 
 	// Регистрируем обработчик события копирования
 	mg.RegisterEventFunc(copyGroupEvent, m.copyGroup)
-	mg.RegisterEventFunc(archiveGroupEvent, m.archiveGroup)
-	mg.RegisterEventFunc(unarchiveGroupEvent, m.unarchiveGroup)
+	mg.RegisterEventFunc(archiveGroupEvent, m.archive)
+	mg.RegisterEventFunc(unarchiveGroupEvent, m.unarchive)
 
 	mge := mg.Editing(
 		&presets.FieldsSection{
@@ -351,7 +351,7 @@ func (m *Group) copyGroup(ctx *web.EventContext) (r web.EventResponse, err error
 	return r, nil
 }
 
-func (m *Group) archiveGroup(ctx *web.EventContext) (r web.EventResponse, err error) {
+func (m *Group) archive(ctx *web.EventContext) (r web.EventResponse, err error) {
 	id := ctx.R.FormValue("id")
 	if id == "" {
 		return r, fmt.Errorf("id is required")
@@ -377,7 +377,7 @@ func (m *Group) archiveGroup(ctx *web.EventContext) (r web.EventResponse, err er
 	return r, nil
 }
 
-func (m *Group) unarchiveGroup(ctx *web.EventContext) (r web.EventResponse, err error) {
+func (m *Group) unarchive(ctx *web.EventContext) (r web.EventResponse, err error) {
 	id := ctx.R.FormValue("id")
 	if id == "" {
 		return r, fmt.Errorf("id is required")

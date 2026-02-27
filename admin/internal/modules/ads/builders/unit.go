@@ -27,7 +27,7 @@ func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 		// Label("Рекламодатели").
 		RightDrawerWidth("1000")
 
-	mn.Listing("ID", "Name")
+	mn.Listing("ID", "Name", "Price", "PlacementID", "NetworkID", "Active")
 
 	mn.Editing().ValidateFunc(func(obj interface{}, ctx *web.EventContext) (err web.ValidationErrors) {
 		u := obj.(*models.Unit)

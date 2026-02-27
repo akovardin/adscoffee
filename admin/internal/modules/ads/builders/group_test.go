@@ -254,7 +254,7 @@ func TestArchiveGroup(t *testing.T) {
 		WillReturnRows(bannerRows)
 
 	// Call the method
-	response, err := groupBuilder.archiveGroup(ctx)
+	response, err := groupBuilder.archive(ctx)
 
 	// Assertions
 	assert.NoError(t, err)
@@ -351,7 +351,7 @@ func TestUnarchiveGroup(t *testing.T) {
 		WillReturnRows(bannerRows)
 
 	// Call the method
-	response, err := groupBuilder.unarchiveGroup(ctx)
+	response, err := groupBuilder.unarchive(ctx)
 
 	// Assertions
 	assert.NoError(t, err)
