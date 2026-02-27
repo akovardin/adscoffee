@@ -75,8 +75,8 @@ func (c *Cache) reload() {
 
 	c.lock.Lock()
 	c.placements = placements
-	for _, banner := range placements {
-		c.placementById[banner.ID] = banner
+	for _, placement := range placements {
+		c.placementById[placement.ID] = placement
 	}
 	c.lock.Unlock()
 }
