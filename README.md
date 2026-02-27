@@ -1,8 +1,5 @@
 # Caffeine
 
-[RU](README.ru.md)
-
-
 [![Go Build](https://github.com/akovardin/adscoffee/actions/workflows/go.yml/badge.svg)](https://github.com/akovardin/adscoffee/actions)
 [![Go Coverage](https://github.com/akovardin/adscoffee/wiki/coverage.svg)](https://raw.githack.com/wiki/akovardin/adscoffee/coverage.html)
 
