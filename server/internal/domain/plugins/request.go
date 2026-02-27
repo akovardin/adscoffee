@@ -16,7 +16,8 @@ type State struct {
 	Device     *Device
 	Candidates []ads.Banner
 	Winners    []ads.Banner
-	Placement  *Placement
+	Placement  ads.Placement
+	Units      []ads.Unit
 }
 
 func (s *State) Value(key any) any {

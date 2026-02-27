@@ -40,13 +40,13 @@ func (t *Mediation) Copy(cfg map[string]any) plugins.Stage {
 func (t *Mediation) Do(ctx context.Context, state *plugins.State) error {
 	winners := state.Winners
 
-	for _, u := range state.Placement.Units {
+	for _, u := range state.Units {
 		winners = append(winners, ads.Banner{
-			ID:      u.ID,
-			Title:   u.Title,
-			Price:   u.Price,
-			Type:    ads.CreativeTypeMediator,
-			Network: u.Network,
+			ID:    u.ID,
+			Title: u.Name, // TODO: title or name?
+			Price: u.Price,
+			Type:  ads.CreativeTypeMediator,
+			Data:  u.Data,
 		})
 	}
 

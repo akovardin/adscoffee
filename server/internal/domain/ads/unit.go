@@ -3,9 +3,12 @@ package ads
 type Unit struct {
 	ID uint
 
-	Title   string
-	Network string
-	Price   int
-	Format  string
-	Active  bool
+	Name  string
+	Price int
+	Data  string
+
+	NetworkID   uint
+	PlacementID uint
+
+	Active bool
 }

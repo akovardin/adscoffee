@@ -19,6 +19,7 @@ import (
 	"go.ads.coffee/platform/server/internal/config"
 	"go.ads.coffee/platform/server/internal/repos/banners"
 	"go.ads.coffee/platform/server/internal/repos/placements"
+	"go.ads.coffee/platform/server/internal/repos/units"
 	"go.ads.coffee/platform/server/internal/server"
 	"go.ads.coffee/platform/server/internal/sessions"
 	"go.ads.coffee/platform/server/plugins"
@@ -67,6 +68,7 @@ func main() {
 						// repos
 						banners.Module,
 						placements.Module,
+						units.Module,
 
 						fx.Invoke(
 							start,
@@ -107,7 +109,12 @@ func start(lc fx.Lifecycle, server *server.Server) {
 	})
 }
 
-func caches(banners *banners.Cache, placements *placements.Cache) {
+func caches(
+	banners *banners.Cache,
+	placements *placements.Cache,
+	units *units.Cache,
+) {
 	go banners.Start(context.Background())
 	go placements.Start(context.Background())
+	go units.Start(context.Background())
 }

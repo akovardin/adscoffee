@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"go.uber.org/zap"
+
 	"go.ads.coffee/platform/server/internal/analytics"
 	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
-	"go.uber.org/zap"
 )
 
 type Analytics interface {

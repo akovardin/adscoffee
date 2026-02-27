@@ -65,6 +65,8 @@ type Banner struct {
 
 	AdvertiserStart time.Time
 	AdvertiserEnd   time.Time
+
+	Data string
 }
 
 func (b Banner) PriceFormated() string {

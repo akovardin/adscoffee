@@ -2,14 +2,16 @@ package web
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 
 	"go.ads.coffee/platform/server/internal/analytics"
-	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
+	"go.ads.coffee/platform/server/internal/repos/placements"
+	"go.ads.coffee/platform/server/internal/repos/units"
 )
 
 var Module = fx.Module(
@@ -29,14 +31,23 @@ type Analytics interface {
 }
 
 type Web struct {
-	analytics Analytics
-	logger    *zap.Logger
+	logger     *zap.Logger
+	analytics  Analytics
+	placements *placements.Cache
+	units      *units.Cache
 }
 
-func New(logger *zap.Logger, analytics *analytics.Analytics) *Web {
+func New(
+	logger *zap.Logger,
+	analytics *analytics.Analytics,
+	placements *placements.Cache,
+	units *units.Cache,
+) *Web {
 	return &Web{
-		analytics: analytics,
-		logger:    logger,
+		logger:     logger,
+		analytics:  analytics,
+		placements: placements,
+		units:      units,
 	}
 }
 
@@ -46,8 +57,10 @@ func (w *Web) Name() string {
 
 func (w *Web) Copy(cfg map[string]any) plugins.Input {
 	return &Web{
-		analytics: w.analytics,
-		logger:    w.logger,
+		logger:     w.logger,
+		analytics:  w.analytics,
+		placements: w.placements,
+		units:      w.units,
 	}
 }
 
@@ -58,19 +71,20 @@ func (w *Web) Do(ctx context.Context, state *plugins.State) bool {
 	state.Device = &plugins.Device{}
 
 	// проверить наличие placement
+	id, _ := strconv.Atoi(chi.URLParam(state.Request, "placement"))
 
-	placement := chi.URLParam(state.Request, "placement")
-
-	state.Placement = &plugins.Placement{
-		ID: placement,
-		Units: []ads.Unit{
-			{
-				Network: "yandex",
-				Price:   10,
-				Format:  "banner",
-			},
-		},
+	placement, exit := w.placements.One(ctx, uint(id))
+	if !exit {
+		return false
 	}
+
+	units, exit := w.units.FindByPlacement(ctx, placement.ID)
+	if !exit {
+		return false
+	}
+
+	state.Placement = placement
+	state.Units = units
 
 	// check error
 	if err := w.analytics.LogRequest(ctx, state); err != nil {

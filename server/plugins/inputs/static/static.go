@@ -13,6 +13,8 @@ import (
 	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 	"go.ads.coffee/platform/server/internal/repos/banners"
+	"go.ads.coffee/platform/server/internal/repos/placements"
+	"go.ads.coffee/platform/server/internal/repos/units"
 	"go.ads.coffee/platform/server/internal/sessions"
 )
 
@@ -46,10 +48,12 @@ type Session interface {
 }
 
 type Static struct {
-	logger    *zap.Logger
-	cache     Cache
-	sessions  Session
-	analytics Analytics
+	logger     *zap.Logger
+	cache      Cache
+	sessions   Session
+	analytics  Analytics
+	placements *placements.Cache
+	units      *units.Cache
 }
 
 func New(
@@ -57,12 +61,16 @@ func New(
 	cache *banners.Cache,
 	sessions *sessions.Sessions,
 	analytics *analytics.Analytics,
+	placements *placements.Cache,
+	units *units.Cache,
 ) *Static {
 	return &Static{
-		logger:    logger,
-		cache:     cache,
-		sessions:  sessions,
-		analytics: analytics,
+		logger:     logger,
+		cache:      cache,
+		sessions:   sessions,
+		analytics:  analytics,
+		placements: placements,
+		units:      units,
 	}
 }
 
@@ -72,10 +80,12 @@ func (s *Static) Name() string {
 
 func (s *Static) Copy(cfg map[string]any) plugins.Input {
 	return &Static{
-		cache:     s.cache,
-		logger:    s.logger,
-		sessions:  s.sessions,
-		analytics: s.analytics,
+		cache:      s.cache,
+		logger:     s.logger,
+		sessions:   s.sessions,
+		analytics:  s.analytics,
+		placements: s.placements,
+		units:      s.units,
 	}
 }
 
@@ -90,19 +100,20 @@ func (s *Static) Do(ctx context.Context, state *plugins.State) bool {
 
 	// проверить наличие placement
 
-	placement := chi.URLParam(state.Request, "placement")
+	id, _ := strconv.Atoi(chi.URLParam(state.Request, "placement"))
 
-	state.Placement = &plugins.Placement{
-		ID: placement,
-		Units: []ads.Unit{
-			{
-				ID:      1,
-				Network: "yandex",
-				Price:   10,
-				Format:  "banner",
-			},
-		},
+	placement, exit := s.placements.One(ctx, uint(id))
+	if !exit {
+		return false
 	}
+
+	units, exit := s.units.FindByPlacement(ctx, placement.ID)
+	if !exit {
+		return false
+	}
+
+	state.Placement = placement
+	state.Units = units
 
 	// проверяем есть ли в сессии баннер для экшена click
 	// если баннер в сессии, то редиректим на трекер url
@@ -126,8 +137,9 @@ func (s *Static) Do(ctx context.Context, state *plugins.State) bool {
 			return false
 		}
 
-		// check err
-		_ = s.analytics.LogClick(ctx, ads.TrackerInfo{})
+		if err := s.analytics.LogClick(ctx, ads.TrackerInfo{}); err != nil {
+			s.logger.Error("error on log click", zap.Error(err))
+		}
 
 		http.Redirect(state.Response, state.Request, banner.Target, http.StatusSeeOther)
 

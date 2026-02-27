@@ -9,5 +9,4 @@ type Placement struct {
 	gorm.Model
 
 	Active bool
-	Units  []Unit `gorm:"many2many:placement_units;"`
 }

@@ -30,6 +30,7 @@ type NativeResponse struct {
 	Target      string   `json:"target"`
 	Impressions []string `json:"impressions"`
 	Clicks      []string `json:"clicks"`
+	Data        string   `json:"data,omitempty"`
 }
 
 func (f *Native) Copy(cfg map[string]any) plugins.Format {
@@ -75,6 +76,7 @@ func (f *Native) Render(ctx context.Context, state *plugins.State) (any, error) 
 			Description: b.Description,
 			Target:      b.Target,
 			Image:       b.Media("image"),
+			Data:        b.Data,
 
 			Impressions: impressiontrackers,
 			Clicks:      clicktrackers,
