@@ -3,7 +3,8 @@
 version: '3'
 
 vars:
-  SERVER_VERSION: v0.2
+  SERVER_VERSION: v0.3
+  ADMIN_VERSION: v0.1
   SERVER: miniservices
   NETWORK: production
   SERVICE_GROUP: adscoffee
@@ -52,21 +53,21 @@ tasks:
   
   docker-build-admin:
     cmds:
-      - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:latest -f Dockerfile.admin .
+      - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:{{ .ADMIN_VERSION }} -f Dockerfile.admin .
 
   docker-publish-admin:
     cmds:
-      - docker push registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:latest
+      - docker push registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:{{ .ADMIN_VERSION }}
 
   docker-run-admin:
     cmds:
-     - docker run -p 8092:8082 -d -v /opt/platform/admin/configs:/configs registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:latest serve -c=configs/dev.yaml
+     - docker run -p 8092:8082 -d -v /opt/platform/admin/configs:/configs registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:{{ .ADMIN_VERSION }} serve -c=configs/dev.yaml
 
   docker-serve-admin:
     cmds:
-      - sup {{ .NETWORK }} docker-pull-admin
-      - sup {{ .NETWORK }} docker-stop-admin
-      - sup {{ .NETWORK }} docker-start-admin
+      - sup -e ADMIN_VERSION="{{ .ADMIN_VERSION }}" {{ .NETWORK }} docker-pull-admin
+      - sup -e ADMIN_VERSION="{{ .ADMIN_VERSION }}" {{ .NETWORK }} docker-stop-admin
+      - sup -e ADMIN_VERSION="{{ .ADMIN_VERSION }}" {{ .NETWORK }} docker-start-admin
 
   docker-serve-server:
     cmds:
