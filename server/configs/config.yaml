@@ -43,7 +43,7 @@ database:
 
 pipelines:
   - name: dsp
-    route: /dsp
+    route: /dsp/{placement}
     input:
       name: inputs.rtb
     stages:
@@ -73,7 +73,8 @@ pipelines:
     output:
       name: outputs.web
       config:   
-        base: example
+        base: https://example.com
+        format: native
 
   - name: banner
     route: /banner/{placement}/{action}

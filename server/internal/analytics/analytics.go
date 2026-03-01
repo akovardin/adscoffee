@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"time"
 
+	"go.uber.org/zap"
+
 	"go.ads.coffee/platform/pkg/kafkapool"
 	"go.ads.coffee/platform/pkg/telemetry"
 	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
-	"go.uber.org/zap"
 )
 
 type Analytics struct {
