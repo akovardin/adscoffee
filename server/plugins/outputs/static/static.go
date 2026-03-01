@@ -11,6 +11,7 @@ import (
 	"go.ads.coffee/platform/server/internal/sessions"
 	"go.ads.coffee/platform/server/plugins/outputs/static/formats"
 	"go.uber.org/fx"
+	"go.uber.org/zap"
 )
 
 const (
@@ -46,12 +47,14 @@ type Session interface {
 
 type Static struct {
 	base      string
+	logger    *zap.Logger
 	sessions  Session
 	analytics Analytics
 	format    Banner
 }
 
 func New(
+	logger *zap.Logger,
 	format *formats.Banner,
 	sessions *sessions.Sessions,
 	analytics *analytics.Analytics,
@@ -76,6 +79,7 @@ func (w *Static) Copy(cfg map[string]any) plugins.Output {
 
 	return &Static{
 		base:      base,
+		logger:    w.logger,
 		format:    w.format,
 		sessions:  w.sessions,
 		analytics: w.analytics,
@@ -104,8 +108,9 @@ func (w *Static) Do(ctx context.Context, state *plugins.State) error {
 		return fmt.Errorf("error on start session: %w", err)
 	}
 
-	// check error
-	_ = w.analytics.LogImpression(ctx, ads.TrackerInfo{})
+	if err := w.analytics.LogImpression(ctx, ads.TrackerInfo{}); err != nil {
+		w.logger.Error("error on log impression", zap.Error(err))
+	}
 
 	return w.format.Banner(ctx, w.base, banner, state.Response)
 }

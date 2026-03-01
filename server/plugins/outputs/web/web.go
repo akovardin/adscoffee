@@ -33,6 +33,7 @@ func New(ff []plugins.Format, logger *zap.Logger, analytics *analytics.Analytics
 	return &Web{
 		analytics: analytics,
 		formats:   formats,
+		logger:    logger,
 	}
 }
 

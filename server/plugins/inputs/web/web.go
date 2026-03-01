@@ -78,13 +78,12 @@ func (w *Web) Do(ctx context.Context, state *plugins.State) bool {
 		return false
 	}
 
-	units, exit := w.units.FindByPlacement(ctx, placement.ID)
-	if !exit {
-		return false
-	}
-
 	state.Placement = placement
-	state.Units = units
+
+	units, exit := w.units.FindByPlacement(ctx, placement.ID)
+	if exit {
+		state.Units = units
+	}
 
 	// check error
 	if err := w.analytics.LogRequest(ctx, state); err != nil {

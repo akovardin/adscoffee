@@ -107,13 +107,12 @@ func (s *Static) Do(ctx context.Context, state *plugins.State) bool {
 		return false
 	}
 
-	units, exit := s.units.FindByPlacement(ctx, placement.ID)
-	if !exit {
-		return false
-	}
-
 	state.Placement = placement
-	state.Units = units
+
+	units, exit := s.units.FindByPlacement(ctx, placement.ID)
+	if exit {
+		state.Units = units
+	}
 
 	// проверяем есть ли в сессии баннер для экшена click
 	// если баннер в сессии, то редиректим на трекер url

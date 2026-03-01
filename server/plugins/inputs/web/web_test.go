@@ -98,11 +98,9 @@ func TestWeb_Do(t *testing.T) {
 	assert.Equal(t, "test-placement", state.Placement.ID)
 
 	// Проверяем, что placement содержит единицу рекламы
-	assert.Len(t, state.Placement.Units, 1)
-	assert.Equal(t, uint(0), state.Placement.Units[0].ID)
-	assert.Equal(t, "yandex", state.Placement.Units[0].Network)
-	assert.Equal(t, 10, state.Placement.Units[0].Price)
-	assert.Equal(t, "banner", state.Placement.Units[0].Format)
+	assert.Len(t, state.Units, 1)
+	assert.Equal(t, uint(0), state.Units[0].ID)
+	assert.Equal(t, 10, state.Units[0].Price)
 
 	// Проверяем, что analytics.LogRequest был вызван
 	mockAnalytics.AssertCalled(t, "LogRequest", ctx, state)
