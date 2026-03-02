@@ -25,6 +25,7 @@ import (
 	"go.ads.coffee/platform/admin/internal/logger"
 	"go.ads.coffee/platform/admin/internal/modules/ads"
 	"go.ads.coffee/platform/admin/internal/modules/media"
+	"go.ads.coffee/platform/admin/internal/modules/stats"
 	"go.ads.coffee/platform/admin/internal/modules/users"
 	umodels "go.ads.coffee/platform/admin/internal/modules/users/models"
 	"go.ads.coffee/platform/admin/internal/s3storage"
@@ -67,6 +68,7 @@ func main() {
 						ads.Module,
 						users.Module,
 						media.Module,
+						stats.Module,
 
 						fx.Provide(
 							configure,
@@ -168,6 +170,7 @@ func configure(
 	media *media.Media,
 	users *users.Users,
 	ads *ads.Ads,
+	stats *stats.Stats,
 ) *presets.Builder {
 	b := presets.New()
 
@@ -185,8 +188,11 @@ func configure(
 	media.Configure(b)
 	ads.Configure(b)
 	users.Configure(b)
+	stats.Configure(b)
 
 	b.MenuOrder(
+		"dashboard",
+		"separator",
 		"advertisers",
 		"campaigns",
 		"bgroups",
