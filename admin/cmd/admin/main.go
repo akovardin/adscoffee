@@ -19,6 +19,7 @@ import (
 	"golang.org/x/text/language"
 	"gorm.io/gorm"
 
+	"go.ads.coffee/platform/admin/internal/clickhouse"
 	"go.ads.coffee/platform/admin/internal/config"
 	"go.ads.coffee/platform/admin/internal/database"
 	"go.ads.coffee/platform/admin/internal/internat"
@@ -64,6 +65,7 @@ func main() {
 						logger.Module,
 						s3storage.Module,
 						server.Module,
+						clickhouse.Module,
 
 						ads.Module,
 						users.Module,

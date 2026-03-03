@@ -1,0 +1,202 @@
+package stats
+
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/uptrace/go-clickhouse/ch"
+	"go.uber.org/zap"
+
+	"go.ads.coffee/platform/admin/internal/clickhouse"
+)
+
+const DateHour = "2006-01-02 15"
+
+// достыпные метрики
+const (
+	MetricRequests    = "requests"
+	MetricResponses   = "responses"
+	MetricWins        = "wins"
+	MetricImpressions = "impressions"
+	MetricClicks      = "clicks"
+	MetricConversions = "conversions"
+)
+
+// доступные фильтры
+const (
+	FilterAdvertiserId = "advertiser_id"
+	FilterCampaignId   = "campaign_id"
+	FilterGroupId      = "group_id"
+	FilterBannerId     = "banner_id"
+	FilterNetwork      = "network"
+	FilterBundle       = "bundle"
+	FilterSlot         = "slot"
+)
+
+type Query struct {
+	logger     *zap.Logger
+	clickhouse *clickhouse.Clickhouse
+}
+
+func NewQuery(logger *zap.Logger, clickhouse *clickhouse.Clickhouse) *Query {
+	return &Query{
+		logger:     logger,
+		clickhouse: clickhouse,
+	}
+}
+
+type Stat struct {
+	Labels []string
+	//        metric name    hour   value
+	Datasets map[string]map[string]float64
+}
+
+type Condition struct {
+	From    time.Time
+	To      time.Time
+	Metrics []string // из каких табличек нужно доставать данные
+	Filters []Filter
+	Groups  []string
+}
+
+type Filter struct {
+	Field string
+	Value []any
+}
+
+func (q *Query) Select(ctx context.Context, condition Condition) (Stat, error) {
+	diff := condition.To.Sub(condition.From)
+	cnt := int(diff.Hours())
+
+	hours := make([]string, 0, cnt)
+
+	for i := 0; i < cnt; i++ {
+		hours = append(hours, condition.From.Add(time.Duration(i)*time.Hour).Format(DateHour))
+	}
+
+	datasets := map[string]map[string]float64{}
+
+	for _, metric := range condition.Metrics {
+		st, err := q.query(ctx, metric, condition, hours)
+		if err != nil {
+			q.logger.Error("query", zap.Error(err))
+
+			return Stat{}, err
+		}
+
+		for key, item := range st {
+			datasets[key] = item
+		}
+	}
+
+	return Stat{
+		Labels:   hours,
+		Datasets: datasets,
+	}, nil
+}
+
+type Item struct {
+	Timestamp time.Time
+	Label0    string
+	Label1    string
+	Label2    string
+	Label3    string
+	Label4    string
+	Value     float64
+}
+
+func (i Item) Key(metric string, groups []string) string {
+	if i.Label4 != "" {
+		return metric + " - " + groups[0] + ":" + i.Label0 + " - " + groups[1] + ":" + i.Label1 + " - " + groups[2] + ":" + i.Label2 + " - " + groups[3] + ":" + i.Label3 + " - " + groups[4] + ":" + i.Label4
+	}
+
+	if i.Label3 != "" {
+		return metric + " - " + groups[0] + ":" + i.Label0 + " - " + groups[1] + ":" + i.Label1 + " - " + groups[2] + ":" + i.Label2 + " - " + groups[3] + ":" + i.Label3
+	}
+
+	if i.Label2 != "" {
+		return metric + " - " + groups[0] + ":" + i.Label0 + " - " + groups[1] + ":" + i.Label1 + " - " + groups[2] + ":" + i.Label2
+	}
+
+	if i.Label1 != "" {
+		return metric + " - " + groups[0] + ":" + i.Label0 + " - " + groups[1] + ":" + i.Label1
+	}
+
+	if i.Label0 != "" {
+		return metric + " - " + groups[0] + ":" + i.Label0
+	}
+
+	return metric
+
+}
+
+func (q *Query) query(ctx context.Context, metric string, condition Condition, hours []string) (map[string]map[string]float64, error) {
+	sel := q.clickhouse.DB.NewSelect()
+
+	// если метрика деньги, то тут берем impressions
+	sel.ModelTableExpr(metric + "_hour")
+
+	sel.ColumnExpr("timestamp")
+
+	for i, group := range condition.Groups {
+		sel.ColumnExpr(group+" as label?", i)
+	}
+
+	// если метрика деньги, то тут берем price
+	sel.ColumnExpr("sum(count) as value")
+
+	for _, filter := range condition.Filters {
+		sel.Where(filter.Field+" IN (?)", ch.In(filter.Value))
+	}
+
+	sel.Where("timestamp >= ?", condition.From)
+	sel.Where("timestamp <= ?", condition.To)
+
+	sel.Group("timestamp")
+
+	for _, group := range condition.Groups {
+		sel.Group(group)
+	}
+
+	sel.Order("timestamp DESC")
+	sel.Limit(1000)
+
+	fmt.Println(sel.String())
+
+	items := []Item{}
+
+	err := sel.Scan(ctx, &items)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(items) == 0 {
+		return nil, nil
+	}
+
+	data := map[string]map[string]float64{}
+
+	// раскладываю по метрикам часы с их значениями
+	for _, item := range items {
+		key := item.Key(metric, condition.Groups)
+		hour := item.Timestamp.Format(DateHour)
+
+		if _, exist := data[key]; !exist {
+			data[key] = map[string]float64{}
+		}
+		data[key][hour] = item.Value
+	}
+
+	// заполняем дырки в случае отсутствия данных в определенном часе
+	for key, item := range data {
+		for _, hour := range hours {
+			_, exist := item[hour]
+			if !exist {
+				data[key][hour] = 0
+			}
+		}
+	}
+
+	return data, nil
+}

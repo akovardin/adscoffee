@@ -6,6 +6,7 @@ import (
 	"go.uber.org/config"
 	"go.uber.org/fx"
 
+	"go.ads.coffee/platform/admin/internal/clickhouse"
 	"go.ads.coffee/platform/admin/internal/database"
 	"go.ads.coffee/platform/admin/internal/s3storage"
 	"go.ads.coffee/platform/admin/internal/server"
@@ -14,9 +15,10 @@ import (
 type Config struct {
 	fx.Out
 
-	Database  database.Config  `yaml:"database"`
-	S3Storage s3storage.Config `yaml:"s3storage"`
-	Server    server.Config    `yaml:"server"`
+	Database   database.Config   `yaml:"database"`
+	S3Storage  s3storage.Config  `yaml:"s3storage"`
+	Server     server.Config     `yaml:"server"`
+	Clickhouse clickhouse.Config `yaml:"clickhouse"`
 }
 
 func New(file string) (Config, error) {

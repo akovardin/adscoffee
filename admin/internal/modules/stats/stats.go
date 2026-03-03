@@ -1,7 +1,9 @@
 package stats
 
 import (
+	"context"
 	"fmt"
+	"time"
 
 	"github.com/qor5/admin/v3/presets"
 	"github.com/qor5/web/v3"
@@ -12,12 +14,14 @@ import (
 )
 
 type Stats struct {
-	db *gorm.DB
+	db    *gorm.DB
+	query *Query
 }
 
-func New(db *gorm.DB) *Stats {
+func New(db *gorm.DB, query *Query) *Stats {
 	return &Stats{
-		db: db,
+		db:    db,
+		query: query,
 	}
 }
 
@@ -78,6 +82,31 @@ func (s *Stats) Configure(pb *presets.Builder) {
 	lb := b.Listing()
 
 	lb.PageFunc(func(ctx *web.EventContext) (r web.PageResponse, err error) {
+		// load data from stats
+		// prepare data for chart
+
+		data, err := s.query.Select(context.Background(), Condition{
+			From:    time.Now().Add(-time.Hour * 12),
+			To:      time.Now(),
+			Metrics: []string{MetricImpressions, MetricClicks},
+			Filters: []Filter{
+				{
+					Field: FilterCampaignId,
+					Value: []any{2},
+				},
+				{
+					Field: FilterGroupId,
+					Value: []any{85, 89, 78},
+				},
+			},
+			Groups: []string{"group_id"},
+		})
+
+		if err != nil {
+			return r, err
+		}
+
+		_ = data
 
 		body := vuetify.VContainer(
 			h.RawHTML(
@@ -94,11 +123,18 @@ func (s *Stats) Configure(pb *presets.Builder) {
       type: 'line',
       data: {
         labels: ['10.02', '11.02', '12.02', '13.02', '14.02', '15.02'],
-        datasets: [{
-          label: '# of Votes',
-          data: [12, 19, 3, 5, 2, 3],
-          borderWidth: 1
-        }]
+        datasets: [
+			{
+				label: 'impressions',
+				data: [12, 19, 3, 5, 2, 3],
+				borderWidth: 1
+			},
+			{
+				label: 'clicks', // key из массива data: impression - 99:63:54
+				data: [2, 9, 1, 2, 1, 2],
+				borderWidth: 1
+			}
+		]
       },
       options: {
         responsive: true,
