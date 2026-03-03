@@ -87,6 +87,10 @@ github.com/cespare/xxhash/v2
 # github.com/chapsuk/wait v0.3.2
 ## explicit
 github.com/chapsuk/wait
+# github.com/codemodus/kace v0.5.1
+## explicit
+github.com/codemodus/kace
+github.com/codemodus/kace/ktrie
 # github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 ## explicit
 github.com/davecgh/go-spew/spew
@@ -422,6 +426,18 @@ github.com/twmb/franz-go/plugin/kzap
 # github.com/ua-parser/uap-go v0.0.0-20240611065828-3a4781585db6
 ## explicit
 github.com/ua-parser/uap-go/uaparser
+# github.com/uptrace/go-clickhouse v0.3.1
+## explicit; go 1.18
+github.com/uptrace/go-clickhouse/ch
+github.com/uptrace/go-clickhouse/ch/bfloat16
+github.com/uptrace/go-clickhouse/ch/chpool
+github.com/uptrace/go-clickhouse/ch/chproto
+github.com/uptrace/go-clickhouse/ch/chschema
+github.com/uptrace/go-clickhouse/ch/chtype
+github.com/uptrace/go-clickhouse/ch/internal
+github.com/uptrace/go-clickhouse/ch/internal/cityhash102
+github.com/uptrace/go-clickhouse/ch/internal/parser
+github.com/uptrace/go-clickhouse/ch/internal/tagparser
 # github.com/urfave/cli/v3 v3.6.2
 ## explicit; go 1.22
 github.com/urfave/cli/v3
@@ -538,6 +554,7 @@ golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
 # golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0
 ## explicit; go 1.23.0
+golang.org/x/exp/constraints
 golang.org/x/exp/maps
 # golang.org/x/image v0.23.0
 ## explicit; go 1.18
