@@ -39,7 +39,7 @@ type Analytics interface {
 	LogClick(ctx context.Context, data ads.TrackerInfo) error
 }
 
-type Cache interface {
+type Banners interface {
 	One(ctx context.Context, id uint) (ads.Banner, bool)
 }
 
@@ -47,13 +47,21 @@ type Session interface {
 	LoadWithExpire(r *http.Request) (sessions.Session, bool)
 }
 
+type Placements interface {
+	One(ctx context.Context, id uint) (ads.Placement, bool)
+}
+
+type Units interface {
+	FindByPlacement(ctx context.Context, id uint) ([]ads.Unit, bool)
+}
+
 type Static struct {
 	logger     *zap.Logger
-	cache      Cache
+	banners    Banners
 	sessions   Session
 	analytics  Analytics
-	placements *placements.Cache
-	units      *units.Cache
+	placements Placements
+	units      Units
 }
 
 func New(
@@ -66,7 +74,7 @@ func New(
 ) *Static {
 	return &Static{
 		logger:     logger,
-		cache:      cache,
+		banners:    cache,
 		sessions:   sessions,
 		analytics:  analytics,
 		placements: placements,
@@ -80,7 +88,7 @@ func (s *Static) Name() string {
 
 func (s *Static) Copy(cfg map[string]any) plugins.Input {
 	return &Static{
-		cache:      s.cache,
+		banners:    s.banners,
 		logger:     s.logger,
 		sessions:   s.sessions,
 		analytics:  s.analytics,
@@ -127,7 +135,7 @@ func (s *Static) Do(ctx context.Context, state *plugins.State) bool {
 		}
 
 		id, _ := strconv.Atoi(session.Value)
-		banner, ok := s.cache.One(ctx, uint(id))
+		banner, ok := s.banners.One(ctx, uint(id))
 		if !ok {
 			s.logger.Warn("error on load banner from cache")
 

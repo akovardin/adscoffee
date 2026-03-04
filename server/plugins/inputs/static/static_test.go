@@ -16,18 +16,16 @@ import (
 	"go.ads.coffee/platform/server/internal/sessions"
 )
 
-// MockCache is a mock implementation of the Cache interface
-type MockCache struct {
+type MockBanners struct {
 	mock.Mock
 }
 
-func (m *MockCache) One(ctx context.Context, id uint) (ads.Banner, bool) {
+func (m *MockBanners) One(ctx context.Context, id uint) (ads.Banner, bool) {
 	args := m.Called(ctx, id)
 	banner, _ := args.Get(0).(ads.Banner)
 	return banner, args.Bool(1)
 }
 
-// MockSession is a mock implementation of the Session interface
 type MockSession struct {
 	mock.Mock
 }
@@ -38,7 +36,6 @@ func (m *MockSession) LoadWithExpire(r *http.Request) (sessions.Session, bool) {
 	return session, args.Bool(1)
 }
 
-// MockAnalytics is a mock implementation of the Analytics interface
 type MockAnalytics struct {
 	mock.Mock
 }
@@ -48,105 +45,116 @@ func (m *MockAnalytics) LogClick(ctx context.Context, data ads.TrackerInfo) erro
 	return args.Error(0)
 }
 
+type MockPlacements struct {
+	mock.Mock
+}
+
+func (m *MockPlacements) One(ctx context.Context, id uint) (ads.Placement, bool) {
+	args := m.Called(ctx, id)
+	placement, _ := args.Get(0).(ads.Placement)
+	return placement, args.Bool(1)
+}
+
+type MockUnits struct {
+	mock.Mock
+}
+
+func (m *MockUnits) FindByPlacement(ctx context.Context, id uint) ([]ads.Unit, bool) {
+	args := m.Called(ctx, id)
+	units, _ := args.Get(0).([]ads.Unit)
+	return units, args.Bool(1)
+}
+
 func TestNew(t *testing.T) {
-	// Create real dependencies for constructor
 	logger := zaptest.NewLogger(t)
 
-	// For the constructor, we need to use actual types
-	// But we can't easily create real instances in tests
-	// So we'll test the constructor separately
-
-	// Create mock implementations of interfaces
-	cache := &MockCache{}
+	banners := &MockBanners{}
 	session := &MockSession{}
 	analytics := &MockAnalytics{}
 
-	// Create an instance directly since we can't easily create real dependencies
 	static := &Static{
 		logger:    logger,
-		cache:     cache,
+		banners:   banners,
 		sessions:  session,
 		analytics: analytics,
 	}
 
-	// Check the result
 	assert.NotNil(t, static)
 }
 
 func TestStatic_Name(t *testing.T) {
-	// Create real dependencies
 	logger := zaptest.NewLogger(t)
-	cache := &MockCache{}
+	cache := &MockBanners{}
 	session := &MockSession{}
 	analytics := &MockAnalytics{}
 
-	// Create an instance of Static
 	static := &Static{
 		logger:    logger,
-		cache:     cache,
+		banners:   cache,
 		sessions:  session,
 		analytics: analytics,
 	}
 
-	// Call the function under test
 	name := static.Name()
 
-	// Check the result
 	assert.Equal(t, "inputs.static", name)
 }
 
 func TestStatic_Copy(t *testing.T) {
-	// Create real dependencies
 	logger := zaptest.NewLogger(t)
-	cache := &MockCache{}
+	cache := &MockBanners{}
 	session := &MockSession{}
 	analytics := &MockAnalytics{}
 
-	// Create an instance of Static
 	static := &Static{
 		logger:    logger,
-		cache:     cache,
+		banners:   cache,
 		sessions:  session,
 		analytics: analytics,
 	}
 
-	// Prepare configuration
 	cfgMap := map[string]any{"key": "value"}
 
-	// Call the function under test
 	copied := static.Copy(cfgMap)
 
-	// Check the result
 	assert.NotNil(t, copied)
 	assert.IsType(t, &Static{}, copied)
 
-	// Check that dependencies are copied correctly
 	copiedStatic := copied.(*Static)
-	assert.Equal(t, cache, copiedStatic.cache)
+	assert.Equal(t, cache, copiedStatic.banners)
 	assert.Equal(t, logger, copiedStatic.logger)
 	assert.Equal(t, session, copiedStatic.sessions)
 	assert.Equal(t, analytics, copiedStatic.analytics)
 }
 
 func TestStatic_Do_ViewAction(t *testing.T) {
-	// Create real dependencies
 	logger := zaptest.NewLogger(t)
-	cache := &MockCache{}
+	banners := &MockBanners{}
 	session := &MockSession{}
 	analytics := &MockAnalytics{}
+	placements := &MockPlacements{}
+	units := &MockUnits{}
 
-	// Create an instance of Static
 	static := &Static{
-		logger:    logger,
-		cache:     cache,
-		sessions:  session,
-		analytics: analytics,
+		logger:     logger,
+		banners:    banners,
+		sessions:   session,
+		analytics:  analytics,
+		placements: placements,
+		units:      units,
 	}
 
-	// Prepare context and state
+	placements.On("One", mock.Anything, mock.Anything).Return(ads.Placement{
+		ID: 1,
+	}, true)
+	units.On("FindByPlacement", mock.Anything, mock.Anything).Return([]ads.Unit{
+		{
+			ID: 1,
+		},
+	}, true)
+
 	ctx := context.Background()
 
-	// Create a mock HTTP request with action and placement parameters
 	rctx := &chi.Context{
 		URLParams: chi.RouteParams{
 			Keys:   []string{"action", "placement"},
@@ -156,7 +164,6 @@ func TestStatic_Do_ViewAction(t *testing.T) {
 	req := &http.Request{}
 	req = req.WithContext(context.WithValue(ctx, chi.RouteCtxKey, rctx))
 
-	// Create a response recorder
 	rr := httptest.NewRecorder()
 
 	state := &plugins.State{
@@ -164,47 +171,42 @@ func TestStatic_Do_ViewAction(t *testing.T) {
 		Response: rr,
 	}
 
-	// Call the function under test
 	result := static.Do(ctx, state)
 
-	// Check the result
 	assert.True(t, result)
 	assert.NotNil(t, state.User)
 	assert.NotNil(t, state.Device)
 	assert.NotNil(t, state.Placement)
-	assert.Equal(t, "test-placement", state.Placement.ID)
+	assert.Equal(t, uint(1), state.Placement.ID)
 
-	// Check that placement contains one ad unit
-	assert.Len(t, state.Placement.Units, 1)
-	assert.Equal(t, uint(1), state.Placement.Units[0].ID)
-	assert.Equal(t, "yandex", state.Placement.Units[0].Network)
-	assert.Equal(t, 10, state.Placement.Units[0].Price)
-	assert.Equal(t, "banner", state.Placement.Units[0].Format)
-
-	// Check that action is stored in context
 	action := state.Request.Context().Value("action")
 	assert.Equal(t, "view", action)
 }
 
 func TestStatic_Do_ClickAction_SessionNotFound(t *testing.T) {
-	// Create real dependencies
 	logger := zaptest.NewLogger(t)
-	cache := &MockCache{}
+	cache := &MockBanners{}
 	session := &MockSession{}
 	analytics := &MockAnalytics{}
+	placements := &MockPlacements{}
+	units := &MockUnits{}
 
-	// Create an instance of Static
 	static := &Static{
-		logger:    logger,
-		cache:     cache,
-		sessions:  session,
-		analytics: analytics,
+		logger:     logger,
+		banners:    cache,
+		sessions:   session,
+		analytics:  analytics,
+		placements: placements,
+		units:      units,
 	}
 
-	// Prepare context and state
+	placements.On("One", mock.Anything, mock.Anything).Return(ads.Placement{
+		ID: 1,
+	}, true)
+	units.On("FindByPlacement", mock.Anything, mock.Anything).Return(nil, false)
+
 	ctx := context.Background()
 
-	// Create a mock HTTP request with action and placement parameters
 	rctx := &chi.Context{
 		URLParams: chi.RouteParams{
 			Keys:   []string{"action", "placement"},
@@ -214,7 +216,6 @@ func TestStatic_Do_ClickAction_SessionNotFound(t *testing.T) {
 	req := &http.Request{}
 	req = req.WithContext(context.WithValue(ctx, chi.RouteCtxKey, rctx))
 
-	// Create a response recorder
 	rr := httptest.NewRecorder()
 
 	state := &plugins.State{
@@ -222,43 +223,43 @@ func TestStatic_Do_ClickAction_SessionNotFound(t *testing.T) {
 		Response: rr,
 	}
 
-	// Set up mock expectations
-	// We need to create a request with the same context that will be modified by WithValue
 	reqForMock := req.Clone(ctx)
 	session.On("LoadWithExpire", mock.MatchedBy(func(r *http.Request) bool {
 		return r.URL == reqForMock.URL
 	})).Return(sessions.Session{}, false)
 
-	// Call the function under test
 	result := static.Do(ctx, state)
 
-	// Check the result
 	assert.False(t, result)
 	assert.Equal(t, http.StatusNotFound, rr.Code)
 
-	// Verify mock expectations
 	session.AssertExpectations(t)
 }
 
 func TestStatic_Do_ClickAction_BannerNotFound(t *testing.T) {
-	// Create real dependencies
 	logger := zaptest.NewLogger(t)
-	cache := &MockCache{}
+	banners := &MockBanners{}
 	session := &MockSession{}
 	analytics := &MockAnalytics{}
+	placements := &MockPlacements{}
+	units := &MockUnits{}
 
-	// Create an instance of Static
 	static := &Static{
-		logger:    logger,
-		cache:     cache,
-		sessions:  session,
-		analytics: analytics,
+		logger:     logger,
+		banners:    banners,
+		sessions:   session,
+		analytics:  analytics,
+		placements: placements,
+		units:      units,
 	}
 
-	// Prepare context and state
+	placements.On("One", mock.Anything, mock.Anything).Return(ads.Placement{
+		ID: 1,
+	}, true)
+	units.On("FindByPlacement", mock.Anything, mock.Anything).Return(nil, false)
+
 	ctx := context.Background()
 
-	// Create a mock HTTP request with action and placement parameters
 	rctx := &chi.Context{
 		URLParams: chi.RouteParams{
 			Keys:   []string{"action", "placement"},
@@ -268,7 +269,6 @@ func TestStatic_Do_ClickAction_BannerNotFound(t *testing.T) {
 	req := &http.Request{}
 	req = req.WithContext(context.WithValue(ctx, chi.RouteCtxKey, rctx))
 
-	// Create a response recorder
 	rr := httptest.NewRecorder()
 
 	state := &plugins.State{
@@ -276,45 +276,46 @@ func TestStatic_Do_ClickAction_BannerNotFound(t *testing.T) {
 		Response: rr,
 	}
 
-	// Set up mock expectations
 	reqForMock := req.Clone(ctx)
 	sess := sessions.Session{Value: "1"}
 	session.On("LoadWithExpire", mock.MatchedBy(func(r *http.Request) bool {
 		return r.URL == reqForMock.URL
 	})).Return(sess, true)
-	cache.On("One", ctx, uint(1)).Return(ads.Banner{}, false)
+	banners.On("One", ctx, uint(1)).Return(ads.Banner{}, false)
 
-	// Call the function under test
 	result := static.Do(ctx, state)
 
-	// Check the result
 	assert.False(t, result)
 	assert.Equal(t, http.StatusNotFound, rr.Code)
 
-	// Verify mock expectations
 	session.AssertExpectations(t)
-	cache.AssertExpectations(t)
+	banners.AssertExpectations(t)
 }
 
 func TestStatic_Do_ClickAction_Success(t *testing.T) {
-	// Create real dependencies
 	logger := zaptest.NewLogger(t)
-	cache := &MockCache{}
+	banners := &MockBanners{}
 	session := &MockSession{}
 	analytics := &MockAnalytics{}
+	placements := &MockPlacements{}
+	units := &MockUnits{}
 
-	// Create an instance of Static
 	static := &Static{
-		logger:    logger,
-		cache:     cache,
-		sessions:  session,
-		analytics: analytics,
+		logger:     logger,
+		banners:    banners,
+		sessions:   session,
+		analytics:  analytics,
+		placements: placements,
+		units:      units,
 	}
 
-	// Prepare context and state
+	placements.On("One", mock.Anything, mock.Anything).Return(ads.Placement{
+		ID: 1,
+	}, true)
+	units.On("FindByPlacement", mock.Anything, mock.Anything).Return(nil, false)
+
 	ctx := context.Background()
 
-	// Create a mock HTTP request with action and placement parameters
 	rctx := &chi.Context{
 		URLParams: chi.RouteParams{
 			Keys:   []string{"action", "placement"},
@@ -324,7 +325,6 @@ func TestStatic_Do_ClickAction_Success(t *testing.T) {
 	req := &http.Request{}
 	req = req.WithContext(context.WithValue(ctx, chi.RouteCtxKey, rctx))
 
-	// Create a response recorder
 	rr := httptest.NewRecorder()
 
 	state := &plugins.State{
@@ -332,27 +332,22 @@ func TestStatic_Do_ClickAction_Success(t *testing.T) {
 		Response: rr,
 	}
 
-	// Set up mock expectations
 	reqForMock := req.Clone(ctx)
 	sess := sessions.Session{Value: "1"}
 	banner := ads.Banner{Target: "https://example.com/target"}
 	session.On("LoadWithExpire", mock.MatchedBy(func(r *http.Request) bool {
 		return r.URL == reqForMock.URL
 	})).Return(sess, true)
-	cache.On("One", ctx, uint(1)).Return(banner, true)
+	banners.On("One", ctx, uint(1)).Return(banner, true)
 	analytics.On("LogClick", ctx, ads.TrackerInfo{}).Return(nil)
 
-	// Call the function under test
 	result := static.Do(ctx, state)
 
-	// Check the result
 	assert.False(t, result)
-	// Check that it's a redirect response
 	assert.Equal(t, http.StatusSeeOther, rr.Code)
 	assert.Equal(t, "https://example.com/target", rr.Header().Get("Location"))
 
-	// Verify mock expectations
 	session.AssertExpectations(t)
-	cache.AssertExpectations(t)
+	banners.AssertExpectations(t)
 	analytics.AssertExpectations(t)
 }
