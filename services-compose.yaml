@@ -41,18 +41,18 @@ services:
     depends_on:
       - platform-kafka
 
-  # clickhouse:
-  #   image: clickhouse/clickhouse-server:24.1
-  #   # ports:
-  #   #   - "8123:8123"
-  #   #   - "9000:9000"
-  #   volumes:
-  #     - /opt/platform/clickhouse/data:/var/lib/clickhouse
-  #     - /opt/platform/clickhouse/users.xml:/etc/clickhouse-server/users.d/docker.xml
-  #     - /opt/platform/clickhouse/init:/docker-entrypoint-initdb.d
-  #   environment:
-  #     CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
-  #   ulimits:
-  #     nofile:
-  #       soft: 262144
-  #       hard: 262144
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.1
+    # ports:
+    #   - "8123:8123"
+    #   - "9000:9000"
+    volumes:
+      - /opt/platform/clickhouse/data:/var/lib/clickhouse
+      - /opt/platform/clickhouse/users-prod.xml:/etc/clickhouse-server/users.d/docker.xml
+      - /opt/platform/clickhouse/initprod:/docker-entrypoint-initdb.d
+    environment:
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144

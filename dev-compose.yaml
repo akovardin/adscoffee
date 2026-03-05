@@ -123,8 +123,8 @@ services:
       - "9000:9000"
     volumes:
       - ./data/clickhouse/data:/var/lib/clickhouse
-      - ./data/clickhouse/users.xml:/etc/clickhouse-server/users.d/docker.xml
-      - ./data/clickhouse/init:/docker-entrypoint-initdb.d
+      - ./data/clickhouse/users-dev.xml:/etc/clickhouse-server/users.d/docker.xml
+      - ./data/clickhouse/initdev:/docker-entrypoint-initdb.d
     environment:
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
     ulimits:

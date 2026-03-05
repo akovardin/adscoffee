@@ -110,3 +110,12 @@ tasks:
   letsencrypt:
     cmds:
       - sup {{ .NETWORK }} letsencrypt
+
+  upload-compose:
+    cmds:
+      - ./services-compose.yaml {{ .SERVER }}:/opt/platform/services-compose.yaml
+
+  configs-clickhouse:
+    cmds:
+      - scp ./data/clickhouse/users-prod.xml {{ .SERVER }}:/opt/platform/clickhouse/users-prod.xml
+      - scp ./data/clickhouse/initprod/* {{ .SERVER }}:/opt/platform/clickhouse/initprod/
