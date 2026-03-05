@@ -158,9 +158,3 @@ func (s *Stats) Configure(pb *presets.Builder) {
 		return
 	})
 }
-
-func errorBody(msg string) h.HTMLComponent {
-	return vuetify.VContainer(
-		h.P().Text(msg),
-	)
-}
