@@ -36,15 +36,12 @@ func TestMediation_Do(t *testing.T) {
 		ctx := context.Background()
 		state := &plugins.State{
 			Request: &http.Request{},
-			Placement: &plugins.Placement{
-				ID: "test-placement",
-				Units: []ads.Unit{
-					{
-						ID:      1,
-						Title:   "Test Unit",
-						Price:   100,
-						Network: "test-network",
-					},
+			Units: []ads.Unit{
+				{
+					ID:    1,
+					Name:  "Test Unit",
+					Price: 100,
+					Data:  "",
 				},
 			},
 			Winners: []ads.Banner{},
@@ -57,28 +54,25 @@ func TestMediation_Do(t *testing.T) {
 		assert.Equal(t, "Test Unit", state.Winners[0].Title)
 		assert.Equal(t, 100, state.Winners[0].Price)
 		assert.Equal(t, ads.CreativeTypeMediator, state.Winners[0].Type)
-		assert.Equal(t, "test-network", state.Winners[0].Network)
+		assert.Equal(t, "", state.Winners[0].Network)
 	})
 
 	t.Run("multiple units", func(t *testing.T) {
 		ctx := context.Background()
 		state := &plugins.State{
 			Request: &http.Request{},
-			Placement: &plugins.Placement{
-				ID: "test-placement",
-				Units: []ads.Unit{
-					{
-						ID:      1,
-						Title:   "Unit 1",
-						Price:   100,
-						Network: "network-1",
-					},
-					{
-						ID:      2,
-						Title:   "Unit 2",
-						Price:   200,
-						Network: "network-2",
-					},
+			Units: []ads.Unit{
+				{
+					ID:    1,
+					Name:  "Unit 1",
+					Price: 100,
+					Data:  "",
+				},
+				{
+					ID:    2,
+					Name:  "Unit 2",
+					Price: 200,
+					Data:  "",
 				},
 			},
 			Winners: []ads.Banner{},
@@ -93,9 +87,9 @@ func TestMediation_Do(t *testing.T) {
 	t.Run("no units", func(t *testing.T) {
 		ctx := context.Background()
 		state := &plugins.State{
-			Request:   &http.Request{},
-			Placement: &plugins.Placement{ID: "test-placement", Units: []ads.Unit{}},
-			Winners:   []ads.Banner{},
+			Request: &http.Request{},
+			Units:   []ads.Unit{},
+			Winners: []ads.Banner{},
 		}
 
 		err := mediation.Do(ctx, state)
@@ -111,15 +105,12 @@ func TestMediation_Do(t *testing.T) {
 		ctx := context.Background()
 		state := &plugins.State{
 			Request: &http.Request{},
-			Placement: &plugins.Placement{
-				ID: "test-placement",
-				Units: []ads.Unit{
-					{
-						ID:      1,
-						Title:   "Test Unit",
-						Price:   100,
-						Network: "test-network",
-					},
+			Units: []ads.Unit{
+				{
+					ID:    1,
+					Name:  "Test Unit",
+					Price: 100,
+					Data:  "",
 				},
 			},
 			Winners: []ads.Banner{
@@ -141,9 +132,9 @@ func TestMediation_Do(t *testing.T) {
 	t.Run("no existing winners and no units", func(t *testing.T) {
 		ctx := context.Background()
 		state := &plugins.State{
-			Request:   &http.Request{},
-			Placement: &plugins.Placement{ID: "test-placement", Units: []ads.Unit{}},
-			Winners:   []ads.Banner{},
+			Request: &http.Request{},
+			Units:   []ads.Unit{},
+			Winners: []ads.Banner{},
 		}
 
 		err := mediation.Do(ctx, state)

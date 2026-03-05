@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"go.uber.org/zap"
 
+	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
@@ -23,52 +24,82 @@ func (m *MockAnalytics) LogRequest(ctx context.Context, state *plugins.State) er
 	return args.Error(0)
 }
 
+type MockPlacements struct {
+	mock.Mock
+}
+
+func (m *MockPlacements) One(ctx context.Context, id uint) (ads.Placement, bool) {
+	args := m.Called(ctx, id)
+	placement, _ := args.Get(0).(ads.Placement)
+	return placement, args.Bool(1)
+}
+
+type MockUnits struct {
+	mock.Mock
+}
+
+func (m *MockUnits) FindByPlacement(ctx context.Context, id uint) ([]ads.Unit, bool) {
+	args := m.Called(ctx, id)
+	units, _ := args.Get(0).([]ads.Unit)
+	return units, args.Bool(1)
+}
+
 func TestWeb_Name(t *testing.T) {
-	// Создаем экземпляр Web
 	web := &Web{}
 
-	// Вызываем тестируемую функцию
 	name := web.Name()
 
-	// Проверяем результат
 	assert.Equal(t, "inputs.web", name)
 }
 
 func TestWeb_Copy(t *testing.T) {
-	// Создаем mock для analytics
-	mockAnalytics := new(MockAnalytics)
+	analytics := &MockAnalytics{}
+	placements := &MockPlacements{}
+	units := &MockUnits{}
 
-	// Создаем экземпляр Web
 	web := &Web{
-		analytics: mockAnalytics,
-		logger:    zap.NewNop(),
+		analytics:  analytics,
+		placements: placements,
+		units:      units,
+		logger:     zap.NewNop(),
 	}
 
-	// Подготавливаем конфигурацию
 	cfgMap := map[string]any{"key": "value"}
 
-	// Вызываем тестируемую функцию
 	copied := web.Copy(cfgMap)
 
-	// Проверяем результат
 	assert.NotNil(t, copied)
 	assert.IsType(t, &Web{}, copied)
 
-	// Проверяем, что analytics скопирован корректно
-	copiedWeb := copied.(*Web)
-	assert.Equal(t, mockAnalytics, copiedWeb.analytics)
+	w := copied.(*Web)
+	assert.Equal(t, analytics, w.analytics)
+	assert.Equal(t, placements, w.placements)
+	assert.Equal(t, units, w.units)
 }
 
 func TestWeb_Do(t *testing.T) {
-	// Создаем mock для analytics
-	mockAnalytics := new(MockAnalytics)
-	mockAnalytics.On("LogRequest", mock.Anything, mock.Anything).Return(nil)
+	analytics := &MockAnalytics{}
+	placements := &MockPlacements{}
+	units := &MockUnits{}
 
-	// Создаем экземпляр Web
+	analytics.On("LogRequest", mock.Anything, mock.Anything).Return(nil)
+
 	web := &Web{
-		analytics: mockAnalytics,
-		logger:    zap.NewNop(),
+		analytics:  analytics,
+		placements: placements,
+		units:      units,
+		logger:     zap.NewNop(),
 	}
+
+	placements.On("One", mock.Anything, mock.Anything).Return(ads.Placement{
+		ID: 1,
+	}, true)
+	units.On("FindByPlacement", mock.Anything, mock.Anything).Return([]ads.Unit{
+		{
+			ID:    1,
+			Price: 10,
+		},
+	}, true)
 
 	// Подготавливаем контекст и состояние
 	ctx := context.Background()
@@ -95,13 +126,13 @@ func TestWeb_Do(t *testing.T) {
 	assert.NotNil(t, state.User)
 	assert.NotNil(t, state.Device)
 	assert.NotNil(t, state.Placement)
-	assert.Equal(t, "test-placement", state.Placement.ID)
+	assert.Equal(t, uint(1), state.Placement.ID)
 
 	// Проверяем, что placement содержит единицу рекламы
 	assert.Len(t, state.Units, 1)
-	assert.Equal(t, uint(0), state.Units[0].ID)
+	assert.Equal(t, uint(1), state.Units[0].ID)
 	assert.Equal(t, 10, state.Units[0].Price)
 
 	// Проверяем, что analytics.LogRequest был вызван
-	mockAnalytics.AssertCalled(t, "LogRequest", ctx, state)
+	analytics.AssertCalled(t, "LogRequest", ctx, state)
 }
