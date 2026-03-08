@@ -3,6 +3,7 @@ package stats
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/uptrace/go-clickhouse/ch"
@@ -11,7 +12,10 @@ import (
 	"go.ads.coffee/platform/admin/internal/clickhouse"
 )
 
-const DateHour = "2006-01-02 15"
+const (
+	DateHour       = "2006-01-02 15"
+	DateHourMinute = "2006-01-02 15:04"
+)
 
 // достыпные метрики
 const (
@@ -21,6 +25,8 @@ const (
 	MetricImpressions = "impressions"
 	MetricClicks      = "clicks"
 	MetricConversions = "conversions"
+	MetricPrice       = "price"
+	MetricCtr         = "ctr"
 )
 
 // доступные фильтры
@@ -32,6 +38,17 @@ const (
 	FilterNetwork      = "network"
 	FilterBundle       = "bundle"
 	FilterSlot         = "slot"
+)
+
+// доступные группировки
+const (
+	GroupAdvertiser = "advertiser_id"
+	GroupCampaign   = "campaign_id"
+	GroupGroup      = "group_id"
+	GroupBanner     = "banner_id"
+	GroupNetwork    = "network"
+	GroupBundle     = "bundle"
+	GroupSlot       = "slot"
 )
 
 type Query struct {
@@ -62,10 +79,18 @@ type Condition struct {
 
 type Filter struct {
 	Field string
-	Value []any
+	Value []string
 }
 
 func (q *Query) Select(ctx context.Context, condition Condition) (Stat, error) {
+	if len(condition.Groups) == 0 {
+		return Stat{}, nil
+	}
+
+	if len(condition.Metrics) == 0 {
+		return Stat{}, nil
+	}
+
 	diff := condition.To.Sub(condition.From)
 	cnt := int(diff.Hours())
 
@@ -78,6 +103,10 @@ func (q *Query) Select(ctx context.Context, condition Condition) (Stat, error) {
 	datasets := map[string]map[string]float64{}
 
 	for _, metric := range condition.Metrics {
+		if metric == MetricCtr {
+
+		}
+
 		st, err := q.query(ctx, metric, condition, hours)
 		if err != nil {
 			q.logger.Error("query", zap.Error(err))
@@ -134,9 +163,6 @@ func (i Item) Key(metric string, groups []string) string {
 func (q *Query) query(ctx context.Context, metric string, condition Condition, hours []string) (map[string]map[string]float64, error) {
 	sel := q.clickhouse.DB.NewSelect()
 
-	// если метрика деньги, то тут берем impressions
-	sel.ModelTableExpr(metric + "_hour")
-
 	sel.ColumnExpr("timestamp")
 
 	for i, group := range condition.Groups {
@@ -144,9 +170,24 @@ func (q *Query) query(ctx context.Context, metric string, condition Condition, h
 	}
 
 	// если метрика деньги, то тут берем price
-	sel.ColumnExpr("sum(count) as value")
+	if metric == MetricPrice {
+		sel.ColumnExpr("toFloat64(sum(price)) as value")
+	} else {
+		sel.ColumnExpr("sum(count) as value")
+	}
+
+	// если метрика деньги, то тут берем impressions
+	if metric == MetricPrice {
+		sel.ModelTableExpr("impressions_hour")
+	} else {
+		sel.ModelTableExpr(metric + "_hour")
+	}
 
 	for _, filter := range condition.Filters {
+		if len(filter.Value) == 0 {
+			continue
+		}
+
 		sel.Where(filter.Field+" IN (?)", ch.In(filter.Value))
 	}
 
@@ -156,6 +197,11 @@ func (q *Query) query(ctx context.Context, metric string, condition Condition, h
 	sel.Group("timestamp")
 
 	for _, group := range condition.Groups {
+		if group == GroupSlot {
+			// clear slot
+			sel.Where("lengthUTF8(slot) < 5")
+		}
+
 		sel.Group(group)
 	}
 
@@ -199,4 +245,69 @@ func (q *Query) query(ctx context.Context, metric string, condition Condition, h
 	}
 
 	return data, nil
+}
+
+type BundleModel struct {
+	Bundle string
+}
+
+func (q *Query) bundles(ctx context.Context) ([]Option, error) {
+	sel := q.clickhouse.DB.NewSelect()
+
+	sel.ColumnExpr("bundle")
+	sel.ModelTableExpr("impressions_hour")
+	sel.Group("bundle")
+
+	items := []BundleModel{}
+
+	err := sel.Scan(ctx, &items)
+	if err != nil {
+		return nil, err
+	}
+
+	options := make([]Option, 0, len(items))
+	for _, item := range items {
+		if !strings.Contains(item.Bundle, ".") {
+			continue
+		}
+		options = append(options, Option{
+			ID:   item.Bundle,
+			Name: item.Bundle,
+		})
+	}
+
+	return options, err
+}
+
+type NetworkModel struct {
+	Network string
+}
+
+func (q *Query) networks(ctx context.Context) ([]Option, error) {
+	sel := q.clickhouse.DB.NewSelect()
+
+	sel.ColumnExpr("network")
+	sel.ModelTableExpr("impressions_hour")
+	sel.Group("network")
+
+	items := []NetworkModel{}
+
+	err := sel.Scan(ctx, &items)
+	if err != nil {
+		return nil, err
+	}
+
+	options := make([]Option, 0, len(items))
+	for _, item := range items {
+		options = append(options, Option{
+			ID:   item.Network,
+			Name: item.Network,
+		})
+	}
+
+	return options, err
+}
+
+type SlotModel struct {
+	Slot string
 }
