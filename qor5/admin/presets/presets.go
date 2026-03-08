@@ -519,6 +519,61 @@ func (m *ModelBuilder) DefaultMenuItem(
 	}
 }
 
+func (m *ModelBuilder) DefaultDasboardMenuItem(
+	customizeChildren func(evCtx *web.EventContext, isSub bool, menuIcon string, children ...h.HTMLComponent) ([]h.HTMLComponent, error),
+) func(evCtx *web.EventContext, isSub bool) (h.HTMLComponent, error) {
+	return func(evCtx *web.EventContext, isSub bool) (h.HTMLComponent, error) {
+		menuIcon := m.menuIcon
+		// fontWeight := subMenuFontWeight
+		if isSub {
+			// menuIcon = ""
+		} else if menuIcon == "" {
+			// fontWeight = menuFontWeight
+			menuIcon = defaultMenuIcon(m.label)
+		}
+		href := m.Info().ListingHref()
+		if m.link != "" {
+			href = m.link
+		}
+		if m.defaultURLQueryFunc != nil {
+			href = fmt.Sprintf("%s?%s", href, m.defaultURLQueryFunc(evCtx.R).Encode())
+		}
+
+		children := []h.HTMLComponent{
+			h.Iff(menuIcon != "", func() h.HTMLComponent {
+				return web.Slot(VIcon(menuIcon)).Name(VSlotPrepend)
+			}),
+			VListItemTitle(
+				h.Text(m.Info().LabelName(evCtx, false)),
+			),
+		}
+		if customizeChildren != nil {
+			var err error
+			children, err = customizeChildren(evCtx, isSub, menuIcon, children...)
+			if err != nil {
+				return nil, err
+			}
+		}
+		item := VListItem().Rounded(true).Value(m.label).Children(children...)
+
+		item.Href(href)
+		// 		if strings.HasPrefix(href, "/") {
+		// 			funcStr := fmt.Sprintf(`(e) => {
+		// 	if (e.metaKey || e.ctrlKey) { return; }
+		// 	e.stopPropagation();
+		// 	e.preventDefault();
+		// 	%s;
+		// }
+		// `, web.Plaid().PushStateURL(href).Go())
+		// 			item.Attr("@click", funcStr)
+		// 		}
+		// if b.isMenuItemActive(ctx, m) {
+		//	item = item.Class("v-list-item--active text-primary")
+		// }
+		return item, nil
+	}
+}
+
 func (b *Builder) RunBrandFunc(ctx *web.EventContext) (r h.HTMLComponent) {
 	if b.brandFunc != nil {
 		return b.brandFunc(ctx)

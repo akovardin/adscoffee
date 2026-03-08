@@ -26,6 +26,7 @@ type ModelBuilder struct {
 	notInMenu           bool
 	menuIcon            string
 	menuItem            func(evCtx *web.EventContext, isSub bool) (h.HTMLComponent, error)
+	dashboardItem       func(evCtx *web.EventContext, isSub bool) (h.HTMLComponent, error)
 	uriName             string
 	defaultURLQueryFunc func(*http.Request) url.Values
 	label               string
@@ -61,6 +62,8 @@ func NewModelBuilder(p *Builder, model interface{}) (mb *ModelBuilder) {
 	mb.uriName = inflection.Plural(strcase.ToKebab(modelName))
 	mb.modelInfo = &ModelInfo{mb: mb}
 	mb.menuItem = mb.DefaultMenuItem(nil)
+	mb.dashboardItem = mb.DefaultDasboardMenuItem(nil)
+
 	// Be aware the uriName here is still the original struct
 	mb.newListing()
 	mb.newDetailing()
