@@ -152,10 +152,23 @@ func (b *MenuOrderBuilder) buildMenuItem(name string, isSub bool, groupName stri
 	if !ok {
 		return nil
 	}
-	menuItem, err := m.menuItem(ctx, isSub)
-	if err != nil {
-		panic(err)
+
+	var (
+		menuItem h.HTMLComponent
+		err      error
+	)
+	if name == "dashboard" {
+		menuItem, err = m.dashboardItem(ctx, isSub)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		menuItem, err = m.menuItem(ctx, isSub)
+		if err != nil {
+			panic(err)
+		}
 	}
+
 	inOrderMap[m.uriName] = menuOrderItem{
 		groupName: groupName,
 		model:     m,
