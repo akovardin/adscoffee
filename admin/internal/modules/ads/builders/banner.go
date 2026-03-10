@@ -230,7 +230,8 @@ func (m *Banner) Configure(b *presets.Builder) {
 				{"Title"},
 				{"Label"},
 				{"Description"},
-				{"Image", "Icon"},
+				{"Image"},
+				{"Icon"},
 				{"Active"},
 			},
 		},
@@ -299,6 +300,14 @@ func (m *Banner) Configure(b *presets.Builder) {
 					"image": {
 						Width:  640,
 						Height: 360,
+					},
+					"250x250": {
+						Width:  250,
+						Height: 250,
+					},
+					"450x450": {
+						Width:  450,
+						Height: 450,
 					},
 				},
 			})
