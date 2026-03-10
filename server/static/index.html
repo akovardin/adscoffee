@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+        <meta name="description"
+            content="Пример рекламных баннеров">
+
+    </head>
+    <body>
+
+        <p>Ad image
+            The image is 240*180 pixels to support high resolution displays, and is displayed at 120*90px. The image can be optional to support publishers who use text-only ads.</p>
+      
+
+        <!-- Подключаем скрипт (можно асинхронно) -->
+        <script>
+            window.adsCoffeeCb = window.adsCoffeeCb || [];
+        </script>
+        <script src="js/coffee.js" async></script>
+
+        <!-- Контейнер для рекламы -->
+        <div id="coffee-ad-container-1"></div>
+
+        <!-- Инициализация -->
+        <script>
+            window.adsCoffeeCb.push(() => {
+                window.adsCoffee.render({
+                    renderTo: "coffee-ad-container-1",
+                    placementId: "1",
+                    template: "horizontal-marker",
+                });
+            });
+        </script>
+
+        <!-- Контейнер для рекламы -->
+        <div id="coffee-ad-container-2"></div>
+
+        <!-- Инициализация -->
+        <script>
+            window.adsCoffeeCb.push(() => {
+                window.adsCoffee.render({
+                    renderTo: "coffee-ad-container-2",
+                    placementId: "1",
+                });
+            });
+        </script>
+
+
+        <!-- Контейнер для рекламы -->
+        <div id="coffee-ad-container-3"></div>
+
+        <!-- Инициализация -->
+        <script>
+            window.adsCoffeeCb.push(() => {
+                window.adsCoffee.render({
+                    renderTo: "coffee-ad-container-3",
+                    placementId: "1",
+                    template: "horizontal",
+                    contentWidth: 380,
+                });
+            });
+        </script>
+
+    </body>
+</html>
