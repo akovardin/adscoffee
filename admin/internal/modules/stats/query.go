@@ -26,7 +26,6 @@ const (
 	MetricClicks      = "clicks"
 	MetricConversions = "conversions"
 	MetricPrice       = "price"
-	MetricCtr         = "ctr"
 )
 
 // доступные фильтры
@@ -37,7 +36,6 @@ const (
 	FilterBannerId     = "banner_id"
 	FilterNetwork      = "network"
 	FilterBundle       = "bundle"
-	FilterSlot         = "slot"
 )
 
 // доступные группировки
@@ -48,7 +46,6 @@ const (
 	GroupBanner     = "banner_id"
 	GroupNetwork    = "network"
 	GroupBundle     = "bundle"
-	GroupSlot       = "slot"
 )
 
 type Query struct {
@@ -103,10 +100,6 @@ func (q *Query) Select(ctx context.Context, condition Condition) (Stat, error) {
 	datasets := map[string]map[string]float64{}
 
 	for _, metric := range condition.Metrics {
-		if metric == MetricCtr {
-
-		}
-
 		st, err := q.query(ctx, metric, condition, hours)
 		if err != nil {
 			q.logger.Error("query", zap.Error(err))
@@ -197,11 +190,6 @@ func (q *Query) query(ctx context.Context, metric string, condition Condition, h
 	sel.Group("timestamp")
 
 	for _, group := range condition.Groups {
-		if group == GroupSlot {
-			// clear slot
-			sel.Where("lengthUTF8(slot) < 5")
-		}
-
 		sel.Group(group)
 	}
 

@@ -75,7 +75,6 @@ func (s *Stats) Configure(pb *presets.Builder) {
 
 		bundles := parse(ctx, "bundles")
 		networks := parse(ctx, "networks")
-		slots := parse(ctx, "slots")
 
 		// load stats
 		data, err := s.query.Select(context.Background(), Condition{
@@ -106,10 +105,6 @@ func (s *Stats) Configure(pb *presets.Builder) {
 				{
 					Field: FilterNetwork,
 					Value: networks,
-				},
-				{
-					Field: FilterSlot,
-					Value: slots,
 				},
 			},
 			Groups: grouped,
@@ -507,10 +502,6 @@ func (s *Stats) metrics() []Option {
 			ID:   MetricPrice,
 			Name: "Деньги",
 		},
-		{
-			ID:   MetricCtr,
-			Name: "CTR",
-		},
 	}
 }
 
@@ -539,10 +530,6 @@ func (s *Stats) grouped() []Option {
 		{
 			ID:   GroupBundle,
 			Name: "Бандлы",
-		},
-		{
-			ID:   GroupSlot,
-			Name: "Слоты",
 		},
 	}
 }
