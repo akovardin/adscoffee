@@ -9,6 +9,7 @@ require (
 	github.com/cep21/circuit/v4 v4.0.0
 	github.com/chapsuk/wait v0.3.2
 	github.com/go-chi/chi/v5 v5.2.4
+	github.com/go-chi/cors v1.2.2
 	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/google/uuid v1.6.0

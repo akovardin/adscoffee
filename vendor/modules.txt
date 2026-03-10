@@ -117,6 +117,9 @@ github.com/gabriel-vasile/mimetype/internal/scan
 ## explicit; go 1.22
 github.com/go-chi/chi/v5
 github.com/go-chi/chi/v5/middleware
+# github.com/go-chi/cors v1.2.2
+## explicit; go 1.14
+github.com/go-chi/cors
 # github.com/go-logr/logr v1.4.3
 ## explicit; go 1.18
 github.com/go-logr/logr
