@@ -7,8 +7,11 @@ type Unit struct {
 	Price int
 	Data  string
 
-	NetworkID   uint
+	NetworkID uint
+	Network   Network
+
 	PlacementID uint
+	Placement   Placement
 
 	Active bool
 }

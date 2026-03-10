@@ -11,6 +11,8 @@ import (
 	"go.ads.coffee/platform/server/internal/domain/ads"
 )
 
+const network = "coffee"
+
 type Repo struct {
 	logger *zap.Logger
 	db     *gorm.DB
@@ -154,6 +156,8 @@ func toModel(row Row) (ads.Banner, error) {
 
 		Image: row.Image,
 		Icon:  row.Icon,
+
+		Network: network,
 	}
 
 	var err error

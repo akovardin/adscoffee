@@ -27,6 +27,7 @@ func (r *Repo) All(ctx context.Context) ([]ads.Unit, error) {
 	rows := []ads.Unit{}
 
 	err := r.db.Model(ads.Unit{}).
+		Preload("Network").
 		Where("deleted_at is null and active = true").
 		Find(&rows).Error
 	if err != nil {

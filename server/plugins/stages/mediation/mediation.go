@@ -42,11 +42,12 @@ func (t *Mediation) Do(ctx context.Context, state *plugins.State) error {
 
 	for _, u := range state.Units {
 		winners = append(winners, ads.Banner{
-			ID:    u.ID,
-			Title: u.Name, // TODO: title or name?
-			Price: u.Price,
-			Type:  ads.CreativeTypeMediator,
-			Data:  u.Data,
+			ID:      u.ID,
+			Title:   u.Name, // TODO: title or name?
+			Price:   u.Price,
+			Type:    ads.CreativeTypeMediator,
+			Data:    u.Data,
+			Network: u.Network.Name,
 		})
 	}
 
