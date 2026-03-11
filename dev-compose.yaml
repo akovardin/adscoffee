@@ -151,13 +151,14 @@ services:
       - "9223:9001"
     command: [ "server", "--console-address", ":9001", "/data" ]
 
-  
-  dagu:
-    image: ghcr.io/dagu-org/dagu:latest
+  ch-ui:
+    image: ghcr.io/caioricciuti/ch-ui:latest
+    environment:
+      - CLICKHOUSE_URL=http://clickhouse:8123
     volumes:
-      - ./analytics/dagu:/var/lib/dagu
+      - ./data/chiui:/app/data
     ports:
-      - "8088:8080"
+      - "3488:3488"
 
 
 volumes:

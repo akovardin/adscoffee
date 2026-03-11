@@ -13,4 +13,6 @@ Taskfile.prod.yml
 analytics/dagu/data
 analytics/dagu/suspend
 analytics/dagu/logs
+analytics/configs/prod.yaml
+analytics/configs/dev.yaml
 deploy/*

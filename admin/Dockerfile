@@ -5,7 +5,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 
 ADD . /app
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -v -o /admin ./cmd/admin
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -v -o /admin ./admin/cmd/admin
 
 # Tests
 FROM build-stage AS run-test-stage
@@ -17,10 +17,9 @@ ENV TZ="Europe/Moscow"
 WORKDIR /
 
 COPY --from=build-stage /admin /admin
-COPY configs/* /configs/
 RUN apt-get update
 RUN apt-get install -y ca-certificates
 
-EXPOSE 8080
+EXPOSE 8082
 
 ENTRYPOINT [ "/admin"]

@@ -1,10 +1,10 @@
 services:
-  platform-redis:
+  redis:
     image: redis/redis-stack-server:latest
     # ports: 
     #   - 6379:6379
 
-  platform-kafka:
+  kafka:
     image: confluentinc/cp-kafka:7.8.0
     hostname: kafka
     # ports:
@@ -16,9 +16,9 @@ services:
       # Изменено: теперь только один узел выполняет роль и брокера, и контроллера
       KAFKA_PROCESS_ROLES: 'broker,controller'
       # Изменено: только один voter (сам себя)
-      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@platform-kafka:19093'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:19093'
       KAFKA_LISTENERS: 'PLAINTEXT_INTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:19093,PLAINTEXT_EXTERNAL://0.0.0.0:19092'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_INTERNAL://platform-kafka:9092,PLAINTEXT_EXTERNAL://platform-kafka:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_INTERNAL://kafka:9092,PLAINTEXT_EXTERNAL://kafka:9092'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT,PLAINTEXT_EXTERNAL:PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT_INTERNAL'
@@ -28,18 +28,18 @@ services:
       KAFKA_DEFAULT_REPLICATION_FACTOR: 1
       KAFKA_MIN_INSYNC_REPLICAS: 1
 
-  platform-kafka-ui:
+  kafka-ui:
     image: provectuslabs/kafka-ui:latest
     ports:
       - "8090:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: platform-kafka:9092
+      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka:9092
       AUTH_TYPE: "LOGIN_FORM"
       SPRING_SECURITY_USER_NAME: admin
       SPRING_SECURITY_USER_PASSWORD: "password"
     depends_on:
-      - platform-kafka
+      - kafka
 
   clickhouse:
     image: clickhouse/clickhouse-server:24.1
@@ -56,3 +56,13 @@ services:
       nofile:
         soft: 262144
         hard: 262144
+
+  ch-ui:
+    image: ghcr.io/caioricciuti/ch-ui:latest
+    environment:
+      - CLICKHOUSE_URL=http://clickhouse:8123
+    ports:
+      - "3488:3488"
+
+
+    #  add own containers?

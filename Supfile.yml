@@ -27,6 +27,17 @@ commands:
     run: docker run -p 8072:8082  --network platform_default --name platform-admin -d -v /opt/platform/admin/configs:/configs registry.gitflic.ru/project/kovardin/adscoffee/platform-admin:$ADMIN_VERSION serve -c=/configs/prod.yaml
 
 
+  docker-pull-analytics:
+    run: docker pull registry.gitflic.ru/project/kovardin/adscoffee/platform-analytics:$ANALYTICS_VERSION
+
+  docker-stop-analytics:
+    run: docker stop platform-analytics || true && docker rm platform-analytics || true
+
+  docker-start-analytics:
+    run: >
+      docker run -p 8080:8080 --network platform_default --name platform-analytics -d -v /opt/platform/analytics/configs:/configs -e DAGU_AUTH_MODE=basic -e DAGU_AUTH_BASIC_USERNAME=admin -e DAGU_AUTH_BASIC_PASSWORD=password registry.gitflic.ru/project/kovardin/adscoffee/platform-analytics:$ANALYTICS_VERSION
+
+
   letsencrypt:
     run: >
       letsencrypt certonly -a webroot --webroot-path=/var/www/platform.ads.coffee/web -d platform.ads.coffee

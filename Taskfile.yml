@@ -5,6 +5,7 @@ version: '3'
 vars:
   SERVER_VERSION: v0.3
   ADMIN_VERSION: v0.1
+  ANALYTICS_VERSION: v0.2
   SERVER: miniservices
   NETWORK: production
   SERVICE_GROUP: adscoffee
@@ -40,7 +41,7 @@ tasks:
 
   docker-build-server:
     cmds:
-      - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-server:{{ .SERVER_VERSION }} -f Dockerfile.server .
+      - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-server:{{ .SERVER_VERSION }} -f ./server/Dockerfile .
 
   docker-publish-server:
     cmds:
@@ -48,12 +49,11 @@ tasks:
 
   docker-run-server:
     cmds:
-     - docker run -p 8091:8081 -d -v /opt/platform/server/configs:/configs registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-server:{{ .SERVER_VERSION }} serve -c=configs/dev.yaml
-
+     - docker run --rm -p 8091:8081 -d -v /opt/platform/server/configs:/configs registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-server:{{ .SERVER_VERSION }} serve -c=configs/dev.yaml
   
   docker-build-admin:
     cmds:
-      - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:{{ .ADMIN_VERSION }} -f Dockerfile.admin .
+      - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:{{ .ADMIN_VERSION }} -f ./admin/Dockerfile .
 
   docker-publish-admin:
     cmds:
@@ -61,7 +61,20 @@ tasks:
 
   docker-run-admin:
     cmds:
-     - docker run -p 8092:8082 -d -v /opt/platform/admin/configs:/configs registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:{{ .ADMIN_VERSION }} serve -c=configs/dev.yaml
+     - docker run --rm -p 8092:8082 -d -v /opt/platform/admin/configs:/configs registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:{{ .ADMIN_VERSION }} serve -c=configs/dev.yaml
+
+
+  docker-build-analytics:
+    cmds:
+      - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-analytics:{{ .ANALYTICS_VERSION }} -f ./analytics/Dockerfile .
+
+  docker-publish-analytics:
+    cmds:
+      - docker push registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-analytics:{{ .ANALYTICS_VERSION }}
+
+  docker-run-analytics:
+    cmds:
+     - docker run --rm -p 8080:8080 -d -v /Users/artem/projects/adscoffee/platform/analytics/configs:/configs -v /Users/artem/projects/adscoffee/platform/analytics/dagu:/var/lib/dagu registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-analytics:{{ .ANALYTICS_VERSION }}
 
   docker-serve-admin:
     cmds:
@@ -75,14 +88,24 @@ tasks:
       - sup -e SERVER_VERSION="{{ .SERVER_VERSION }}" {{ .NETWORK }} docker-stop-server
       - sup -e SERVER_VERSION="{{ .SERVER_VERSION }}" {{ .NETWORK }} docker-start-server
 
+  docker-serve-analytics:
+    cmds:
+      - sup -e ANALYTICS_VERSION="{{ .ANALYTICS_VERSION }}" {{ .NETWORK }} docker-pull-analytics
+      - sup -e ANALYTICS_VERSION="{{ .ANALYTICS_VERSION }}" {{ .NETWORK }} docker-stop-analytics
+      - sup -e ANALYTICS_VERSION="{{ .ANALYTICS_VERSION }}" {{ .NETWORK }} docker-start-analytics
+
   configs-server:
     cmds:
       - scp ./server/configs/prod.yaml {{ .SERVER }}:/opt/platform/server/configs/prod.yaml
 
-
   configs-admin:
     cmds:
       - scp ./admin/configs/prod.yaml {{ .SERVER }}:/opt/platform/admin/configs/prod.yaml
+
+  configs-analytics:
+    cmds:
+      - scp ./analytics/configs/prod.yaml {{ .SERVER }}:/opt/platform/analytics/configs/prod.yaml
+
 
   deploy-server:
     cmds:
@@ -96,10 +119,17 @@ tasks:
       - task: docker-publish-admin
       - task: docker-serve-admin
 
+  deploy-analytics:
+    cmds:
+      - task: docker-build-analytics
+      - task: docker-publish-analytics
+      - task: docker-serve-analytics
+
   deploy:
     cmds:
       - task: deploy-server
       - task: deploy-admin
+      - task: deploy-analytics
 
   serve:
     cmds:

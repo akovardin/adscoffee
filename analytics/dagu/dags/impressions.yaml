@@ -5,4 +5,4 @@ schedule: "1 * * * *"
 steps:
   - name: impressions
     command:
-      ./analytics impression
+      /analytics impressions -config=configs/prod.yaml

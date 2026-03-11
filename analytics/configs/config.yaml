@@ -1,0 +1,9 @@
+clickhouse:
+  host: 127.0.0.1
+  port: 9000
+  user: user
+  password: password
+  database: analytics
+  max_open_conns: 20
+  max_idle_conns: 4
+  max_conn_lifetime: "1m"

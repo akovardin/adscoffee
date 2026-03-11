@@ -5,8 +5,11 @@ import (
 	"os"
 
 	"github.com/urfave/cli/v3"
-	"go.ads.coffee/platform/analytics/internal/handlers"
 	"go.uber.org/fx"
+
+	"go.ads.coffee/platform/analytics/internal/clickhouse"
+	"go.ads.coffee/platform/analytics/internal/config"
+	"go.ads.coffee/platform/analytics/internal/handlers"
 )
 
 func main() {
@@ -22,21 +25,24 @@ func main() {
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					fx.New(
 						fx.Provide(
-							// func() (config.Config, error) {
-							// 	cfg := cmd.String("config")
-							// 	if cfg == "" {
-							// 		cfg = "analytics/configs/config.yaml"
-							// 	}
+							func() (config.Config, error) {
+								cfg := cmd.String("config")
+								if cfg == "" {
+									cfg = "analytics/configs/config.yaml"
+								}
 
-							// 	return config.New(cfg)
-							// },
-
-							handlers.Module,
+								return config.New(cfg)
+							},
 						),
+
+						handlers.Module,
+						clickhouse.Module,
 
 						fx.Invoke(
 							func(impressions *handlers.Impressions) {
 								impressions.Run()
+
+								os.Exit(0)
 							},
 						),
 					).Run()
