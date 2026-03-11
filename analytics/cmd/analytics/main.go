@@ -20,8 +20,11 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			{
-				Name:    "impressions",
-				Aliases: []string{"i"},
+				Name: "aggregations",
+				Flags: []cli.Flag{
+					&cli.StringFlag{Name: "table", Aliases: []string{"t"}},
+				},
+				Aliases: []string{"a"},
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					fx.New(
 						fx.Provide(
@@ -39,8 +42,10 @@ func main() {
 						clickhouse.Module,
 
 						fx.Invoke(
-							func(impressions *handlers.Impressions) {
-								impressions.Run()
+							func(aggregate *handlers.Aggregate) {
+								if err := aggregate.Run(ctx, cmd); err != nil {
+									panic(err)
+								}
 
 								os.Exit(0)
 							},

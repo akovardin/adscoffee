@@ -9,4 +9,5 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -v -o /analyt
 # Deploy
 FROM --platform=linux/amd64 ghcr.io/dagu-org/dagu:latest
 COPY --from=build /analytics /analytics
+COPY analytics/dagu/dags/requests.yaml /var/lib/dagu/dags/requests.yaml
 COPY analytics/dagu/dags/impressions.yaml /var/lib/dagu/dags/impressions.yaml

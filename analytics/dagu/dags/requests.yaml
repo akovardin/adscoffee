@@ -1,0 +1,8 @@
+description: Агрегация данных
+schedule: "1 * * * *"
+
+
+steps:
+  - name: requests
+    command:
+      /analytics aggregations -table=requests -config=/configs/prod.yaml
