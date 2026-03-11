@@ -157,7 +157,7 @@ services:
     environment:
       - CLICKHOUSE_URL=http://clickhouse:8123
     volumes:
-      - ./data/chiui:/app/data
+      - ./data/chui:/app/data
     ports:
       - "3488:3488"
 

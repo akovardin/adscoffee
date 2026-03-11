@@ -93,7 +93,7 @@ func TestNative_Render_WithOneWinner(t *testing.T) {
 	assert.Equal(t, "Test Native Ad", item.Title)
 	assert.Equal(t, "This is a test native advertisement", item.Description)
 	assert.Equal(t, "https://example.com/click", item.Target)
-	assert.Equal(t, "https:/test/image.image.jpg", item.Image) // base URL is prepended
+	assert.Equal(t, "https:/test/image.250x250.jpg", item.Image) // base URL is prepended
 
 	assert.NotEmpty(t, item.Impressions)
 	assert.NotEmpty(t, item.Clicks)
@@ -141,7 +141,7 @@ func TestNative_Render_WithMultipleWinners(t *testing.T) {
 	assert.Equal(t, "First Native Ad", item1.Title)
 	assert.Equal(t, "This is the first test native advertisement", item1.Description)
 	assert.Equal(t, "https://example.com/click1", item1.Target)
-	assert.Equal(t, "https:/test/image1.image.jpg", item1.Image)
+	assert.Equal(t, "https:/test/image1.250x250.jpg", item1.Image)
 
 	assert.NotEmpty(t, item1.Impressions)
 	assert.NotEmpty(t, item1.Clicks)
@@ -150,7 +150,7 @@ func TestNative_Render_WithMultipleWinners(t *testing.T) {
 	assert.Equal(t, "Second Native Ad", item2.Title)
 	assert.Equal(t, "This is the second test native advertisement", item2.Description)
 	assert.Equal(t, "https://example.com/click2", item2.Target)
-	assert.Equal(t, "https:/test/image2.image.jpg", item2.Image)
+	assert.Equal(t, "https:/test/image2.250x250.jpg", item2.Image)
 
 	assert.NotEmpty(t, item2.Impressions)
 	assert.NotEmpty(t, item2.Clicks)
