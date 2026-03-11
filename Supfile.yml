@@ -35,7 +35,7 @@ commands:
 
   docker-start-analytics:
     run: >
-      docker run -p 8080:8080 --network platform_default --name platform-analytics -d -v /opt/platform/analytics/configs:/configs -e DAGU_AUTH_MODE=basic -e DAGU_AUTH_BASIC_USERNAME=admin -e DAGU_AUTH_BASIC_PASSWORD=password registry.gitflic.ru/project/kovardin/adscoffee/platform-analytics:$ANALYTICS_VERSION
+      docker run -p 8080:8080 --network platform_default --name platform-analytics -d -v /opt/platform/analytics/configs:/configs -e DAGU_AUTH_MODE=basic -e DAGU_AUTH_BASIC_USERNAME=admin -e DAGU_AUTH_BASIC_PASSWORD=$DAGU_AUTH_BASIC_PASSWORD registry.gitflic.ru/project/kovardin/adscoffee/platform-analytics:$ANALYTICS_VERSION
 
 
   letsencrypt:

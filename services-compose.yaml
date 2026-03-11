@@ -37,7 +37,7 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka:9092
       AUTH_TYPE: "LOGIN_FORM"
       SPRING_SECURITY_USER_NAME: admin
-      SPRING_SECURITY_USER_PASSWORD: "password"
+      SPRING_SECURITY_USER_PASSWORD: password
     depends_on:
       - kafka
 
@@ -47,15 +47,17 @@ services:
     #   - "8123:8123"
     #   - "9000:9000"
     volumes:
-      - /opt/platform/clickhouse/data:/var/lib/clickhouse
-      - /opt/platform/clickhouse/users-prod.xml:/etc/clickhouse-server/users.d/docker.xml
+      - clickhouse:/var/lib/clickhouse
       - /opt/platform/clickhouse/initprod:/docker-entrypoint-initdb.d
     environment:
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+      CLICKHOUSE_USER: admin
+      CLICKHOUSE_PASSWORD: password
     ulimits:
       nofile:
         soft: 262144
         hard: 262144
+    # docker run -it --rm --network platform_default clickhouse/clickhouse-client --host clickhouse
 
   ch-ui:
     image: ghcr.io/caioricciuti/ch-ui:latest
@@ -65,4 +67,5 @@ services:
       - "3488:3488"
 
 
-    #  add own containers?
+volumes:
+  clickhouse:

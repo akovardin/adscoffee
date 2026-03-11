@@ -1,5 +1,6 @@
 .vscode/*
 .codeassistant/*
+.env.prod
 data/*
 backup.sql
 geoip/*
@@ -16,3 +17,4 @@ analytics/dagu/logs
 analytics/configs/prod.yaml
 analytics/configs/dev.yaml
 deploy/*
+services-compose.prod.yaml

@@ -2,10 +2,12 @@
 
 version: '3'
 
+dotenv: ['.env.prod']
+
 vars:
   SERVER_VERSION: v0.3
   ADMIN_VERSION: v0.1
-  ANALYTICS_VERSION: v0.2
+  ANALYTICS_VERSION: v0.3
   SERVER: miniservices
   NETWORK: production
   SERVICE_GROUP: adscoffee
@@ -92,7 +94,7 @@ tasks:
     cmds:
       - sup -e ANALYTICS_VERSION="{{ .ANALYTICS_VERSION }}" {{ .NETWORK }} docker-pull-analytics
       - sup -e ANALYTICS_VERSION="{{ .ANALYTICS_VERSION }}" {{ .NETWORK }} docker-stop-analytics
-      - sup -e ANALYTICS_VERSION="{{ .ANALYTICS_VERSION }}" {{ .NETWORK }} docker-start-analytics
+      - sup -e ANALYTICS_VERSION="{{ .ANALYTICS_VERSION }}" -e DAGU_AUTH_BASIC_PASSWORD={{ .DAGU_AUTH_BASIC_PASSWORD }} {{ .NETWORK }} docker-start-analytics
 
   configs-server:
     cmds:
@@ -143,7 +145,7 @@ tasks:
 
   upload-compose:
     cmds:
-      - ./services-compose.yaml {{ .SERVER }}:/opt/platform/services-compose.yaml
+      - ./services-compose.prod.yaml {{ .SERVER }}:/opt/platform/services-compose.yaml
 
   configs-clickhouse:
     cmds:
