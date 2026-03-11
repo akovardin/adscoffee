@@ -68,7 +68,7 @@ func (r *Analytics) LogRequest(ctx context.Context, state *plugins.State) error 
 		ads.ActionRequest,
 		ads.Event{
 			RequestID: state.RequestID,
-			Timestamp: time.Now().Unix(),
+			Timestamp: time.Now().UTC().Unix(),
 			Action:    ads.ActionRequest,
 			GAID:      "",
 			OAID:      "",
