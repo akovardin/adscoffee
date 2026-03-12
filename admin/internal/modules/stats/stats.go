@@ -564,16 +564,19 @@ func started(ctx *web.EventContext) time.Time {
 }
 
 func ended(ctx *web.EventContext, started time.Time) time.Time {
-	var t time.Time
+	var (
+		t   time.Time
+		err error
+	)
 
 	in := ctx.R.FormValue("ended_at")
 	if in == "" {
 		t = time.Now()
-	}
-
-	t, err := time.Parse(DateHourMinute, in)
-	if err != nil {
-		t = time.Now()
+	} else {
+		t, err = time.Parse(DateHourMinute, in)
+		if err != nil {
+			t = time.Now()
+		}
 	}
 
 	if t.Before(started) {
