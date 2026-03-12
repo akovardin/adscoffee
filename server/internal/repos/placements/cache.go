@@ -75,6 +75,7 @@ func (c *Cache) reload() {
 
 	c.lock.Lock()
 	c.placements = placements
+	c.placementById = map[uint]ads.Placement{}
 	for _, placement := range placements {
 		c.placementById[placement.ID] = placement
 	}

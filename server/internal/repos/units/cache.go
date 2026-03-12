@@ -79,6 +79,7 @@ func (c *Cache) reload() {
 
 	c.lock.Lock()
 	c.units = units
+	c.unitsByPlacement = map[uint][]ads.Unit{}
 	for _, unit := range units {
 		c.unitsByPlacement[unit.PlacementID] = append(c.unitsByPlacement[unit.PlacementID], unit)
 	}

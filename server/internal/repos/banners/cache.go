@@ -76,6 +76,7 @@ func (c *Cache) reload() {
 
 	c.lock.Lock()
 	c.banners = banners
+	c.bannersById = map[uint]ads.Banner{}
 	for _, banner := range banners {
 		c.bannersById[banner.ID] = banner
 	}
