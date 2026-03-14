@@ -13,8 +13,12 @@ import (
 )
 
 const (
+	Date           = "2006-01-02"
 	DateHour       = "2006-01-02 15"
 	DateHourMinute = "2006-01-02 15:04"
+
+	ByHour = "hour"
+	ByDay  = "day"
 )
 
 // достыпные метрики
@@ -46,6 +50,7 @@ const (
 	GroupBanner     = "banner_id"
 	GroupNetwork    = "network"
 	GroupBundle     = "bundle"
+	GroupSlot       = "slot"
 )
 
 type Query struct {
@@ -72,6 +77,7 @@ type Condition struct {
 	Metrics []string // из каких табличек нужно доставать данные
 	Filters []Filter
 	Groups  []string
+	By      string
 }
 
 type Filter struct {
@@ -89,18 +95,26 @@ func (q *Query) Select(ctx context.Context, condition Condition) (Stat, error) {
 	}
 
 	diff := condition.To.Sub(condition.From)
-	cnt := int(diff.Hours())
+	labels := []string{}
+	if condition.By == ByDay {
+		cnt := int(diff.Hours()/24) + 1
 
-	hours := make([]string, 0, cnt)
+		for i := 0; i < cnt; i++ {
+			labels = append(labels, condition.From.Add(time.Duration(i)*time.Hour*24).Format(Date))
+		}
 
-	for i := 0; i < cnt; i++ {
-		hours = append(hours, condition.From.Add(time.Duration(i)*time.Hour).Format(DateHour))
+	} else {
+		cnt := int(diff.Hours())
+
+		for i := 0; i < cnt; i++ {
+			labels = append(labels, condition.From.Add(time.Duration(i)*time.Hour).Format(DateHour))
+		}
 	}
 
 	datasets := map[string]map[string]float64{}
 
 	for _, metric := range condition.Metrics {
-		st, err := q.query(ctx, metric, condition, hours)
+		st, err := q.query(ctx, metric, condition, labels)
 		if err != nil {
 			q.logger.Error("query", zap.Error(err))
 
@@ -113,19 +127,19 @@ func (q *Query) Select(ctx context.Context, condition Condition) (Stat, error) {
 	}
 
 	return Stat{
-		Labels:   hours,
+		Labels:   labels,
 		Datasets: datasets,
 	}, nil
 }
 
 type Item struct {
-	Timestamp time.Time
-	Label0    string
-	Label1    string
-	Label2    string
-	Label3    string
-	Label4    string
-	Value     float64
+	Time   time.Time
+	Label0 string
+	Label1 string
+	Label2 string
+	Label3 string
+	Label4 string
+	Value  float64
 }
 
 func (i Item) Key(metric string, groups []string) string {
@@ -156,7 +170,11 @@ func (i Item) Key(metric string, groups []string) string {
 func (q *Query) query(ctx context.Context, metric string, condition Condition, hours []string) (map[string]map[string]float64, error) {
 	sel := q.clickhouse.DB.NewSelect()
 
-	sel.ColumnExpr("timestamp")
+	if condition.By == ByDay {
+		sel.ColumnExpr("toDate(timestamp) as time")
+	} else {
+		sel.ColumnExpr("timestamp as time")
+	}
 
 	for i, group := range condition.Groups {
 		sel.ColumnExpr(group+" as label?", i)
@@ -193,7 +211,7 @@ func (q *Query) query(ctx context.Context, metric string, condition Condition, h
 		sel.Group(group)
 	}
 
-	sel.Order("timestamp DESC")
+	sel.Order("time DESC")
 	sel.Limit(1000)
 
 	fmt.Println(sel.String())
@@ -214,7 +232,12 @@ func (q *Query) query(ctx context.Context, metric string, condition Condition, h
 	// раскладываю по метрикам часы с их значениями
 	for _, item := range items {
 		key := item.Key(metric, condition.Groups)
-		hour := item.Timestamp.Format(DateHour)
+		hour := ""
+		if condition.By == ByDay {
+			hour = item.Time.Format(Date)
+		} else {
+			hour = item.Time.Format(DateHour)
+		}
 
 		if _, exist := data[key]; !exist {
 			data[key] = map[string]float64{}
@@ -222,12 +245,14 @@ func (q *Query) query(ctx context.Context, metric string, condition Condition, h
 		data[key][hour] = item.Value
 	}
 
-	// заполняем дырки в случае отсутствия данных в определенном часе
-	for key, item := range data {
-		for _, hour := range hours {
-			_, exist := item[hour]
-			if !exist {
-				data[key][hour] = 0
+	if condition.By == ByHour {
+		// заполняем дырки в случае отсутствия данных в определенном часе
+		for key, item := range data {
+			for _, hour := range hours {
+				_, exist := item[hour]
+				if !exist {
+					data[key][hour] = 0
+				}
 			}
 		}
 	}

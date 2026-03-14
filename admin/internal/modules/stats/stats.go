@@ -51,6 +51,21 @@ func (s *Stats) Configure(pb *presets.Builder) {
 		MenuIcon("mdi-view-dashboard").
 		URIName("dashboard")
 
+	b.RegisterEventFunc("reload_dashboard", func(ctx *web.EventContext) (er web.EventResponse, err error) {
+		// Получаем все параметры из запроса
+		params := ctx.Queries()
+
+		// Формируем URL с параметрами
+		url := "/admin/dashboard"
+		if len(params) > 0 {
+			url += "?" + params.Encode()
+		}
+
+		// Делаем полный редирект
+		er.RedirectURL = url
+		return
+	})
+
 	lb := b.Listing()
 
 	lb.PageFunc(func(ctx *web.EventContext) (r web.PageResponse, err error) {
@@ -159,198 +174,152 @@ func (s *Stats) Configure(pb *presets.Builder) {
 				h.Script(script.String()),
 			).Style("margin-bottom: 30px"),
 
-			h.Div(
-				h.H3("Срезы"),
-			).Style("margin-bottom: 20px; margin-top: 30px"),
-
-			v.VRow(
+			web.Scope(
 				h.Div(
-					vx.VXSelect().
-						Items(s.metrics()).
-						ItemTitle("Name").
-						ItemValue("ID").
-						Multiple(true).
-						Clearable(true).
-						Chips(true).
-						Attr(web.VField("Metrics", metrics)...).
-						Label("Метрики"),
-				).Id("Metrics").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
+					h.H3("Срезы"),
+				).Style("margin-bottom: 20px; margin-top: 30px"),
 
-				h.Div(
-					vx.VXSelect().
-						Items(s.grouped()).
-						ItemTitle("Name").
-						ItemValue("ID").
-						Multiple(true).
-						Clearable(true).
-						Chips(true).
-						Attr(web.VField("Grouped", grouped)...).
-						Label("Группировки"),
-				).Id("Grouped").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
+				v.VRow(
+					h.Div(
+						vx.VXSelect().
+							Items(s.metrics()).
+							ItemTitle("Name").
+							ItemValue("ID").
+							Multiple(true).
+							Clearable(true).
+							Chips(true).
+							Attr(web.VField("Metrics", metrics)...).
+							Label("Метрики"),
+					).Id("Metrics").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
 
-				h.Div(
+					h.Div(
+						vx.VXSelect().
+							Items(s.grouped()).
+							ItemTitle("Name").
+							ItemValue("ID").
+							Multiple(true).
+							Clearable(true).
+							Chips(true).
+							Attr(web.VField("Grouped", grouped)...).
+							Label("Группировки"),
+					).Id("Grouped").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
+
+					h.Div(
+						vx.VXDatepicker().Type("datetimepicker").
+							Format("YYYY-MM-DD HH:mm").
+							Clearable(true).
+							Id("StartedAt").
+							Attr(web.VField("StartedAt", startedAt)...).
+							Label("Начало").
+							Width(240),
+					).Style("margin-right: 34px; padding-left: 12px;"),
+
 					vx.VXDatepicker().Type("datetimepicker").
 						Format("YYYY-MM-DD HH:mm").
 						Clearable(true).
-						Id("StartedAt").
-						Attr(web.VField("StartedAt", startedAt)...).
-						Label("Начало").
+						Id("EndedAt").
+						Attr(web.VField("EndedAt", endedAt)...).
+						Label("Конец").
 						Width(240),
-				).Style("margin-right: 34px; padding-left: 12px;"),
-
-				vx.VXDatepicker().Type("datetimepicker").
-					Format("YYYY-MM-DD HH:mm").
-					Clearable(true).
-					Id("EndedAt").
-					Attr(web.VField("EndedAt", endedAt)...).
-					Label("Конец").
-					Width(240),
-			),
-
-			h.Div(
-				h.H3("Фильтры"),
-			).Style("margin-bottom: 20px; margin-top: 30px"),
-
-			v.VRow(
-				h.Div(
-					vx.VXSelect().
-						Items(s.banners()).
-						ItemTitle("Name").
-						ItemValue("ID").
-						Multiple(true).
-						Clearable(true).
-						Chips(true).
-						Attr(web.VField("BannerId", banenrs)...).
-						Label("Баннер"),
-				).Id("BannerId").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
+				),
 
 				h.Div(
-					vx.VXSelect().
-						Items(s.groups()).
-						ItemTitle("Name").
-						ItemValue("ID").
-						Multiple(true).
-						Clearable(true).
-						Chips(true).
-						Attr(web.VField("GroupId", groups)...).
-						Label("Группа"),
-				).Id("GroupId").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
+					h.H3("Фильтры"),
+				).Style("margin-bottom: 20px; margin-top: 30px"),
+
+				v.VRow(
+					h.Div(
+						vx.VXSelect().
+							Items(s.banners()).
+							ItemTitle("Name").
+							ItemValue("ID").
+							Multiple(true).
+							Clearable(true).
+							Chips(true).
+							Attr(web.VField("BannerId", banenrs)...).
+							Label("Баннер"),
+					).Id("BannerId").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
+
+					h.Div(
+						vx.VXSelect().
+							Items(s.groups()).
+							ItemTitle("Name").
+							ItemValue("ID").
+							Multiple(true).
+							Clearable(true).
+							Chips(true).
+							Attr(web.VField("GroupId", groups)...).
+							Label("Группа"),
+					).Id("GroupId").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
+
+					h.Div(
+						vx.VXSelect().
+							Items(s.campaigns()).
+							ItemTitle("Name").
+							ItemValue("ID").
+							Multiple(true).
+							Clearable(true).
+							Chips(true).
+							Attr(web.VField("CampaignId", campaigns)...).
+							Label("Кампания"),
+					).Id("CampaignId").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
+
+					h.Div(
+						vx.VXSelect().
+							Items(s.advertisers()).
+							ItemTitle("Name").
+							ItemValue("ID").
+							Multiple(true).
+							Clearable(true).
+							Chips(true).
+							Attr(web.VField("AdvertiserId", advertisers)...).
+							Label("Рекламодатель"),
+					).Id("AdvertiserId").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
+				),
+
+				v.VRow(
+					h.Div(
+						vx.VXSelect().
+							Items(bundleOptions).
+							ItemTitle("Name").
+							ItemValue("ID").
+							Multiple(true).
+							Clearable(true).
+							Chips(true).
+							Attr(web.VField("Bundle", bundles)...).
+							Label("Бандл"),
+					).Id("Bundle").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
+
+					h.Div(
+						vx.VXSelect().
+							Items(networkOptions).
+							ItemTitle("Name").
+							ItemValue("ID").
+							Multiple(true).
+							Clearable(true).
+							Chips(true).
+							Attr(web.VField("Network", networks)...).
+							Label("Сеть"),
+					).Id("Network").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
+				),
 
 				h.Div(
-					vx.VXSelect().
-						Items(s.campaigns()).
-						ItemTitle("Name").
-						ItemValue("ID").
-						Multiple(true).
-						Clearable(true).
-						Chips(true).
-						Attr(web.VField("CampaignId", campaigns)...).
-						Label("Кампания"),
-				).Id("CampaignId").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
-
-				h.Div(
-					vx.VXSelect().
-						Items(s.advertisers()).
-						ItemTitle("Name").
-						ItemValue("ID").
-						Multiple(true).
-						Clearable(true).
-						Chips(true).
-						Attr(web.VField("AdvertiserId", advertisers)...).
-						Label("Рекламодатель"),
-				).Id("AdvertiserId").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
-			),
-
-			v.VRow(
-				h.Div(
-					vx.VXSelect().
-						Items(bundleOptions).
-						ItemTitle("Name").
-						ItemValue("ID").
-						Multiple(true).
-						Clearable(true).
-						Chips(true).
-						Attr(web.VField("Bundle", bundles)...).
-						Label("Бандл"),
-				).Id("Bundle").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
-
-				h.Div(
-					vx.VXSelect().
-						Items(networkOptions).
-						ItemTitle("Name").
-						ItemValue("ID").
-						Multiple(true).
-						Clearable(true).
-						Chips(true).
-						Attr(web.VField("Network", networks)...).
-						Label("Сеть"),
-				).Id("Network").Style("margin-right: 20px; padding-left: 12px; width: 250px"),
-			),
-
-			h.Div(
-				v.VBtn("Обновить").Attr("onclick", `(function() {
-						// filtesr
-						const startedAt = document.querySelector('#StartedAt input[type="text"]').value;
-						const endedAt = document.querySelector('#EndedAt input[type="text"]').value;
-						const banenrs = document.querySelector('#BannerId input[type="text"]').value;
-						const groups = document.querySelector('#GroupId input[type="text"]').value;
-						const campaigns = document.querySelector('#CampaignId input[type="text"]').value;
-						const advertisers = document.querySelector('#AdvertiserId input[type="text"]').value;
-						const bundles = document.querySelector('#Bundle input[type="text"]').value;
-						const networks = document.querySelector('#Network input[type="text"]').value;
-						
-						// grouped
-						const grouped = document.querySelector('#Grouped input[type="text"]').value;
-
-						// metrics
-						const metrics = document.querySelector('#Metrics input[type="text"]').value;
-
-						const params = new URLSearchParams();
-
-						if (startedAt != "") {
-							params.append("started_at", startedAt);
-						}	
-					
-						if (endedAt != "") {
-							params.append("ended_at", endedAt);
-						}
-
-						if (banenrs != "") {
-							params.append("banners", banenrs);
-						}
-
-						if (groups != "") {
-							params.append("groups", groups);
-						}
-
-						if (campaigns != "") {
-							params.append("campaigns", campaigns);
-						}
-
-						if (advertisers != "") {
-							params.append("advertisers", advertisers);
-						}
-
-						if (grouped != "") {
-							params.append("grouped", grouped);
-						}
-
-						if (metrics != "") {
-							params.append("metrics", metrics);
-						}
-
-						if (bundles != "") {
-							params.append("bundles", bundles);
-						}
-
-						if (networks != "") {
-							params.append("networks", networks);
-						}
-
-
-						window.location.href = '/admin/dashboard?' + params.toString();
-					})()`).Variant(v.VariantFlat).Class("bg-primary"),
-			).Style("margin-top: 20px; margin-bottom: 30px"),
+					v.VBtn("Обновить").Color("primary").Attr("@click", web.Plaid().
+						EventFunc("reload_dashboard").
+						Query("started_at", web.Var("form.StartedAt")).
+						Query("ended_at", web.Var("form.EndedAt")).
+						Query("banners", web.Var("form.BannerId ? form.BannerId.join(',') : ''")).
+						Query("groups", web.Var("form.GroupId ? form.GroupId.join(',') : ''")).
+						Query("campaigns", web.Var("form.CampaignId ? form.CampaignId.join(',') : ''")).
+						Query("advertisers", web.Var("form.AdvertiserId ? form.AdvertiserId.join(',') : ''")).
+						Query("bundles", web.Var("form.Bundle ? form.Bundle.join(',') : ''")).
+						Query("networks", web.Var("form.Network ? form.Network.join(',') : ''")).
+						Query("grouped", web.Var("form.Grouped ? form.Grouped.join(',') : ''")).
+						Query("by", web.Var("form.By")).
+						Query("metrics", web.Var("form.Metrics ? form.Metrics.join(',') : ''")).
+						Go()),
+				).Style("margin-top: 20px; margin-bottom: 30px"),
+			).VSlot("{ locals, form }"),
 
 			h.Div(
 				dt,
