@@ -43,9 +43,9 @@ services:
 
   clickhouse:
     image: clickhouse/clickhouse-server:24.1
-    # ports:
-    #   - "8123:8123"
-    #   - "9000:9000"
+    ports:
+      - "8123:8123"
+      - "9000:9000"
     volumes:
       - clickhouse:/var/lib/clickhouse
       - /opt/platform/clickhouse/initprod:/docker-entrypoint-initdb.d
