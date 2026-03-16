@@ -2,7 +2,10 @@ package tracker
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 
+	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
 
 	"go.ads.coffee/platform/server/internal/analytics"
@@ -48,17 +51,24 @@ func (s *Tracker) Copy(cfg map[string]any) plugins.Input {
 }
 
 func (s *Tracker) Do(ctx context.Context, state *plugins.State) bool {
-	// нужно получить данные пользователя из запроса
+	raw, err := base64.URLEncoding.DecodeString(chi.URLParam(state.Request, "data"))
+	if err != nil {
+		return false
+	}
 
-	// decode from url base 64
-	// save impression/click
-	// save unic
-	// log to analytics
+	info := ads.TrackerInfo{} // TODO: total use ads.Event?
+	if err := json.Unmarshal(raw, &info); err != nil {
+		return false
+	}
 
-	// s.analytics.LogImpression()
-
-	state.User = &plugins.User{}
-	state.Device = &plugins.Device{}
+	switch info.Action {
+	case ads.ActionImpression:
+		s.analytics.LogImpression(ctx, info)
+	case ads.ActionClick:
+		s.analytics.LogClick(ctx, info)
+	default:
+		return false
+	}
 
 	return true
 }
