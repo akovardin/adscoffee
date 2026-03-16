@@ -11,3 +11,5 @@ FROM --platform=linux/amd64 ghcr.io/dagu-org/dagu:latest
 COPY --from=build /analytics /analytics
 COPY analytics/dagu/dags/requests.yaml /var/lib/dagu/dags/requests.yaml
 COPY analytics/dagu/dags/impressions.yaml /var/lib/dagu/dags/impressions.yaml
+COPY analytics/dagu/dags/clicks.yaml /var/lib/dagu/dags/clicks.yaml
+COPY analytics/dagu/dags/responses.yaml /var/lib/dagu/dags/responses.yaml

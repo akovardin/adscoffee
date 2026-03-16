@@ -130,6 +130,8 @@ type Messages_ModelsI18nModuleKey struct {
 	Units       string
 	UnitsName   string
 	UnitsActive string
+
+	Dashboards string
 }
 
 var Messages_en_EN_ModelsI18nModuleKey = &Messages_ModelsI18nModuleKey{
@@ -268,4 +270,6 @@ var Messages_ru_RU_ModelsI18nModuleKey = &Messages_ModelsI18nModuleKey{
 	Units:       "Юниты",
 	UnitsName:   "Название",
 	UnitsActive: "Активен",
+
+	Dashboards: "Аналитика",
 }

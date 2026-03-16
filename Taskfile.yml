@@ -6,8 +6,8 @@ dotenv: ['.env.prod']
 
 vars:
   SERVER_VERSION: v0.5
-  ADMIN_VERSION: v0.1
-  ANALYTICS_VERSION: v0.3
+  ADMIN_VERSION: v0.2
+  ANALYTICS_VERSION: v0.4
   SERVER: miniservices
   NETWORK: production
   SERVICE_GROUP: adscoffee
