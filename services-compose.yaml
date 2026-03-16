@@ -27,6 +27,12 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_DEFAULT_REPLICATION_FACTOR: 1
       KAFKA_MIN_INSYNC_REPLICAS: 1
+      
+      # Дополнительные настройки для хранения данных
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_LOG_RETENTION_HOURS: 168  # сохранять данные 7 дней (по умолчанию)
+    volumes:
+    - kafka-data:/var/lib/kafka/data  # volume для данных Kafka
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -69,3 +75,4 @@ services:
 
 volumes:
   clickhouse:
+  kafka-data:

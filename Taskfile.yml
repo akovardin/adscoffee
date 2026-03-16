@@ -5,13 +5,12 @@ version: '3'
 dotenv: ['.env.prod']
 
 vars:
-  SERVER_VERSION: v0.3
+  SERVER_VERSION: v0.5
   ADMIN_VERSION: v0.1
   ANALYTICS_VERSION: v0.3
   SERVER: miniservices
   NETWORK: production
   SERVICE_GROUP: adscoffee
-  PG_CONNECT: user=admin password=123 dbname=admin_dev host=localhost port=6432 sslmode=disable
 
 tasks:  
   gitpush:
@@ -37,9 +36,6 @@ tasks:
     cmds:
       - docker-compose -f dev-compose.yaml down
   
-  migrate:
-    cmds:
-      - go run admin/cmd/admin/main.go -c ./admin/configs/config.yaml m
 
   docker-build-server:
     cmds:
