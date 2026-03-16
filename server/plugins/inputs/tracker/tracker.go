@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
+	"go.uber.org/zap"
 
 	"go.ads.coffee/platform/server/internal/analytics"
 	"go.ads.coffee/platform/server/internal/domain/ads"
@@ -31,11 +32,13 @@ type Analytics interface {
 }
 
 type Tracker struct {
+	logger    *zap.Logger
 	analytics Analytics
 }
 
-func New(analytics *analytics.Analytics) *Tracker {
+func New(logger *zap.Logger, analytics *analytics.Analytics) *Tracker {
 	return &Tracker{
+		logger:    logger,
 		analytics: analytics,
 	}
 }
@@ -46,6 +49,7 @@ func (s *Tracker) Name() string {
 
 func (s *Tracker) Copy(cfg map[string]any) plugins.Input {
 	return &Tracker{
+		logger:    s.logger,
 		analytics: s.analytics,
 	}
 }
@@ -63,10 +67,18 @@ func (s *Tracker) Do(ctx context.Context, state *plugins.State) bool {
 
 	switch info.Action {
 	case ads.ActionImpression:
-		s.analytics.LogImpression(ctx, info)
+		if err := s.analytics.LogImpression(ctx, info); err != nil {
+			s.logger.Error("failed to log impression", zap.Error(err))
+
+			return false
+		}
 	case ads.ActionClick:
-		s.analytics.LogClick(ctx, info)
-	default:
+		if err := s.analytics.LogClick(ctx, info); err != nil {
+			s.logger.Error("failed to log click", zap.Error(err))
+
+			return false
+		}
+	default: // uncnown or emnty action
 		return false
 	}
 
