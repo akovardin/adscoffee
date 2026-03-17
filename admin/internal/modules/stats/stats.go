@@ -79,10 +79,6 @@ func (s *Stats) Configure(pb *presets.Builder) {
 		}
 
 		grouped := parse(ctx, "grouped")
-		if grouped == nil {
-			grouped = []string{GroupNetwork}
-		}
-
 		banenrs := parse(ctx, "banenrs")
 		groups := parse(ctx, "groups")
 		campaigns := parse(ctx, "campaigns")
