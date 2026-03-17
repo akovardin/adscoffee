@@ -12,4 +12,12 @@ GET http://localhost:9090/banner/123/click
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36
 
 ### prod
-GET https://platform.ads.coffee/native/123
+GET https://platform.ads.coffee/native/1
+
+
+### tracker
+GET http://localhost:8081/tracker/eyJ0aW1lc3RhbXAiOjAsImFjdGlvbiI6ImltcHJlc3Npb24iLCJyZXF1ZXN0X2lkIjoiMDQ2MjlmZTUtNGNlYy00ODc3LTg4ZDAtMDJjZjU1MWVlYzA5IiwiY2xpY2tfaWQiOiI5NTMxMzI1YS00ZDgwLTRlZTMtOWIzYy0wZTUwMmEwNWFhMjciLCJiYW5uZXJfaWQiOjMsImdyb3VwX2lkIjoiMyIsImNhbXBhaWduX2lkIjoiMyIsImFkdmVydGlzZXJfaWQiOiIzIiwiZ2FpZCI6IiIsIm9haWQiOiIiLCJidW5kbGUiOiIiLCJjaXR5IjoiIiwiY291bnRyeSI6IiIsInJlZ2lvbiI6IiIsInByaWNlIjowLCJuZXR3b3JrIjoiIiwic2l6ZSI6IiIsIm1ha2UiOiIifQ==.gif
+
+
+### tracker
+GET https://platform.ads.coffee/tracker/eyJ0aW1lc3RhbXAiOjAsImFjdGlvbiI6ImltcHJlc3Npb24iLCJyZXF1ZXN0X2lkIjoiMDQ2MjlmZTUtNGNlYy00ODc3LTg4ZDAtMDJjZjU1MWVlYzA5IiwiY2xpY2tfaWQiOiI5NTMxMzI1YS00ZDgwLTRlZTMtOWIzYy0wZTUwMmEwNWFhMjciLCJiYW5uZXJfaWQiOjMsImdyb3VwX2lkIjoiMyIsImNhbXBhaWduX2lkIjoiMyIsImFkdmVydGlzZXJfaWQiOiIzIiwiZ2FpZCI6IiIsIm9haWQiOiIiLCJidW5kbGUiOiIiLCJjaXR5IjoiIiwiY291bnRyeSI6IiIsInJlZ2lvbiI6IiIsInByaWNlIjowLCJuZXR3b3JrIjoiIiwic2l6ZSI6IiIsIm1ha2UiOiIifQ==.gif
