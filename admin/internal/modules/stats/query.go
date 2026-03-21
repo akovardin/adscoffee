@@ -205,7 +205,7 @@ func (q *Query) query(ctx context.Context, metric string, condition Condition, h
 	sel.Where("timestamp >= ?", condition.From)
 	sel.Where("timestamp <= ?", condition.To)
 
-	sel.Group("timestamp")
+	sel.Group("time")
 
 	for _, group := range condition.Groups {
 		sel.Group(group)
