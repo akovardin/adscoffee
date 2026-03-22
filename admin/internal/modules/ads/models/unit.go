@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Unit struct {
 	gorm.Model
@@ -16,4 +20,6 @@ type Unit struct {
 
 	Data   string
 	Active bool
+
+	ArchivedAt *time.Time
 }

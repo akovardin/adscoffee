@@ -342,6 +342,7 @@ func (m *Banner) Configure(b *presets.Builder) {
 			sel,
 		)
 	})
+
 	mbe.Field("Description").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
 		return v.VTextarea().
 			Label(field.Label).

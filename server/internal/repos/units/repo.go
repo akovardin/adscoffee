@@ -28,7 +28,7 @@ func (r *Repo) All(ctx context.Context) ([]ads.Unit, error) {
 
 	err := r.db.Model(ads.Unit{}).
 		Preload("Network").
-		Where("deleted_at is null and active = true").
+		Where("deleted_at is null and active = true and archived_at is NULL").
 		Find(&rows).Error
 	if err != nil {
 		return nil, err
