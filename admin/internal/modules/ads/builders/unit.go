@@ -3,6 +3,7 @@ package builders
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/qor5/admin/v3/presets"
 	"github.com/qor5/admin/v3/presets/gorm2op"
@@ -29,13 +30,18 @@ func NewUnit(logger *zap.Logger, db *gorm.DB) *Unit {
 	}
 }
 
+const (
+	archiveUnitEvent   = "archiveUnit"
+	unarchiveUnitEvent = "unarchiveUnit"
+)
+
 func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 	mn := b.Model(&models.Unit{}).
 		MenuIcon("mdi-lan").
 		// Label("Рекламодатели").
 		RightDrawerWidth("1000")
 
-	mnl := mn.Listing("ID", "Name", "Price", "Placement", "Network", "Active").
+	mnl := mn.Listing("ID", "Title", "Price", "Placement", "Network", "Active").
 		SearchFunc(func(ctx *web.EventContext, params *presets.SearchParams) (result *presets.SearchResult, err error) {
 			// по умоланию архивные сущности не показываются
 			// только если явно выбрать их в фильтре
@@ -60,7 +66,7 @@ func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 				return gorm2op.DataOperator(qdb).Search(ctx, params)
 			}
 		}).
-		SearchColumns("Name").
+		SearchColumns("Title").
 		// SelectableColumns(true).
 		OrderableFields([]*presets.OrderableField{
 			{
@@ -68,8 +74,8 @@ func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 				DBColumn:  "id",
 			},
 			{
-				FieldName: "Name",
-				DBColumn:  "name",
+				FieldName: "Title",
+				DBColumn:  "title",
 			},
 			{
 				FieldName: "Active",
@@ -128,7 +134,7 @@ func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 
 		n.db.First(&placement, "id = ?", c.PlacementID)
 
-		return h.Td().Text(placement.Name)
+		return h.Td().Text(placement.Title)
 	})
 
 	mnl.Field("Network").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
@@ -160,18 +166,19 @@ func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 		&presets.FieldsSection{
 			// Title: "Info",
 			Rows: [][]string{
-				{"Name"},
+				{"Title"},
 				{"Price"},
 				{"PlacementID"},
 				{"NetworkID"},
 				{"Data"},
+				{"Active"},
 			},
 		},
 	).ValidateFunc(func(obj interface{}, ctx *web.EventContext) (err web.ValidationErrors) {
 		u := obj.(*models.Unit)
 
-		if u.Name == "" {
-			err.FieldError("Name", "Name is required")
+		if u.Title == "" {
+			err.FieldError("Name", "Title is required")
 		}
 		return
 	})
@@ -186,7 +193,7 @@ func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 			Variant("outlined").Density("compact").
 			Label("Плейсмент").
 			Items(items).
-			ItemTitle("Name").
+			ItemTitle("Title").
 			ItemValue("ID").
 			Attr(web.VField("PlacementID", c.PlacementID)...)
 
@@ -222,5 +229,90 @@ func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 			ErrorMessages(field.Errors...)
 	})
 
+	mnn := mnl.RowMenu()
+
+	mnn.RowMenuItem("Archive").
+		ComponentFunc(func(obj interface{}, id string, ctx *web.EventContext) h.HTMLComponent {
+			item := obj.(*models.Unit)
+			if item.ArchivedAt == nil {
+				return v.VListItem(
+					web.Slot(
+						v.VIcon("mdi-archive-arrow-down"), // Используем иконку копирования
+					).Name("prepend"),
+					v.VListItemTitle(
+						h.Text("Архивировать"),
+					),
+				).Attr("@click",
+					web.Plaid().EventFunc(archiveUnitEvent).Query("id", id).Go(),
+				)
+			} else {
+				return v.VListItem(
+					web.Slot(
+						v.VIcon("mdi-archive-arrow-up"), // Используем иконку копирования
+					).Name("prepend"),
+					v.VListItemTitle(
+						h.Text("Разархивировать"),
+					),
+				).Attr("@click",
+					web.Plaid().EventFunc(unarchiveUnitEvent).Query("id", id).Go(),
+				)
+			}
+		})
+
+	// Регистрируем обработчик события копирования
+	mn.RegisterEventFunc(archivePlacementEvent, n.archive)
+	mn.RegisterEventFunc(unarchivePlacementEvent, n.unarchive)
+
 	return mn
+}
+
+func (n *Unit) archive(ctx *web.EventContext) (r web.EventResponse, err error) {
+	id := ctx.R.FormValue("id")
+	if id == "" {
+		return r, fmt.Errorf("id is required")
+	}
+
+	// Находим оригинальную запись
+	var original models.Unit
+	if err := n.db.First(&original, id).Error; err != nil {
+		return r, fmt.Errorf("failed to find unit: %w", err)
+	}
+
+	now := time.Now()
+	if err := original.Archive(n.db, &now); err != nil {
+		return r, fmt.Errorf("failed to archive unit: %w", err)
+	}
+
+	// Обновляем список
+	r.Emit(
+		presets.NotifModelsUpdated(&models.Unit{}),
+		presets.PayloadModelsUpdated{Ids: []string{id}},
+	)
+
+	return r, nil
+}
+
+func (n *Unit) unarchive(ctx *web.EventContext) (r web.EventResponse, err error) {
+	id := ctx.R.FormValue("id")
+	if id == "" {
+		return r, fmt.Errorf("id is required")
+	}
+
+	// Находим оригинальную запись
+	var original models.Unit
+	if err := n.db.First(&original, id).Error; err != nil {
+		return r, fmt.Errorf("failed to find unit: %w", err)
+	}
+
+	if err := original.Archive(n.db, nil); err != nil {
+		return r, fmt.Errorf("failed to unarchive unit: %w", err)
+	}
+
+	// Обновляем список
+	r.Emit(
+		presets.NotifModelsUpdated(&models.Unit{}),
+		presets.PayloadModelsUpdated{Ids: []string{id}},
+	)
+
+	return r, nil
 }

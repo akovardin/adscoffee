@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -9,7 +10,7 @@ import (
 type Unit struct {
 	gorm.Model
 
-	Name  string
+	Title string
 	Price int
 
 	NetworkID int
@@ -22,4 +23,14 @@ type Unit struct {
 	Active bool
 
 	ArchivedAt *time.Time
+}
+
+func (original Unit) Archive(db *gorm.DB, archive *time.Time) error {
+	original.ArchivedAt = archive
+
+	if err := db.Save(&original).Error; err != nil {
+		return fmt.Errorf("failed to archive: %w", err)
+	}
+
+	return nil
 }

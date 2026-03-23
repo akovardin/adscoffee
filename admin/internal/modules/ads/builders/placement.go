@@ -40,7 +40,7 @@ func (m *Placement) Configure(b *presets.Builder) {
 		// Label("Рекламодатели").
 		RightDrawerWidth("1000")
 
-	mpl := mp.Listing("ID", "Name", "Active").
+	mpl := mp.Listing("ID", "Title", "Active").
 		SearchFunc(func(ctx *web.EventContext, params *presets.SearchParams) (result *presets.SearchResult, err error) {
 			exist := false
 			for _, v := range params.SQLConditions {
@@ -63,12 +63,34 @@ func (m *Placement) Configure(b *presets.Builder) {
 				return gorm2op.DataOperator(qdb).Search(ctx, params)
 			}
 		}).
-		SearchColumns("Name")
+		SearchColumns("Title").
+		OrderableFields([]*presets.OrderableField{
+			{
+				FieldName: "ID",
+				DBColumn:  "id",
+			},
+			{
+				FieldName: "Title",
+				DBColumn:  "title",
+			},
+			{
+				FieldName: "Active",
+				DBColumn:  "active",
+			},
+		})
 
-	mp.Editing().ValidateFunc(func(obj interface{}, ctx *web.EventContext) (err web.ValidationErrors) {
+	mp.Editing(
+		&presets.FieldsSection{
+			// Title: "Info",
+			Rows: [][]string{
+				{"Title"},
+				{"Active"},
+			},
+		},
+	).ValidateFunc(func(obj interface{}, ctx *web.EventContext) (err web.ValidationErrors) {
 		u := obj.(*models.Placement)
 
-		if u.Name == "" {
+		if u.Title == "" {
 			err.FieldError("Name", "Name is required")
 		}
 		return
@@ -149,7 +171,7 @@ func (m *Placement) Configure(b *presets.Builder) {
 						h.Text("Архивировать"),
 					),
 				).Attr("@click",
-					web.Plaid().EventFunc(archiveGroupEvent).Query("id", id).Go(),
+					web.Plaid().EventFunc(archivePlacementEvent).Query("id", id).Go(),
 				)
 			} else {
 				return v.VListItem(
@@ -160,7 +182,7 @@ func (m *Placement) Configure(b *presets.Builder) {
 						h.Text("Разархивировать"),
 					),
 				).Attr("@click",
-					web.Plaid().EventFunc(unarchiveGroupEvent).Query("id", id).Go(),
+					web.Plaid().EventFunc(unarchivePlacementEvent).Query("id", id).Go(),
 				)
 			}
 		})

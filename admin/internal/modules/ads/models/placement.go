@@ -10,9 +10,10 @@ import (
 type Placement struct {
 	gorm.Model
 
-	Name       string
+	Title  string
+	Active bool
+
 	ArchivedAt *time.Time
-	Active     bool
 }
 
 func (original Placement) Archive(db *gorm.DB, archive *time.Time) error {

@@ -55,7 +55,7 @@ func TestUnit_Validation(t *testing.T) {
 
 	t.Run("Valid unit", func(t *testing.T) {
 		validUnit := &models.Unit{
-			Name: "Test Unit",
+			Title: "Test Unit",
 		}
 
 		ctx := &web.EventContext{}
@@ -68,7 +68,7 @@ func TestUnit_Validation(t *testing.T) {
 
 	t.Run("Invalid unit - empty name", func(t *testing.T) {
 		invalidUnit := &models.Unit{
-			Name: "",
+			Title: "",
 		}
 
 		ctx := &web.EventContext{}
@@ -81,7 +81,7 @@ func TestUnit_Validation(t *testing.T) {
 		fieldErrors := err.FieldErrors()
 		require.NotEmpty(t, fieldErrors)
 
-		nameErrors := err.GetFieldErrors("Name")
+		nameErrors := err.GetFieldErrors("Title")
 		require.Len(t, nameErrors, 1)
 		assert.Equal(t, "Name is required", nameErrors[0])
 	})
