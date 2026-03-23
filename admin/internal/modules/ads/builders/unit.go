@@ -37,7 +37,7 @@ const (
 
 func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 	mn := b.Model(&models.Unit{}).
-		MenuIcon("mdi-lan").
+		MenuIcon("mdi-volcano-outline").
 		// Label("Рекламодатели").
 		RightDrawerWidth("1000")
 
@@ -260,8 +260,8 @@ func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 		})
 
 	// Регистрируем обработчик события копирования
-	mn.RegisterEventFunc(archivePlacementEvent, n.archive)
-	mn.RegisterEventFunc(unarchivePlacementEvent, n.unarchive)
+	mn.RegisterEventFunc(archiveUnitEvent, n.archive)
+	mn.RegisterEventFunc(unarchiveUnitEvent, n.unarchive)
 
 	return mn
 }

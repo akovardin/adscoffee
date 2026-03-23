@@ -36,7 +36,7 @@ const (
 
 func (m *Placement) Configure(b *presets.Builder) {
 	mp := b.Model(&models.Placement{}).
-		MenuIcon("mdi-lan").
+		MenuIcon("mdi-vector-difference-ba").
 		// Label("Рекламодатели").
 		RightDrawerWidth("1000")
 
