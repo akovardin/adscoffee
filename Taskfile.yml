@@ -5,8 +5,8 @@ version: '3'
 dotenv: ['.env.prod']
 
 vars:
-  SERVER_VERSION: v0.5
-  ADMIN_VERSION: v0.2
+  SERVER_VERSION: v0.6
+  ADMIN_VERSION: v0.3
   ANALYTICS_VERSION: v0.4
   SERVER: miniservices
   NETWORK: production

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
@@ -64,6 +65,8 @@ func (s *Tracker) Do(ctx context.Context, state *plugins.State) bool {
 	if err := json.Unmarshal(raw, &info); err != nil {
 		return false
 	}
+
+	info.Timestamp = time.Now().Unix()
 
 	switch info.Action {
 	case ads.ActionImpression:
