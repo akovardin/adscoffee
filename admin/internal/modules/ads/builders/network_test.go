@@ -44,14 +44,14 @@ func TestNetwork_Configure(t *testing.T) {
 	// Check that the listing fields are set correctly
 	listing := modelBuilder.Listing()
 	fieldNames := listing.FieldNames()
-	assert.Len(t, fieldNames, 3)
+	assert.Len(t, fieldNames, 5)
 	assert.Contains(t, fieldNames, "Title")
 	assert.Contains(t, fieldNames, "Name")
 
 	// Check that the listing fields are set correctly
 	listing = modelBuilder.Listing()
 	fieldNames = listing.FieldNames()
-	assert.Len(t, fieldNames, 3)
+	assert.Len(t, fieldNames, 5)
 	assert.Contains(t, fieldNames, "Title")
 	assert.Contains(t, fieldNames, "Name")
 }

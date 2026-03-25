@@ -178,7 +178,7 @@ func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 		u := obj.(*models.Unit)
 
 		if u.Title == "" {
-			err.FieldError("Name", "Title is required")
+			err.FieldError("Title", "Title is required")
 		}
 		return
 	})
