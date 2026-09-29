@@ -114,22 +114,31 @@ type Messages_ModelsI18nModuleKey struct {
 	WorkersCreatedAt string
 
 	// Network
-	Network       string
-	Networks      string
-	NetworksName  string
-	NetworksTitle string
+	Network        string
+	Networks       string
+	NetworksName   string
+	NetworksTitle  string
+	NetworksId     string
+	NetworksActive string
 
 	// Placement
 	Placement        string
 	Placements       string
 	PlacementsName   string
 	PlacementsActive string
+	PlacementsId     string
+	PlacementsTitle  string
 
 	// Unit
-	Unit        string
-	Units       string
-	UnitsName   string
-	UnitsActive string
+	Unit           string
+	Units          string
+	UnitsName      string
+	UnitsActive    string
+	UnitsId        string
+	UnitsTitle     string
+	UnitsPrice     string
+	UnitsPlacement string
+	UnitsNetwork   string
 
 	Dashboards string
 }
@@ -148,6 +157,18 @@ var Messages_en_EN_ModelsI18nModuleKey = &Messages_ModelsI18nModuleKey{
 	BannersTracking: "Tracking",
 	BannersTitle:    "Title",
 	BannersLabel:    "Label",
+
+	NetworksId:     "ID",
+	NetworksActive: "Active",
+
+	PlacementsId:    "ID",
+	PlacementsTitle: "Title",
+
+	UnitsId:        "ID",
+	UnitsTitle:     "Title",
+	UnitsPrice:     "Price",
+	UnitsPlacement: "Placement",
+	UnitsNetwork:   "Network",
 }
 
 var Messages_ru_RU_ModelsI18nModuleKey = &Messages_ModelsI18nModuleKey{
@@ -256,20 +277,29 @@ var Messages_ru_RU_ModelsI18nModuleKey = &Messages_ModelsI18nModuleKey{
 	WorkersStatus:    "Status",
 	WorkersCreatedAt: "Created At",
 
-	Network:       "Рекламная сеть",
-	Networks:      "Рекламные сети",
-	NetworksName:  "Название",
-	NetworksTitle: "Заголовок",
+	Network:        "Рекламная сеть",
+	Networks:       "Рекламные сети",
+	NetworksName:   "Название",
+	NetworksTitle:  "Заголовок",
+	NetworksId:     "ID",
+	NetworksActive: "Активен",
 
 	Placement:        "Плейсмент",
 	Placements:       "Плейсменты",
 	PlacementsName:   "Название",
 	PlacementsActive: "Активен",
+	PlacementsId:     "ID",
+	PlacementsTitle:  "Заголовок",
 
-	Unit:        "Юнит",
-	Units:       "Юниты",
-	UnitsName:   "Название",
-	UnitsActive: "Активен",
+	Unit:           "Юнит",
+	Units:          "Юниты",
+	UnitsName:      "Название",
+	UnitsActive:    "Активен",
+	UnitsId:        "ID",
+	UnitsTitle:     "Заголовок",
+	UnitsPrice:     "Ставка",
+	UnitsPlacement: "Плейсмент",
+	UnitsNetwork:   "Сеть",
 
 	Dashboards: "Аналитика",
 }

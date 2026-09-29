@@ -1,0 +1,11 @@
+.git/
+.gitignore
+.gitattributes
+data/
+vendor/
+deploy/
+docs/
+node_modules/
+*.md
+Dockerfile
+.DS_Store

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"os"
 
 	"github.com/urfave/cli/v3"
@@ -44,7 +45,8 @@ func main() {
 						fx.Invoke(
 							func(aggregate *handlers.Aggregate) {
 								if err := aggregate.Run(ctx, cmd); err != nil {
-									panic(err)
+									log.Printf("ERROR: %v", err)
+									os.Exit(1)
 								}
 
 								os.Exit(0)
@@ -59,6 +61,6 @@ func main() {
 	}
 
 	if err := cmd.Run(context.Background(), os.Args); err != nil {
-		panic(err)
+		log.Fatalf("FATAL: %v", err)
 	}
 }

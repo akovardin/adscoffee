@@ -1,7 +1,7 @@
 clickhouse:
-  host: 127.0.0.1
+  host: clickhouse
   port: 9000
-  user: user
+  user: admin
   password: password
   database: analytics
   max_open_conns: 20

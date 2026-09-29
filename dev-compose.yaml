@@ -161,6 +161,44 @@ services:
     ports:
       - "3488:3488"
 
+  grafana:
+    container_name: grafana-adscoffee
+    image: grafana/grafana:11.5.0
+    ports:
+      - "3001:3001"
+    environment:
+      - GF_SERVER_HTTP_PORT=3001
+      - GF_INSTALL_PLUGINS=grafana-clickhouse-datasource
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+      - GF_AUTH_ANONYMOUS_ORG_NAME=Main Org.
+      - GF_DEFAULT_THEME=light
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    depends_on:
+      - clickhouse
+
+  analytics:
+    container_name: analytics-adscoffee
+    build:
+      context: .
+      dockerfile: analytics/Dockerfile
+    ports:
+      - "8088:8080"
+    environment:
+      - DAGU_HOST=0.0.0.0
+      - DAGU_PORT=8080
+      - DAGU_AUTH_MODE=basic
+      - DAGU_AUTH_BASIC_USERNAME=admin
+      - DAGU_AUTH_BASIC_PASSWORD=password
+    volumes:
+      - ./analytics/configs:/configs
+      - ./analytics/dagu/dags:/var/lib/dagu/dags
+    depends_on:
+      - clickhouse
 
 volumes:
   minio-volume:

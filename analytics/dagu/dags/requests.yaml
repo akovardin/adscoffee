@@ -5,4 +5,4 @@ schedule: "1 * * * *"
 steps:
   - name: requests
     command:
-      /analytics aggregations -table=requests -config=/configs/prod.yaml
+      /analytics aggregations -table=requests -config=/configs/config.yaml

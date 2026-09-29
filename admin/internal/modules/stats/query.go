@@ -264,6 +264,11 @@ type BundleModel struct {
 	Bundle string
 }
 
+type Option struct {
+	ID   string
+	Name string
+}
+
 func (q *Query) bundles(ctx context.Context) ([]Option, error) {
 	sel := q.clickhouse.DB.NewSelect()
 
