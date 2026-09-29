@@ -7,19 +7,18 @@ import (
 	"gorm.io/gorm"
 )
 
-type Placement struct {
+type Site struct {
 	gorm.Model
 
 	Title  string
 	Active bool
 
-	SiteID uint
-	Site   Site
+	Placements []Placement
 
 	ArchivedAt *time.Time
 }
 
-func (original Placement) Archive(db *gorm.DB, archive *time.Time) error {
+func (original Site) Archive(db *gorm.DB, archive *time.Time) error {
 	original.ArchivedAt = archive
 
 	if err := db.Save(&original).Error; err != nil {

@@ -22,6 +22,7 @@ type Ads struct {
 	network    *builders.Network
 	placement  *builders.Placement
 	unit       *builders.Unit
+	site       *builders.Site
 }
 
 func New(
@@ -34,6 +35,7 @@ func New(
 	network *builders.Network,
 	placement *builders.Placement,
 	unit *builders.Unit,
+	site *builders.Site,
 ) *Ads {
 	return &Ads{
 		logger:     logger,
@@ -45,6 +47,7 @@ func New(
 		network:    network,
 		placement:  placement,
 		unit:       unit,
+		site:       site,
 	}
 }
 
@@ -68,6 +71,7 @@ func (m *Ads) Configure(b *presets.Builder) {
 	m.group.Configure(b)
 	m.banner.Configure(b)
 	m.network.Configure(b)
+	m.site.Configure(b)
 	m.placement.Configure(b)
 	m.unit.Configure(b)
 }
@@ -79,10 +83,10 @@ func (u *Ads) Migrate() {
 		&models.Campaign{},
 		&models.Banner{},
 		&models.Bgroup{},
-		&models.Audience{},
 		&models.Network{},
 		&models.Unit{},
 		&models.Placement{},
+		&models.Site{},
 	)
 	if err != nil {
 		panic(err)

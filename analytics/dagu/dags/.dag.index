@@ -1,4 +1,4 @@
-ŸôğÕ
+ÚñÕ
 clicks.yaml³ÀğËªƒŸúì"clicks:*[{"kind":"cron","expression":"1 * * * *"}]JĞĞ³Ñ€ĞµĞ³Ğ°Ñ†Ğ¸Ñ Ğ´Ğ°Ğ½Ğ½Ñ‹Ñ…Z/var/lib/dagu/dags/clicks.yaml¢
  example-01-basic-sequential.yamlî©â“ô–¿µÊ"example-01-basic-sequentialJExecute steps one after anotherZ3/var/lib/dagu/dags/example-01-basic-sequential.yaml«
 "example-02-parallel-execution.yamlÆÅÂãö–¿µÊ"example-02-parallel-executionJ"Execute multiple tasks in parallelZ5/var/lib/dagu/dags/example-02-parallel-execution.yaml®

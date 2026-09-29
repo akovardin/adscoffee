@@ -7,11 +7,11 @@ COPY . /app
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -v -o /analytics ./analytics/cmd/analytics
 
 # Deploy
-FROM alpine:3.21
+FROM debian:bookworm-slim
 
-RUN apk add --no-cache wget
+RUN apt-get update && apt-get install -y --no-install-recommends wget ca-certificates && rm -rf /var/lib/apt/lists/*
 
-RUN wget -q https://github.com/dagu-org/dagu/releases/download/v2.16.6/dagu_2.16.6_linux_amd64.tar.gz -O /tmp/dagu.tar.gz \
+RUN wget -q https://github.com/dagu-org/dagu/releases/download/v2.15.4/dagu_2.15.4_linux_amd64.tar.gz -O /tmp/dagu.tar.gz \
   && tar -xzf /tmp/dagu.tar.gz -C /usr/local/bin/ dagu \
   && chmod +x /usr/local/bin/dagu \
   && rm /tmp/dagu.tar.gz

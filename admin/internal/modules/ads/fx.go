@@ -17,5 +17,6 @@ var Module = fx.Module(
 		builders.NewNetwork,
 		builders.NewPlacement,
 		builders.NewUnit,
+		builders.NewSite,
 	),
 )

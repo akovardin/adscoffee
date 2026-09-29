@@ -17,30 +17,30 @@ import (
 	"go.ads.coffee/platform/admin/internal/modules/ads/models"
 )
 
-type Placement struct {
+type Site struct {
 	logger *zap.Logger
 	db     *gorm.DB
 }
 
-func NewPlacement(logger *zap.Logger, db *gorm.DB) *Placement {
-	return &Placement{
+func NewSite(logger *zap.Logger, db *gorm.DB) *Site {
+	return &Site{
 		logger: logger,
 		db:     db,
 	}
 }
 
 const (
-	archivePlacementEvent   = "archivePlacement"
-	unarchivePlacementEvent = "unarchivePlacement"
+	archiveSiteEvent   = "archiveSite"
+	unarchiveSiteEvent = "unarchiveSite"
 )
 
-func (m *Placement) Configure(b *presets.Builder) {
-	mp := b.Model(&models.Placement{}).
-		MenuIcon("mdi-vector-difference-ba").
-		// Label("Рекламодатели").
+func (m *Site) Configure(b *presets.Builder) {
+	mp := b.Model(&models.Site{}).
+		URIName("sites").
+		MenuIcon("mdi-web").
 		RightDrawerWidth("1000")
 
-	mpl := mp.Listing("ID", "Title", "Site", "Active").
+	mpl := mp.Listing("ID", "Title", "Active").
 		SearchFunc(func(ctx *web.EventContext, params *presets.SearchParams) (result *presets.SearchResult, err error) {
 			exist := false
 			for _, v := range params.SQLConditions {
@@ -56,69 +56,14 @@ func (m *Placement) Configure(b *presets.Builder) {
 			}
 
 			if !exist {
-				qdb := m.db.Where("archived_at is null").Preload("Site")
+				qdb := m.db.Where("archived_at is null")
 				return gorm2op.DataOperator(qdb).Search(ctx, params)
 			} else {
-				qdb := m.db.Where("").Preload("Site")
+				qdb := m.db.Where("")
 				return gorm2op.DataOperator(qdb).Search(ctx, params)
 			}
 		}).
-		SearchColumns("Title").
-		OrderableFields([]*presets.OrderableField{
-			{
-				FieldName: "ID",
-				DBColumn:  "id",
-			},
-			{
-				FieldName: "Title",
-				DBColumn:  "title",
-			},
-			{
-				FieldName: "Active",
-				DBColumn:  "active",
-			},
-		})
-
-	mpl.Field("Site").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
-		c := obj.(*models.Placement)
-		if c.Site.ID == 0 {
-			return h.Td().Children(h.Text("—"))
-		}
-		return h.Td().Children(h.Text(c.Site.Title))
-	})
-
-	mp.Editing(
-		&presets.FieldsSection{
-			// Title: "Info",
-			Rows: [][]string{
-				{"Title"},
-				{"SiteID"},
-				{"Active"},
-			},
-		},
-	).ValidateFunc(func(obj interface{}, ctx *web.EventContext) (err web.ValidationErrors) {
-		u := obj.(*models.Placement)
-
-		if u.Title == "" {
-			err.FieldError("Name", "Name is required")
-		}
-		return
-	}).Field("SiteID").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
-		c := obj.(*models.Placement)
-
-		var items []models.Site
-		m.db.Find(&items)
-
-		sel := v.VSelect().
-			Variant("outlined").Density("compact").
-			Label("Сайт").
-			Items(items).
-			ItemTitle("Title").
-			ItemValue("ID").
-			Attr(web.VField("SiteID", c.SiteID)...)
-
-		return h.Div(sel)
-	})
+		SearchColumns("Title")
 
 	mpl.FilterDataFunc(func(ctx *web.EventContext) vuetifyx.FilterData {
 		return []*vuetifyx.FilterItem{
@@ -129,7 +74,6 @@ func (m *Placement) Configure(b *presets.Builder) {
 				SQLCondition: "archived_at is null",
 				Options: []*vuetifyx.SelectItem{
 					{
-
 						Text:         "В архиве",
 						Value:        "is_archived",
 						SQLCondition: "archived_at is not null",
@@ -147,7 +91,6 @@ func (m *Placement) Configure(b *presets.Builder) {
 				ItemType: vuetifyx.ItemTypeSelect,
 				Options: []*vuetifyx.SelectItem{
 					{
-
 						Text:         "Включен",
 						Value:        "is_active",
 						SQLCondition: "active = true",
@@ -159,17 +102,11 @@ func (m *Placement) Configure(b *presets.Builder) {
 					},
 				},
 			},
-			{
-				Key:          "created",
-				Label:        "Создан",
-				ItemType:     vuetifyx.ItemTypeDate,
-				SQLCondition: `created_at %s ?`,
-			},
 		}
 	})
 
 	mpl.Field("Active").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
-		c := obj.(*models.Placement)
+		c := obj.(*models.Site)
 
 		color := "red"
 		text := "выключен"
@@ -181,86 +118,97 @@ func (m *Placement) Configure(b *presets.Builder) {
 		return h.Td().Children(h.Span(text).Style("color:" + color))
 	})
 
+	mp.Editing(
+		&presets.FieldsSection{
+			Rows: [][]string{
+				{"Title"},
+				{"Active"},
+			},
+		},
+	).ValidateFunc(func(obj interface{}, ctx *web.EventContext) (err web.ValidationErrors) {
+		u := obj.(*models.Site)
+
+		if u.Title == "" {
+			err.FieldError("Name", "Name is required")
+		}
+		return
+	})
+
 	mpn := mpl.RowMenu()
 
 	mpn.RowMenuItem("Archive").
 		ComponentFunc(func(obj interface{}, id string, ctx *web.EventContext) h.HTMLComponent {
-			item := obj.(*models.Placement)
+			item := obj.(*models.Site)
 			if item.ArchivedAt == nil {
 				return v.VListItem(
 					web.Slot(
-						v.VIcon("mdi-archive-arrow-down"), // Используем иконку копирования
+						v.VIcon("mdi-archive-arrow-down"),
 					).Name("prepend"),
 					v.VListItemTitle(
 						h.Text("Архивировать"),
 					),
 				).Attr("@click",
-					web.Plaid().EventFunc(archivePlacementEvent).Query("id", id).Go(),
+					web.Plaid().EventFunc(archiveSiteEvent).Query("id", id).Go(),
 				)
 			} else {
 				return v.VListItem(
 					web.Slot(
-						v.VIcon("mdi-archive-arrow-up"), // Используем иконку копирования
+						v.VIcon("mdi-archive-arrow-up"),
 					).Name("prepend"),
 					v.VListItemTitle(
 						h.Text("Разархивировать"),
 					),
 				).Attr("@click",
-					web.Plaid().EventFunc(unarchivePlacementEvent).Query("id", id).Go(),
+					web.Plaid().EventFunc(unarchiveSiteEvent).Query("id", id).Go(),
 				)
 			}
 		})
 
-	// Регистрируем обработчик события копирования
-	mp.RegisterEventFunc(archivePlacementEvent, m.archive)
-	mp.RegisterEventFunc(unarchivePlacementEvent, m.unarchive)
+	mp.RegisterEventFunc(archiveSiteEvent, m.archive)
+	mp.RegisterEventFunc(unarchiveSiteEvent, m.unarchive)
 }
 
-func (m *Placement) archive(ctx *web.EventContext) (r web.EventResponse, err error) {
+func (m *Site) archive(ctx *web.EventContext) (r web.EventResponse, err error) {
 	id := ctx.R.FormValue("id")
 	if id == "" {
 		return r, fmt.Errorf("id is required")
 	}
 
-	// Находим оригинальную запись
-	var original models.Placement
+	var original models.Site
 	if err := m.db.First(&original, id).Error; err != nil {
-		return r, fmt.Errorf("failed to find placement: %w", err)
+		return r, fmt.Errorf("failed to find site: %w", err)
 	}
 
 	now := time.Now()
 	if err := original.Archive(m.db, &now); err != nil {
-		return r, fmt.Errorf("failed to archive placement: %w", err)
+		return r, fmt.Errorf("failed to archive site: %w", err)
 	}
 
-	// Обновляем список
 	r.Emit(
-		presets.NotifModelsUpdated(&models.Placement{}),
+		presets.NotifModelsUpdated(&models.Site{}),
 		presets.PayloadModelsUpdated{Ids: []string{id}},
 	)
 
 	return r, nil
 }
 
-func (m *Placement) unarchive(ctx *web.EventContext) (r web.EventResponse, err error) {
+func (m *Site) unarchive(ctx *web.EventContext) (r web.EventResponse, err error) {
 	id := ctx.R.FormValue("id")
 	if id == "" {
 		return r, fmt.Errorf("id is required")
 	}
 
-	// Находим оригинальную запись
-	var original models.Placement
+	var original models.Site
 	if err := m.db.First(&original, id).Error; err != nil {
-		return r, fmt.Errorf("failed to find placement: %w", err)
+		return r, fmt.Errorf("failed to find site: %w", err)
 	}
 
 	if err := original.Archive(m.db, nil); err != nil {
-		return r, fmt.Errorf("failed to unarchive placement: %w", err)
+		return r, fmt.Errorf("failed to unarchive site: %w", err)
 	}
 
-	// Обновляем список
 	r.Emit(
-		presets.NotifModelsUpdated(&models.Placement{}),
+		presets.NotifModelsUpdated(&models.Site{}),
 		presets.PayloadModelsUpdated{Ids: []string{id}},
 	)
 

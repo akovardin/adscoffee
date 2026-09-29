@@ -128,6 +128,14 @@ type Messages_ModelsI18nModuleKey struct {
 	PlacementsActive string
 	PlacementsId     string
 	PlacementsTitle  string
+	PlacementsSite   string
+
+	// Site
+	Site         string
+	Sites        string
+	SitesId      string
+	SitesTitle   string
+	SitesActive  string
 
 	// Unit
 	Unit           string
@@ -163,6 +171,10 @@ var Messages_en_EN_ModelsI18nModuleKey = &Messages_ModelsI18nModuleKey{
 
 	PlacementsId:    "ID",
 	PlacementsTitle: "Title",
+
+	SitesId:    "ID",
+	SitesTitle: "Title",
+	SitesActive: "Active",
 
 	UnitsId:        "ID",
 	UnitsTitle:     "Title",
@@ -290,6 +302,13 @@ var Messages_ru_RU_ModelsI18nModuleKey = &Messages_ModelsI18nModuleKey{
 	PlacementsActive: "Активен",
 	PlacementsId:     "ID",
 	PlacementsTitle:  "Заголовок",
+	PlacementsSite:   "Сайт",
+
+	Site:         "Сайт",
+	Sites:        "Сайты",
+	SitesId:      "ID",
+	SitesTitle:   "Заголовок",
+	SitesActive:  "Активен",
 
 	Unit:           "Юнит",
 	Units:          "Юниты",
