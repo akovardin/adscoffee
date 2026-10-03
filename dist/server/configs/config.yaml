@@ -28,7 +28,9 @@ kafka-pool:
 
 telemetry:
   jaeger:
-    enabled: false
+    enabled: ${TELEMETRY_ENABLED:false}
+    sampling: 100
+    endpoint: ${TELEMETRY_ENDPOINT:localhost:4317}
 
 database:
   debug: false

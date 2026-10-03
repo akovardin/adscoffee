@@ -2,15 +2,22 @@ package pipeline
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
+
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 	"go.ads.coffee/platform/server/internal/inputs"
+	"go.ads.coffee/platform/server/internal/metrics"
 	"go.ads.coffee/platform/server/internal/outputs"
 	"go.ads.coffee/platform/server/internal/stages"
 	"go.ads.coffee/platform/server/internal/targetings"
 )
+
+var tracer = otel.Tracer("server")
 
 type Manager struct {
 	pipelines []*Pipeline
@@ -57,17 +64,35 @@ func NewManager(
 
 func (m *Manager) Mount(router *chi.Mux) {
 	for _, p := range m.pipelines {
-		router.Mount(p.Route(), http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ctx := r.Context()
+		pipeline := p
+
+		router.Mount(pipeline.Route(), http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+
+			// извлекаем контекст трассировки из заголовков и стартуем спан пайплайна
+			ctx := otel.GetTextMapPropagator().Extract(r.Context(), propagation.HeaderCarrier(r.Header))
+			ctx, span := tracer.Start(ctx, "pipeline "+pipeline.Name())
+			defer span.End()
+
+			// счётчик RPS на уровне пайплайна (server_requests_total{kind="pipeline"})
+			metrics.IncPipeline(pipeline.Name())
 
 			state := &plugins.State{
 				RequestID: uuid.NewString(),
 				ClickID:   uuid.NewString(),
-				Request:   r,
+				Request:   r.WithContext(ctx),
 				Response:  w,
 			}
 
-			if err := p.Do(ctx, state); err != nil {
+			err := pipeline.Do(ctx, state)
+
+			// время ответа сервиса
+			metrics.ObserveDuration(metrics.KindPipeline, pipeline.Name(), time.Since(start))
+
+			if err != nil {
+				// счётчик ошибок на уровне пайплайна
+				metrics.IncError(metrics.KindPipeline, pipeline.Name())
+				span.RecordError(err)
 				w.WriteHeader(http.StatusNotFound)
 			}
 		}))

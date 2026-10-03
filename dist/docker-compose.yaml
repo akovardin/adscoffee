@@ -218,6 +218,46 @@ services:
     depends_on:
       - clickhouse
 
+  prometheus:
+    container_name: platform-prometheus
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./data/prometheus:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    depends_on:
+      - server
+
+  loki:
+    container_name: platform-loki
+    image: grafana/loki:3.3.2
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - ./data/loki:/loki
+    command:
+      - "-config.file=/etc/loki/local-config.yaml"
+
+  promtail:
+    container_name: platform-promtail
+    image: grafana/promtail:3.3.2
+    restart: unless-stopped
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+    command:
+      - "-config.file=/etc/promtail/config.yml"
+    depends_on:
+      - loki
+
   migrate:
     container_name: platform-migrate
     image: registry.gitflic.ru/project/kovardin/adscoffee/platform-admin:${ADMIN_IMAGE_TAG:-latest}

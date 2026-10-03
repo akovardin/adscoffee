@@ -17,6 +17,7 @@ import (
 	"go.ads.coffee/platform/pkg/telemetry"
 	"go.ads.coffee/platform/server/internal/analytics"
 	"go.ads.coffee/platform/server/internal/config"
+	"go.ads.coffee/platform/server/internal/metrics"
 	"go.ads.coffee/platform/server/internal/repos/banners"
 	"go.ads.coffee/platform/server/internal/repos/placements"
 	"go.ads.coffee/platform/server/internal/repos/units"
@@ -63,6 +64,7 @@ func main() {
 						circuitbreaker.Module,
 						redispool.Module,
 						kafkapool.Module,
+						metrics.Module,
 						plugins.Module,
 
 						// repos

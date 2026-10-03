@@ -1,0 +1,63 @@
+{
+  "title": "Caffeine Platform Logs",
+  "uid": "caffeine-platform-logs",
+  "version": 1,
+  "schemaVersion": 39,
+  "timezone": "browser",
+  "editable": true,
+  "tags": ["caffeine", "ads", "logs", "loki"],
+  "refresh": "30s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "templating": { "list": [] },
+  "annotations": { "list": [] },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Server (platform-server)",
+      "type": "logs",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "options": { "showTime": true, "showLabels": false, "showCommonLabels": false, "wrapLogMessage": true, "prettifyLogMessage": false, "enableLogDetails": true, "dedupStrategy": "none", "sortOrder": "Descending" },
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "loki" }, "refId": "A", "expr": "{service=\"server\"}" }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Admin (platform-admin)",
+      "type": "logs",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 10 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "options": { "showTime": true, "showLabels": false, "showCommonLabels": false, "wrapLogMessage": true, "prettifyLogMessage": false, "enableLogDetails": true, "dedupStrategy": "none", "sortOrder": "Descending" },
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "loki" }, "refId": "A", "expr": "{service=\"admin\"}" }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Analytics (platform-analytics)",
+      "type": "logs",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 20 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "options": { "showTime": true, "showLabels": false, "showCommonLabels": false, "wrapLogMessage": true, "prettifyLogMessage": false, "enableLogDetails": true, "dedupStrategy": "none", "sortOrder": "Descending" },
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "loki" }, "refId": "A", "expr": "{service=\"analytics\"}" }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Errors (all services)",
+      "type": "logs",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 30 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "options": { "showTime": true, "showLabels": true, "showCommonLabels": false, "wrapLogMessage": true, "prettifyLogMessage": false, "enableLogDetails": true, "dedupStrategy": "none", "sortOrder": "Descending" },
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "loki" }, "refId": "A", "expr": "{service=~\".+\"} |~ \"(?i)error|panic|failed|fatal\"" }
+      ]
+    }
+  ]
+}

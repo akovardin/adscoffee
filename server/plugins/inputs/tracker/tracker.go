@@ -13,6 +13,7 @@ import (
 	"go.ads.coffee/platform/server/internal/analytics"
 	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
+	"go.ads.coffee/platform/server/internal/metrics"
 )
 
 var Module = fx.Module(
@@ -56,6 +57,8 @@ func (s *Tracker) Copy(cfg map[string]any) plugins.Input {
 }
 
 func (s *Tracker) Do(ctx context.Context, state *plugins.State) bool {
+	metrics.IncInput(s.Name())
+
 	raw, err := base64.URLEncoding.DecodeString(chi.URLParam(state.Request, "data"))
 	if err != nil {
 		return false

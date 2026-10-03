@@ -11,6 +11,7 @@ import (
 	"go.ads.coffee/platform/server/internal/analytics"
 	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
+	"go.ads.coffee/platform/server/internal/metrics"
 	"go.ads.coffee/platform/server/internal/repos/placements"
 	"go.ads.coffee/platform/server/internal/repos/units"
 )
@@ -74,6 +75,8 @@ func (w *Web) Copy(cfg map[string]any) plugins.Input {
 }
 
 func (w *Web) Do(ctx context.Context, state *plugins.State) bool {
+	metrics.IncInput(w.Name())
+
 	// нужно получить данные пользователя из запроса
 
 	state.User = &plugins.User{}

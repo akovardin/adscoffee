@@ -145,6 +145,16 @@ tasks:
     cmds:
       - '{{ .SUP }} venator certbot-renew-check'
 
+  grafana-reload:
+    desc: Пересоздать Grafana на venator (перечитать provisioning/datasources и дашборды)
+    cmds:
+      - '{{ .SUP }} venator grafana-reload'
+
+  prometheus-reload:
+    desc: Пересоздать Prometheus на venator (перечитать prometheus.yml)
+    cmds:
+      - '{{ .SUP }} venator prometheus-reload'
+
 
   docker-build-server:
     cmds:

@@ -9,7 +9,7 @@ commands:
   # --- dist (docker compose) ---
 
   dist-prepare:
-    run: mkdir -p /opt/platform/data/postgres /opt/platform/data/grafana /opt/platform/data/chui /opt/platform/data/clickhouse /opt/platform/data/kafka1 /opt/platform/data/kafka2 /opt/platform/data/kafka3 /opt/platform/data/dagu/data /opt/platform/data/dagu/logs && chown -R 472:472 /opt/platform/data/grafana && chown -R 100:101 /opt/platform/data/chui && chown -R 1000:1000 /opt/platform/data/kafka1 /opt/platform/data/kafka2 /opt/platform/data/kafka3
+    run: mkdir -p /opt/platform/data/postgres /opt/platform/data/grafana /opt/platform/data/chui /opt/platform/data/clickhouse /opt/platform/data/kafka1 /opt/platform/data/kafka2 /opt/platform/data/kafka3 /opt/platform/data/dagu/data /opt/platform/data/dagu/logs /opt/platform/data/prometheus /opt/platform/data/loki && chown -R 472:472 /opt/platform/data/grafana && chown -R 100:101 /opt/platform/data/chui && chown -R 1000:1000 /opt/platform/data/kafka1 /opt/platform/data/kafka2 /opt/platform/data/kafka3 && chown -R 65534:65534 /opt/platform/data/prometheus && chown -R 10001:10001 /opt/platform/data/loki
 
   dist-up:
     run: cd /opt/platform && docker compose up -d --build --remove-orphans
@@ -39,6 +39,12 @@ commands:
 
   analytics-deploy:
     run: cd /opt/platform && ANALYTICS_IMAGE_TAG=$ANALYTICS_VERSION docker compose up -d --no-deps --pull always --force-recreate analytics && docker compose ps analytics
+
+  grafana-reload:
+    run: cd /opt/platform && docker compose up -d --no-deps --force-recreate grafana && docker compose ps grafana
+
+  prometheus-reload:
+    run: cd /opt/platform && docker compose up -d --no-deps --force-recreate prometheus && docker compose ps prometheus
 
 
   # --- nginx / TLS ---

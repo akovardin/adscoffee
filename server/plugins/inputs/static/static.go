@@ -12,6 +12,7 @@ import (
 	"go.ads.coffee/platform/server/internal/analytics"
 	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
+	"go.ads.coffee/platform/server/internal/metrics"
 	"go.ads.coffee/platform/server/internal/repos/banners"
 	"go.ads.coffee/platform/server/internal/repos/placements"
 	"go.ads.coffee/platform/server/internal/repos/units"
@@ -98,6 +99,8 @@ func (s *Static) Copy(cfg map[string]any) plugins.Input {
 }
 
 func (s *Static) Do(ctx context.Context, state *plugins.State) bool {
+	metrics.IncInput(s.Name())
+
 	action := chi.URLParam(state.Request, "action")
 	state.WithValue(actionKey, action)
 

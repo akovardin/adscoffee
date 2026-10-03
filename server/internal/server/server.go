@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"go.ads.coffee/platform/server/internal/pipeline"
 	"go.ads.coffee/platform/server/static"
@@ -47,6 +48,9 @@ func (s *Server) Start(ctx context.Context) error {
 			MaxAge:           300, // Maximum value not ignored by any of major browsers
 		}),
 	)
+
+	// /metrics для Prometheus
+	router.Handle("/metrics", promhttp.Handler())
 
 	s.manager.Mount(router)
 

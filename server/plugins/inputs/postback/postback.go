@@ -6,6 +6,7 @@ import (
 	"go.uber.org/fx"
 
 	"go.ads.coffee/platform/server/internal/domain/plugins"
+	"go.ads.coffee/platform/server/internal/metrics"
 )
 
 var Module = fx.Module(
@@ -36,6 +37,8 @@ func (s *Postback) Copy(cfg map[string]any) plugins.Input {
 }
 
 func (stages *Postback) Do(ctx context.Context, state *plugins.State) bool {
+	metrics.IncInput(stages.Name())
+
 	// нужно получить данные пользователя из запроса
 
 	state.User = &plugins.User{}

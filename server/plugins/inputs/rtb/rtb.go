@@ -6,6 +6,7 @@ import (
 	"go.uber.org/fx"
 
 	"go.ads.coffee/platform/server/internal/domain/plugins"
+	"go.ads.coffee/platform/server/internal/metrics"
 )
 
 var Module = fx.Module(
@@ -36,6 +37,7 @@ func (rtb *Rtb) Copy(cfg map[string]any) plugins.Input {
 }
 
 func (rtb *Rtb) Do(ctx context.Context, state *plugins.State) bool {
+	metrics.IncInput(rtb.Name())
 
 	// обработка разных типов запросов тоже
 	// может быть вынесена в пллагины
