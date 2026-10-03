@@ -21,9 +21,9 @@
 
 Для запуска всей платформы разом используется каталог `dist/` — самодостаточный пакет на базе Docker Compose. В него входят:
 
-- сервисы приложений: `server`, `admin`, `analytics` (dagu);
-- инфраструктура: PostgreSQL, Redis Cluster, Kafka (3 узла, KRaft), ClickHouse, Kafka UI, Grafana, ch-ui;
-- миграции БД (`migrate`), init-скрипты ClickHouse, дашборды/датасорс Grafana, DAG-и dagu;
+- сервисы приложений: `server`, `admin`, `analytics` на базе dagu;
+- инфраструктура: PostgreSQL, Redis Cluster, Kafka, ClickHouse, Kafka UI, Grafana, ch-ui;
+- миграции БД, init-скрипты ClickHouse, дашборды/датасорс Grafana, DAG-и dagu;
 - конфиги сервисов `dist/{server,admin,analytics}/configs/config.yaml`.
 
 Требования: Docker Engine 24+ и плагин `docker compose` v2.
@@ -43,7 +43,7 @@
    docker compose up -d
    ```
 
-   При первом запуске соберётся образ Redis Cluster и применятся миграции. Порядок старта: `migrate` (создаёт таблицы) → `admin` → `server`; `analytics` поднимается после ClickHouse.
+   При первом запуске соберётся образ Redis Cluster и применятся миграции. Порядок старта: `migrate` → `admin` → `server`; `analytics` поднимается после ClickHouse.
 
 3. Создать пользователя админки (подробнее — в разделе «Пользователи админки»):
 
@@ -154,16 +154,17 @@ task analytics-deploy   # то же для analytics
 - Использует PostgreSQL (кэшируемые репозитории баннеров/плейсментов/юнитов), Redis Cluster (кэш) и публикует события в Kafka.
 
 ### Аналитика (`analytics`)
-Планировщик и воркер агрегаций на базе **dagu**. По расписанию (`1 * * * *`) запускает агрегацию данных в ClickHouse по таблицам `requests`, `impressions`, `clicks`, `responses` и складывает результат в часовые витрины для дашбордов.
+Планировщик и воркер агрегаций на базе **dagu**. По расписанию каждый час `1 * * * *` запускает агрегацию данных в ClickHouse по таблицам `requests`, `impressions`, `clicks`, `responses` и складывает результат в часовые витрины для дашбордов.
 
 - Порт: `8088` (`8080` внутри).
 - Конфиг: `dist/analytics/configs/config.yaml`; DAG-и — `dist/analytics/dagu/dags/*.yaml`.
 - Читает события из Kafka через Kafka Engine ClickHouse, пишет агрегаты в `analytics.*_hour`.
 
-### Kafka (`kafka1`, `kafka2`, `kafka3`, `kafka-init`, `kafka-ui`)
-Шина событий платформы (кластер из 3 брокеров в режиме KRaft). Сервер публикует события, ClickHouse их читает и парсит.
+### Kafka 
 
-- Топики (создаются сервисом `kafka-init`): `request`, `impression`, `click`, `response`, `conversion`, `win`.
+В docker-compose это `kafka1`, `kafka2`, `kafka3`, `kafka-init`, `kafka-ui`. По сути шина событий платформы. Состоит кластер из 3 брокеров в режиме KRaft. Сервер публикует события, ClickHouse их читает и парсит.
+
+- Топики создаются сервисом `kafka-init`. Всего 6 топиков `request`, `impression`, `click`, `response`, `conversion`, `win`.
 - Внешние listener-порты: `19092`, `29092`, `39092`.
 - Kafka UI: порт `8090` (`8080` внутри); логин `KAFKA_UI_USER`/`KAFKA_UI_PASSWORD` из `.env`.
 
@@ -180,19 +181,19 @@ task analytics-deploy   # то же для analytics
 
 Система не привязана к инфраструктуре из `dist/`: все внешние зависимости задаются через окружение (`dist/.env`), поэтому любой компонент можно заменить на облачный или управляемый без изменения кода. Система готова к расширению в любой момент.
 
-- **Kafka.** Вместо локального кластера из Docker достаточно указать адреса облачной (Managed) Kafka в `KAFKA_SEEDS`; конфиг поддерживает SASL (`sasl_mechanism`, `username`, `password`) и TLS.
-- **PostgreSQL.** Выносится на отдельный сервер или в управляемую БД через `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` (локальный `postgres` при этом не поднимается).
+- **Kafka.** Вместо локального кластера из Docker достаточно указать адреса любых серверов Kafka в `KAFKA_SEEDS`; конфиг поддерживает SASL (`sasl_mechanism`, `username`, `password`) и TLS.
+- **PostgreSQL.** Выносится как и Kafka. Можно подключиться к любому хосту через `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`.
 - **ClickHouse.** Аналогично — внешний или облачный инстанс через `CLICKHOUSE_HOST`, `CLICKHOUSE_PORT`, `CLICKHOUSE_USER`, `CLICKHOUSE_PASSWORD`, `CLICKHOUSE_DB`.
 - **Redis.** Внешний Redis Cluster через `REDIS_ADDRS`.
-- **S3.** Любое S3-совместимое хранилище (Yandex Object Storage, MinIO, AWS S3) через `S3_*`.
-- **Рекламный сервер.** `server` не хранит состояние в процессе (данные — в PostgreSQL/Redis, события — в Kafka), поэтому можно запускать сколько угодно инстансов за балансировщиком: на отдельных серверах или в Kubernetes, с горизонтальным масштабированием.
-- **Админка и аналитика.** Масштабируются аналогично: `admin` — stateless (состояние в БД), `analytics` (dagu) — по нагрузке.
+- **S3.** Любое S3-совместимое хранилище (Yandex Object Storage, MinIO, AWS S3) через енвы `S3_*`.
+- **Рекламный сервер.** `server` не хранит состояние в процессе. Данные берутся из PostgreSQL/Redis, события летят в Kafka. Поэтому можно запускать сколько угодно инстансов за балансировщиком: на отдельных серверах или в Kubernetes, с горизонтальным масштабированием.
+- **Админка и аналитика.** можно масштабировать в последний момент. Админку в зависимости от кол-ва пользователей админки, Аналитику — по нагрузке и кол-ву данных.
 
-Миграции БД и init-скрипты ClickHouse идемпотентны, вся конфигурация — через переменные окружения. В итоге система готова к промышленному использованию и в любой момент может быть разнесена на несколько серверов или переведена в Kubernetes.
+Миграции БД и init-скрипты ClickHouse идемпотентны, вся конфигурация выполняется через переменные окружения. В итоге система готова к промышленному использованию и в любой момент может быть разнесена на несколько серверов или переведена в Kubernetes.
 
 ## Разработка
 
-Для локальной разработки используется Docker Compose (инфраструктура) и [Taskfile](https://taskfile.dev/). Полный стек со всеми сервисами и мониторингом проще поднять из `dist/` — см. раздел «Установка и конфигурация».
+Для локальной разработки используется Docker Compose  и [Taskfile](https://taskfile.dev/). Полный стек со всеми сервисами и мониторингом проще поднять из `dist/` — см. раздел «Установка и конфигурация».
 
 1. Поднять инфраструктуру (PostgreSQL, Redis Cluster, Kafka, ClickHouse, MinIO, Grafana, Kafka UI):
 
@@ -222,9 +223,9 @@ task analytics-deploy   # то же для analytics
    go run ./admin/cmd/admin/main.go user -account=admin -password=secret -config=./admin/configs/dev.yaml
    ```
 
-Локальные конфиги — `admin/configs/config.yaml` и `server/configs/config.yaml`; персональные оверрайды `dev.yaml`/`prod.yaml` не коммитятся. В VS Code есть готовые конфигурации запуска (`.vscode/launch.json`).
+Локальные конфиги — `admin/configs/config.yaml` и `server/configs/config.yaml`. Персональные оверрайды `dev.yaml`/`prod.yaml` не коммитятся. В VS Code есть готовые конфигурации запуска (`.vscode/launch.json`).
 
-Остановить инфраструктуру и дополнительные команды:
+Остановка окружения и дополнительные команды:
 
 ```sh
 task docker-down   # остановить инфраструктуру

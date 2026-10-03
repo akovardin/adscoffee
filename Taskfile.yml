@@ -12,7 +12,7 @@ vars:
   SERVICE_GROUP: adscoffee
 
 tasks:  
-  gitpush:
+  push:
     cmds:
       - git push gitflic master
       - git push sourcecraft master
@@ -124,7 +124,7 @@ tasks:
       - '{{ .SUP }} venator nginx-install'
 
   nginx-deploy:
-    desc: Залить конфиги nginx (admin/platform/chui/kafka/analytics/grafana.ads.coffee) на venator и перезагрузить
+    desc: Залить конфиги nginx (admin/platform/chui/kafka/analytics/grafana/ads.coffee) на venator и перезагрузить
     cmds:
       - scp ./deploy/nginx/admin.ads.coffee {{ .VENATOR }}:/etc/nginx/sites-available/admin.ads.coffee
       - scp ./deploy/nginx/platform.ads.coffee {{ .VENATOR }}:/etc/nginx/sites-available/platform.ads.coffee
@@ -132,6 +132,7 @@ tasks:
       - scp ./deploy/nginx/kafka.ads.coffee {{ .VENATOR }}:/etc/nginx/sites-available/kafka.ads.coffee
       - scp ./deploy/nginx/analytics.ads.coffee {{ .VENATOR }}:/etc/nginx/sites-available/analytics.ads.coffee
       - scp ./deploy/nginx/grafana.ads.coffee {{ .VENATOR }}:/etc/nginx/sites-available/grafana.ads.coffee
+      - scp ./deploy/nginx/ads.coffee {{ .VENATOR }}:/etc/nginx/sites-available/ads.coffee
       - '{{ .SUP }} venator nginx-reload'
 
   certbot-setup:
@@ -147,7 +148,7 @@ tasks:
 
   docker-build-server:
     cmds:
-      - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-server:{{ .SERVER_VERSION }} -f ./server/Dockerfile .
+      - docker build --platform linux/amd64 -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-server:{{ .SERVER_VERSION }} -f ./server/Dockerfile .
 
   docker-publish-server:
     cmds:
@@ -159,7 +160,7 @@ tasks:
   
   docker-build-admin:
     cmds:
-      - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:{{ .ADMIN_VERSION }} -f ./admin/Dockerfile .
+      - docker build --platform linux/amd64 -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-admin:{{ .ADMIN_VERSION }} -f ./admin/Dockerfile .
 
   docker-publish-admin:
     cmds:
@@ -172,7 +173,7 @@ tasks:
 
   docker-build-analytics:
     cmds:
-      - docker build -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-analytics:{{ .ANALYTICS_VERSION }} -f ./analytics/Dockerfile .
+      - docker build --platform linux/amd64 -t registry.gitflic.ru/project/kovardin/{{ .SERVICE_GROUP }}/platform-analytics:{{ .ANALYTICS_VERSION }} -f ./analytics/Dockerfile .
 
   docker-publish-analytics:
     cmds:

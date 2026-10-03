@@ -244,6 +244,7 @@ services:
       - "8088:8080"
     volumes:
       - ./analytics/configs:/configs:ro
+      - ./.env:/var/lib/dagu/.env:ro
       - ./analytics/dagu/dags:/var/lib/dagu/dags
       - ./data/dagu/data:/var/lib/dagu/data
       - ./data/dagu/logs:/var/lib/dagu/logs

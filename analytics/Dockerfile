@@ -1,5 +1,5 @@
-# build analytics binary
-FROM golang:1.24 AS build
+# build analytics binary (компилятор выполняется нативно на платформе сборщика)
+FROM --platform=$BUILDPLATFORM golang:1.27 AS build
 WORKDIR /app
 
 COPY . /app

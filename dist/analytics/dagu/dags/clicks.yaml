@@ -4,5 +4,8 @@ schedule: "1 * * * *"
 
 steps:
   - name: clicks
-    command:
+    command: |
+      set -a
+      . /var/lib/dagu/.env
+      set +a
       /analytics aggregations -table=clicks -config=/configs/config.yaml

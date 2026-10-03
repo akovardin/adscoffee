@@ -1,6 +1,6 @@
 module go.ads.coffee/platform
 
-go 1.24.5
+go 1.27
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2

@@ -184,13 +184,14 @@ func configure(
 	b := presets.New()
 
 	// Set up the project name, ORM and Homepage
-	b.URIPrefix("/admin").
+	// префикс "/" обрезается до пустого, поэтому админка доступна из корня
+	b.URIPrefix("/").
 		// BrandTitle("Кофеин").
 		DataOperator(gorm2op.DataOperator(db)).
 		HomePageFunc(func(ctx *web.EventContext) (r web.PageResponse, err error) {
 			r.Body = v.VContainer(
 				h.H1("Реклама"),
-				h.P().Text("Лучшая DSP"))
+				h.P().Text("Платформа для всех"))
 			return
 		})
 
@@ -207,13 +208,13 @@ func configure(
 		"bgroups",
 		"banners",
 		"separator",
-		"media-library",
-		"users",
-		"separator",
 		"sites",
 		"placement",
 		"units",
 		"networks",
+		"separator",
+		"media-library",
+		"users",
 	)
 
 	i18nB := b.GetI18n()

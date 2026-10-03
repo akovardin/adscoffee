@@ -2,7 +2,7 @@
 
 ## Project overview
 
-Go 1.24 monorepo (`go.ads.coffee/platform`) — an open-source advertising platform ("Caffeine"). Three binaries wired with `uber-go/fx` DI and `urfave/cli/v3`:
+Go 1.27 monorepo (`go.ads.coffee/platform`) — an open-source advertising platform ("Caffeine"). Three binaries wired with `uber-go/fx` DI and `urfave/cli/v3`:
 
 | Binary | Package | Default port | Purpose |
 |---|---|---|---|

@@ -2,7 +2,6 @@
 package config
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -32,7 +31,7 @@ s3storage:
   region: "us-east-1"
   s3ForcePathStyle: true
 `
-	tmpfile, err := ioutil.TempFile("", "config-*.yaml")
+	tmpfile, err := os.CreateTemp("", "config-*.yaml")
 	require.NoError(t, err)
 	defer os.Remove(tmpfile.Name())
 
@@ -83,7 +82,7 @@ server:
  database:  # Incorrect indentation
    debug: true
 `
-	tmpfile, err := ioutil.TempFile("", "config-invalid-*.yaml")
+	tmpfile, err := os.CreateTemp("", "config-invalid-*.yaml")
 	require.NoError(t, err)
 	defer os.Remove(tmpfile.Name())
 
@@ -102,7 +101,7 @@ server:
 
 func TestNew_EmptyFile(t *testing.T) {
 	// Create an empty temporary config file
-	tmpfile, err := ioutil.TempFile("", "config-empty-*.yaml")
+	tmpfile, err := os.CreateTemp("", "config-empty-*.yaml")
 	require.NoError(t, err)
 	defer os.Remove(tmpfile.Name())
 	err = tmpfile.Close()

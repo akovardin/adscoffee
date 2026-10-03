@@ -33,7 +33,7 @@ func New(
 }
 
 func (s *Server) Serve() error {
-	s.logger.Info("app server", zap.String("host", "http://localhost"+s.config.Port+"/admin"))
+	s.logger.Info("app server", zap.String("host", "http://localhost"+s.config.Port))
 
 	mux := http.NewServeMux()
 	mux.Handle("/", s.pb)

@@ -1,5 +1,5 @@
-# Build
-FROM mirror.gcr.io/library/golang:1.26.0 AS build-stage
+# Build (компилятор выполняется нативно на платформе сборщика, бинарник кросс-компилируется под amd64)
+FROM --platform=$BUILDPLATFORM mirror.gcr.io/library/golang:1.27 AS build-stage
 
 WORKDIR /app
 COPY go.mod go.sum ./

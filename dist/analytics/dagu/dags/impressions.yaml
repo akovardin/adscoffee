@@ -4,5 +4,8 @@ schedule: "1 * * * *"
 
 steps:
   - name: impressions
-    command:
+    command: |
+      set -a
+      . /var/lib/dagu/.env
+      set +a
       /analytics aggregations -table=impressions -config=/configs/config.yaml

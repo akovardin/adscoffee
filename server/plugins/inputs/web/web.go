@@ -82,15 +82,15 @@ func (w *Web) Do(ctx context.Context, state *plugins.State) bool {
 	// проверить наличие placement
 	id, _ := strconv.Atoi(chi.URLParam(state.Request, "placement"))
 
-	placement, exit := w.placements.One(ctx, uint(id))
-	if !exit {
+	placement, ok := w.placements.One(ctx, uint(id))
+	if !ok {
 		return false
 	}
 
 	state.Placement = placement
 
-	units, exit := w.units.FindByPlacement(ctx, placement.ID)
-	if exit {
+	units, ok := w.units.FindByPlacement(ctx, placement.ID)
+	if ok {
 		state.Units = units
 	}
 

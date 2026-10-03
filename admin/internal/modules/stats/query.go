@@ -269,6 +269,7 @@ type Option struct {
 	Name string
 }
 
+//nolint:unused // задел для фильтра по bundle
 func (q *Query) bundles(ctx context.Context) ([]Option, error) {
 	sel := q.clickhouse.DB.NewSelect()
 
@@ -301,6 +302,7 @@ type NetworkModel struct {
 	Network string
 }
 
+//nolint:unused // задел для фильтра по network
 func (q *Query) networks(ctx context.Context) ([]Option, error) {
 	sel := q.clickhouse.DB.NewSelect()
 

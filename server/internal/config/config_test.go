@@ -2,7 +2,6 @@
 package config
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -56,7 +55,7 @@ kafka-pool:
     producer:
       disable_idempotent_write: true
 `
-	tmpfile, err := ioutil.TempFile("", "config-*.yaml")
+	tmpfile, err := os.CreateTemp("", "config-*.yaml")
 	require.NoError(t, err)
 	defer os.Remove(tmpfile.Name())
 
@@ -111,7 +110,7 @@ pipelines:
   - name: test
 	 route: /test  # Incorrect indentation
 `
-	tmpfile, err := ioutil.TempFile("", "config-invalid-*.yaml")
+	tmpfile, err := os.CreateTemp("", "config-invalid-*.yaml")
 	require.NoError(t, err)
 	defer os.Remove(tmpfile.Name())
 
@@ -130,7 +129,7 @@ pipelines:
 
 func TestNew_EmptyFile(t *testing.T) {
 	// Create an empty temporary config file
-	tmpfile, err := ioutil.TempFile("", "config-empty-*.yaml")
+	tmpfile, err := os.CreateTemp("", "config-empty-*.yaml")
 	require.NoError(t, err)
 	defer os.Remove(tmpfile.Name())
 	err = tmpfile.Close()
