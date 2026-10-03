@@ -1,0 +1,209 @@
+{
+  "title": "Caffeine Analytics",
+  "uid": "caffeine-analytics",
+  "version": 1,
+  "schemaVersion": 39,
+  "timezone": "browser",
+  "editable": true,
+  "tags": ["caffeine", "ads"],
+  "refresh": "30s",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "panels": [
+    {
+      "title": "Requests",
+      "type": "timeseries",
+      "id": 1,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "lineInterpolation": "smooth",
+            "showPoints": "never",
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "showLegend": true, "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "queryType": "sql",
+          "rawSql": "SELECT $__timeInterval(timestamp) AS t, sum(count) AS \"Requests\" FROM analytics.requests_hour WHERE $__timeFilter(timestamp) GROUP BY t ORDER BY t",
+          "format": 0,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Responses",
+      "type": "timeseries",
+      "id": 2,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "lineInterpolation": "smooth",
+            "showPoints": "never",
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "showLegend": true, "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "queryType": "sql",
+          "rawSql": "SELECT $__timeInterval(timestamp) AS t, sum(count) AS \"Responses\" FROM analytics.responses_hour WHERE $__timeFilter(timestamp) GROUP BY t ORDER BY t",
+          "format": 0,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Impressions",
+      "type": "timeseries",
+      "id": 3,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "lineInterpolation": "smooth",
+            "showPoints": "never",
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "showLegend": true, "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "queryType": "sql",
+          "rawSql": "SELECT $__timeInterval(timestamp) AS t, sum(count) AS \"Impressions\" FROM analytics.impressions_hour WHERE $__timeFilter(timestamp) GROUP BY t ORDER BY t",
+          "format": 0,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Clicks",
+      "type": "timeseries",
+      "id": 4,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "lineInterpolation": "smooth",
+            "showPoints": "never",
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "showLegend": true, "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "queryType": "sql",
+          "rawSql": "SELECT $__timeInterval(timestamp) AS t, sum(count) AS \"Clicks\" FROM analytics.clicks_hour WHERE $__timeFilter(timestamp) GROUP BY t ORDER BY t",
+          "format": 0,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Conversions",
+      "type": "timeseries",
+      "id": 5,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "lineInterpolation": "smooth",
+            "showPoints": "never",
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "showLegend": true, "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "queryType": "sql",
+          "rawSql": "SELECT $__timeInterval(timestamp) AS t, sum(count) AS \"Conversions\" FROM analytics.conversions_hour WHERE $__timeFilter(timestamp) GROUP BY t ORDER BY t",
+          "format": 0,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Revenue (Price)",
+      "type": "timeseries",
+      "id": 6,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "lineInterpolation": "smooth",
+            "showPoints": "never",
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "showLegend": true, "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "queryType": "sql",
+          "rawSql": "SELECT $__timeInterval(timestamp) AS t, sum(price) AS \"Revenue\" FROM analytics.impressions_hour WHERE $__timeFilter(timestamp) GROUP BY t ORDER BY t",
+          "format": 0,
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

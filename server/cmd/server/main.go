@@ -27,7 +27,7 @@ import (
 
 func main() {
 	cmd := &cli.Command{
-		Name: "kodikapusta",
+		Name: "coffee",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "config", Aliases: []string{"c"}},
 		},

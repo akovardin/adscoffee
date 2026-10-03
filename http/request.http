@@ -11,6 +11,11 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 GET http://localhost:9090/banner/123/click
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36
 
+
+### test inapp
+GET http://localhost:8081/inapp/1
+
+
 ### prod
 GET https://platform.ads.coffee/native/1
 

@@ -35,7 +35,7 @@ import (
 
 func main() {
 	cmd := &cli.Command{
-		Name: "kodikapusta",
+		Name: "coffee",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "config", Aliases: []string{"c"}},
 		},
@@ -87,6 +87,10 @@ func main() {
 			{
 				Name:    "user",
 				Aliases: []string{"u"},
+				Flags: []cli.Flag{
+					&cli.StringFlag{Name: "account", Aliases: []string{"a"}, Value: "admin", Usage: "логин пользователя"},
+					&cli.StringFlag{Name: "password", Aliases: []string{"p"}, Value: "password", Usage: "пароль пользователя"},
+				},
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					fx.New(
 						fx.Provide(
@@ -109,7 +113,9 @@ func main() {
 						media.Module,
 
 						fx.Invoke(
-							user,
+							func(db *gorm.DB) {
+								user(db, cmd.String("account"), cmd.String("password"))
+							},
 						),
 					).Run()
 
@@ -138,6 +144,7 @@ func main() {
 
 						fx.Invoke(
 							migrate,
+							serve,
 						),
 					).Run()
 
@@ -224,14 +231,16 @@ func configure(
 	return b
 }
 
-func user(db *gorm.DB) {
-	fmt.Println("add user: admin, password")
+func user(db *gorm.DB, account, password string) {
+	fmt.Printf("set user: %s\n", account)
 
-	u := umodels.User{
-		Name: "admin",
+	u := umodels.User{}
+	if err := db.Where("account = ?", account).First(&u).Error; err != nil {
+		u = umodels.User{Name: account}
+		u.Account = account
 	}
-	u.Account = "admin"
-	u.Password = "password"
+
+	u.Password = password
 	u.EncryptPassword()
 
 	if err := db.Model(&u).Save(&u).Error; err != nil {

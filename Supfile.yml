@@ -1,44 +1,56 @@
 networks:
-  production:
+  # Хост задаётся SSH-алиасом `venator` (HostName/User/IdentityFile в ~/.ssh/config,
+  # адрес сервера в git не хранится). sup читает его через `-sshconfig ~/.ssh/config`.
+  venator:
     hosts:
-      - root@188.68.222.18
+      - venator
 
 commands:
-  nginx:
-    run: systemctl restart nginx
+  # --- dist (docker compose) ---
 
-  docker-pull-server:
-    run: docker pull registry.gitflic.ru/project/kovardin/adscoffee/platform-server:$SERVER_VERSION
+  dist-prepare:
+    run: mkdir -p /opt/platform/data/postgres /opt/platform/data/grafana /opt/platform/data/chui /opt/platform/data/clickhouse /opt/platform/data/kafka1 /opt/platform/data/kafka2 /opt/platform/data/kafka3 /opt/platform/data/dagu/data /opt/platform/data/dagu/logs && chown -R 472:472 /opt/platform/data/grafana && chown -R 100:101 /opt/platform/data/chui && chown -R 1000:1000 /opt/platform/data/kafka1 /opt/platform/data/kafka2 /opt/platform/data/kafka3
 
-  docker-stop-server:
-    run: docker stop platform-server || true && docker rm platform-server || true
+  dist-up:
+    run: cd /opt/platform && docker compose up -d --build --remove-orphans
 
-  docker-start-server:
-    run: docker run -p 8071:8081 --network platform_default --name platform-server -d -v /opt/platform/server/configs:/configs registry.gitflic.ru/project/kovardin/adscoffee/platform-server:$SERVER_VERSION serve -c=/configs/prod.yaml
+  dist-down:
+    run: cd /opt/platform && docker compose down
+
+  dist-ps:
+    run: cd /opt/platform && docker compose ps
+
+  dist-logs:
+    run: cd /opt/platform && docker compose logs --tail=200
+
+  dist-pull:
+    run: cd /opt/platform && docker compose pull
+
+  dist-config:
+    run: cd /opt/platform && docker compose config --quiet && echo "compose config OK"
+
+  # --- dist (обновление отдельного сервиса без остановки стека) ---
+
+  server-deploy:
+    run: cd /opt/platform && SERVER_IMAGE_TAG=$SERVER_VERSION docker compose up -d --no-deps --pull always --force-recreate server && docker compose ps server
+
+  admin-deploy:
+    run: cd /opt/platform && ADMIN_IMAGE_TAG=$ADMIN_VERSION docker compose pull admin && ADMIN_IMAGE_TAG=$ADMIN_VERSION docker compose run --rm --no-deps migrate && ADMIN_IMAGE_TAG=$ADMIN_VERSION docker compose up -d --no-deps --force-recreate admin && docker compose ps admin
+
+  analytics-deploy:
+    run: cd /opt/platform && ANALYTICS_IMAGE_TAG=$ANALYTICS_VERSION docker compose up -d --no-deps --pull always --force-recreate analytics && docker compose ps analytics
 
 
-  docker-pull-admin:
-    run: docker pull registry.gitflic.ru/project/kovardin/adscoffee/platform-admin:$ADMIN_VERSION
+  # --- nginx / TLS ---
 
-  docker-stop-admin:
-    run: docker stop platform-admin || true && docker rm platform-admin || true
+  nginx-install:
+    run: command -v nginx >/dev/null 2>&1 || (apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y nginx && systemctl enable --now nginx)
 
-  docker-start-admin:
-    run: docker run -p 8072:8082  --network platform_default --name platform-admin -d -v /opt/platform/admin/configs:/configs registry.gitflic.ru/project/kovardin/adscoffee/platform-admin:$ADMIN_VERSION serve -c=/configs/prod.yaml
+  nginx-reload:
+    run: mkdir -p /var/www/admin.ads.coffee/web /var/www/platform.ads.coffee/web /var/www/chui.ads.coffee/web /var/www/kafka.ads.coffee/web /var/www/analytics.ads.coffee/web /var/www/grafana.ads.coffee/web && ln -sf /etc/nginx/sites-available/admin.ads.coffee /etc/nginx/sites-enabled/admin.ads.coffee && ln -sf /etc/nginx/sites-available/platform.ads.coffee /etc/nginx/sites-enabled/platform.ads.coffee && ln -sf /etc/nginx/sites-available/chui.ads.coffee /etc/nginx/sites-enabled/chui.ads.coffee && ln -sf /etc/nginx/sites-available/kafka.ads.coffee /etc/nginx/sites-enabled/kafka.ads.coffee && ln -sf /etc/nginx/sites-available/analytics.ads.coffee /etc/nginx/sites-enabled/analytics.ads.coffee && ln -sf /etc/nginx/sites-available/grafana.ads.coffee /etc/nginx/sites-enabled/grafana.ads.coffee && nginx -t && systemctl reload nginx && echo "nginx reloaded"
 
+  certbot-install:
+    run: command -v certbot >/dev/null 2>&1 || (apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y certbot) && mkdir -p /etc/letsencrypt/renewal-hooks/deploy && printf '#!/bin/sh\nsystemctl reload nginx\n' > /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh && chmod +x /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh && systemctl enable --now certbot.timer && echo "certbot ready"
 
-  docker-pull-analytics:
-    run: docker pull registry.gitflic.ru/project/kovardin/adscoffee/platform-analytics:$ANALYTICS_VERSION
-
-  docker-stop-analytics:
-    run: docker stop platform-analytics || true && docker rm platform-analytics || true
-
-  docker-start-analytics:
-    run: >
-      docker run -p 8080:8080 --network platform_default --name platform-analytics -d -v /opt/platform/analytics/configs:/configs -e DAGU_AUTH_MODE=basic -e DAGU_AUTH_BASIC_USERNAME=admin -e DAGU_AUTH_BASIC_PASSWORD=$DAGU_AUTH_BASIC_PASSWORD registry.gitflic.ru/project/kovardin/adscoffee/platform-analytics:$ANALYTICS_VERSION
-
-
-  letsencrypt:
-    run: >
-      letsencrypt certonly -a webroot --webroot-path=/var/www/platform.ads.coffee/web -d platform.ads.coffee
-      letsencrypt certonly -a webroot --webroot-path=/var/www/admin.ads.coffee/web -d admin.ads.coffee
+  certbot-renew-check:
+    run: certbot renew --dry-run && echo "renew dry-run OK"

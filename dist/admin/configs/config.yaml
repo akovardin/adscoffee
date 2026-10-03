@@ -1,0 +1,31 @@
+server:
+  port: ":8082"
+
+database:
+  debug: false
+  user: ${POSTGRES_USER}
+  password: ${POSTGRES_PASSWORD}
+  host: ${POSTGRES_HOST}
+  port: ${POSTGRES_PORT}
+  dbname: ${POSTGRES_DB}
+
+s3storage:
+  bucket: ${S3_BUCKET}
+  s3Endpoint: ${S3_ENDPOINT}
+  accessId: ${S3_ACCESS_ID}
+  accessKey: ${S3_ACCESS_KEY}
+  region: ${S3_REGION}
+  s3ForcePathStyle: ${S3_FORCE_PATH_STYLE}
+
+clickhouse:
+  host: ${CLICKHOUSE_HOST}
+  port: ${CLICKHOUSE_PORT}
+  user: ${CLICKHOUSE_USER}
+  password: ${CLICKHOUSE_PASSWORD}
+  database: ${CLICKHOUSE_DB}
+  max_open_conns: 20
+  max_idle_conns: 4
+  max_conn_lifetime: "1m"
+
+grafana:
+  url: ${GRAFANA_URL}

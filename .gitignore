@@ -1,6 +1,7 @@
 .vscode/*
 .codeassistant/*
 .env.prod
+.env.deploy
 data/*
 backup.sql
 geoip/*

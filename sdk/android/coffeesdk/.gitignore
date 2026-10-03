@@ -1,0 +1,5 @@
+build/
+.gradle/
+*.jar
+*.tar.gz
+*.zip

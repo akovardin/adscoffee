@@ -1,0 +1,122 @@
+server:
+  port: ":8081"
+
+redis-pool:
+  main:
+    enabled: true
+    key_prefix: "adscoffee"
+    cluster_addrs: ${REDIS_ADDRS}
+    username: ''
+    password: ''
+    pool_size: 10
+    route_by_latency: true
+    route_randomly: false
+    pool_timeout: 3s
+    max_retries: 3
+    min_retry_backoff: 8ms
+    max_retry_backoff: 512ms
+    dial_timeout: 5s
+    read_timeout: 2s
+    write_timeout: 2s
+
+kafka-pool:
+  main:
+    enabled: true
+    seeds: ${KAFKA_SEEDS}
+    producer:
+      disable_idempotent_write: true
+
+telemetry:
+  jaeger:
+    enabled: false
+
+database:
+  debug: false
+  user: ${POSTGRES_USER}
+  password: ${POSTGRES_PASSWORD}
+  host: ${POSTGRES_HOST}
+  port: ${POSTGRES_PORT}
+  dbname: ${POSTGRES_DB}
+
+pipelines:
+  - name: dsp
+    route: /dsp/{placement}
+    input:
+      name: inputs.rtb
+    stages:
+      - name: stages.banners
+      - name: stages.limits
+      - name: stages.targeting
+      - name: stages.rotation
+    targetings:
+      - name: targetings.apps
+      - name: targetings.geo
+    output:
+      name: outputs.rtb
+
+  - name: native
+    route: /native/{placement}
+    input:
+      name: inputs.web
+    stages:
+      - name: stages.banners
+      - name: stages.limits
+      - name: stages.targeting
+      - name: stages.rotation
+      - name: stages.mediation
+    targetings:
+      - name: targetings.apps
+      - name: targetings.geo
+    output:
+      name: outputs.web
+      config:
+        base: https://platform.ads.coffee
+        format: native
+
+  - name: banner
+    route: /banner/{placement}/{action}
+    input:
+      name: inputs.static
+    stages:
+      - name: stages.banners
+      - name: stages.limits
+      - name: stages.targeting
+      - name: stages.rotation
+    targetings:
+      - name: targetings.apps
+      - name: targetings.geo
+    output:
+      name: outputs.static
+
+  - name: inapp
+    route: /inapp/{placement}
+    input:
+      name: inputs.web
+    stages:
+      - name: stages.banners
+      - name: stages.limits
+      - name: stages.targeting
+      - name: stages.rotation
+      - name: stages.mediation
+    targetings:
+      - name: targetings.apps
+      - name: targetings.geo
+    output:
+      name: outputs.web
+      config:
+        base: https://platform.ads.coffee
+        format: native
+
+  - name: tracker
+    route: /tracker/{data}.gif
+    input:
+      name: inputs.tracker
+    output:
+      name: outputs.pixel
+
+  - name: postback
+    route: /postback
+    input:
+      name: inputs.postback
+    output:
+      name: outputs.empty

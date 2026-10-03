@@ -19,6 +19,12 @@ type Config struct {
 	S3Storage  s3storage.Config  `yaml:"s3storage"`
 	Server     server.Config     `yaml:"server"`
 	Clickhouse clickhouse.Config `yaml:"clickhouse"`
+	Grafana    Grafana           `yaml:"grafana"`
+}
+
+// Grafana — внешний адрес Grafana для встраивания дашбордов в админку.
+type Grafana struct {
+	URL string `yaml:"url"`
 }
 
 func New(file string) (Config, error) {

@@ -1,0 +1,296 @@
+name: caffeine
+
+x-app-env: &app-env
+  env_file:
+    - .env
+
+services:
+  redis:
+    container_name: platform-redis
+    build:
+      context: ./redis-cluster
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      # Static IP so all cluster nodes advertise a container-reachable address.
+      IP: 172.30.240.10
+      INITIAL_PORT: 7001
+      MASTERS: 3
+      SLAVES_PER_MASTER: 1
+    ports:
+      - "7001-7006:7001-7006"
+    networks:
+      default:
+        ipv4_address: 172.30.240.10
+
+  postgres:
+    container_name: platform-postgres
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - "6432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  kafka1:
+    container_name: platform-kafka-1
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka1
+    restart: unless-stopped
+    ports:
+      - "19092:19092"
+      - "19093:19093"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_BROKER_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:19093,2@kafka2:19093,3@kafka3:19093'
+      KAFKA_LISTENERS: 'PLAINTEXT_INTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:19093,PLAINTEXT_EXTERNAL://0.0.0.0:19092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_INTERNAL://kafka1:9092,PLAINTEXT_EXTERNAL://localhost:19092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT,PLAINTEXT_EXTERNAL:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT_INTERNAL'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - ./data/kafka1:/var/lib/kafka/data
+
+  kafka2:
+    container_name: platform-kafka-2
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka2
+    restart: unless-stopped
+    ports:
+      - "29092:29092"
+      - "29093:29093"
+    environment:
+      KAFKA_NODE_ID: 2
+      KAFKA_BROKER_ID: 2
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:19093,2@kafka2:19093,3@kafka3:19093'
+      KAFKA_LISTENERS: 'PLAINTEXT_INTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:19093,PLAINTEXT_EXTERNAL://0.0.0.0:29092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_INTERNAL://kafka2:9092,PLAINTEXT_EXTERNAL://localhost:29092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT,PLAINTEXT_EXTERNAL:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT_INTERNAL'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - ./data/kafka2:/var/lib/kafka/data
+
+  kafka3:
+    container_name: platform-kafka-3
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka3
+    restart: unless-stopped
+    ports:
+      - "39092:39092"
+      - "39093:39093"
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_BROKER_ID: 3
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:19093,2@kafka2:19093,3@kafka3:19093'
+      KAFKA_LISTENERS: 'PLAINTEXT_INTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:19093,PLAINTEXT_EXTERNAL://0.0.0.0:39092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_INTERNAL://kafka3:9092,PLAINTEXT_EXTERNAL://localhost:39092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT,PLAINTEXT_EXTERNAL:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT_INTERNAL'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - ./data/kafka3:/var/lib/kafka/data
+
+  kafka-init:
+    container_name: platform-kafka-init
+    image: confluentinc/cp-kafka:7.8.0
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        set -e
+        cub kafka-ready -b kafka1:9092 1 120
+        for t in request impression click response conversion win; do
+          kafka-topics --bootstrap-server kafka1:9092 --create --if-not-exists --topic "$$t" --partitions 3 --replication-factor 3
+        done
+        echo "kafka topics ready"
+
+  kafka-ui:
+    container_name: platform-kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    restart: unless-stopped
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: caffeine
+      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka1:9092,kafka2:9092,kafka3:9092
+      AUTH_TYPE: "LOGIN_FORM"
+      SPRING_SECURITY_USER_NAME: ${KAFKA_UI_USER}
+      SPRING_SECURITY_USER_PASSWORD: ${KAFKA_UI_PASSWORD}
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+
+  clickhouse:
+    container_name: platform-clickhouse
+    image: clickhouse/clickhouse-server:24.1
+    restart: unless-stopped
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - ./data/clickhouse:/var/lib/clickhouse
+      - ./clickhouse/init:/docker-entrypoint-initdb.d:ro
+    environment:
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB}
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+      kafka1:
+        condition: service_started
+
+  ch-ui:
+    container_name: platform-ch-ui
+    image: ghcr.io/caioricciuti/ch-ui:latest
+    restart: unless-stopped
+    environment:
+      - CLICKHOUSE_URL=http://clickhouse:8123
+    volumes:
+      - ./data/chui:/app/data
+    ports:
+      - "3488:3488"
+    depends_on:
+      - clickhouse
+
+  grafana:
+    container_name: platform-grafana
+    image: grafana/grafana:11.5.0
+    restart: unless-stopped
+    <<: *app-env
+    ports:
+      - "3001:3001"
+    environment:
+      GF_SERVER_HTTP_PORT: 3001
+      GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-http://localhost:3001/}
+      GF_INSTALL_PLUGINS: grafana-clickhouse-datasource
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: ${GRAFANA_ANONYMOUS_ENABLED:-false}
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_AUTH_ANONYMOUS_ORG_NAME: Main Org.
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_DEFAULT_THEME: light
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - clickhouse
+
+  migrate:
+    container_name: platform-migrate
+    image: registry.gitflic.ru/project/kovardin/adscoffee/platform-admin:${ADMIN_IMAGE_TAG:-latest}
+    <<: *app-env
+    command: ["migrate", "-c=/configs/config.yaml"]
+    volumes:
+      - ./admin/configs:/configs:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  analytics:
+    container_name: platform-analytics
+    image: registry.gitflic.ru/project/kovardin/adscoffee/platform-analytics:${ANALYTICS_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    <<: *app-env
+    environment:
+      DAGU_HOST: 0.0.0.0
+      DAGU_PORT: 8080
+      DAGU_AUTH_MODE: basic
+      DAGU_AUTH_BASIC_USERNAME: ${DAGU_AUTH_BASIC_USERNAME}
+      DAGU_AUTH_BASIC_PASSWORD: ${DAGU_AUTH_BASIC_PASSWORD}
+    ports:
+      - "8088:8080"
+    volumes:
+      - ./analytics/configs:/configs:ro
+      - ./analytics/dagu/dags:/var/lib/dagu/dags
+      - ./data/dagu/data:/var/lib/dagu/data
+      - ./data/dagu/logs:/var/lib/dagu/logs
+    depends_on:
+      - clickhouse
+
+  server:
+    container_name: platform-server
+    image: registry.gitflic.ru/project/kovardin/adscoffee/platform-server:${SERVER_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    <<: *app-env
+    command: ["serve", "-c=/configs/config.yaml"]
+    ports:
+      - "8071:8081"
+    volumes:
+      - ./server/configs:/configs:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      kafka-init:
+        condition: service_completed_successfully
+      admin:
+        condition: service_started
+
+  admin:
+    container_name: platform-admin
+    image: registry.gitflic.ru/project/kovardin/adscoffee/platform-admin:${ADMIN_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    <<: *app-env
+    command: ["serve", "-c=/configs/config.yaml"]
+    ports:
+      - "8072:8082"
+    volumes:
+      - ./admin/configs:/configs:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clickhouse:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+
+networks:
+  default:
+    name: caffeine
+    ipam:
+      config:
+        - subnet: 172.30.240.0/24

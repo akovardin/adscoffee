@@ -3,6 +3,7 @@ package inputs
 import (
 	"go.uber.org/fx"
 
+	"go.ads.coffee/platform/server/plugins/inputs/inapp"
 	"go.ads.coffee/platform/server/plugins/inputs/postback"
 	"go.ads.coffee/platform/server/plugins/inputs/rtb"
 	"go.ads.coffee/platform/server/plugins/inputs/static"
@@ -13,6 +14,7 @@ import (
 var Module = fx.Module(
 	"inputs.inputs",
 
+	inapp.Module,
 	rtb.Module,
 	web.Module,
 	postback.Module,

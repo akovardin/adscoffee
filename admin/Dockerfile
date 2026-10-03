@@ -12,7 +12,7 @@ FROM build-stage AS run-test-stage
 RUN go test -v ./...
 
 # Deploy
-FROM mirror.gcr.io/library/debian:11-slim AS build-release-stage
+FROM mirror.gcr.io/library/debian:12-slim AS build-release-stage
 ENV TZ="Europe/Moscow"
 WORKDIR /
 
