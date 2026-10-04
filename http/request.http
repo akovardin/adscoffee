@@ -17,7 +17,7 @@ GET http://localhost:8081/inapp/1
 
 
 ### prod
-GET https://platform.ads.coffee/native/1
+GET https://platform.ads.coffee/inapp/2
 
 
 ### tracker

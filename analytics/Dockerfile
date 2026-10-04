@@ -28,9 +28,10 @@ ENV DAGU_PORT=8080
 ENV DAGU_DAG_DIR=/var/lib/dagu/dags
 ENV DAGU_DATA_DIR=/var/lib/dagu/data
 ENV DAGU_LOG_DIR=/var/lib/dagu/logs
+ENV DAGU_COORDINATOR_ENABLED=false
 
 RUN mkdir -p /var/lib/dagu/data /var/lib/dagu/logs
 
 EXPOSE 8080
 ENTRYPOINT ["/usr/local/bin/dagu"]
-CMD ["server", "--host=0.0.0.0", "--port=8080", "--dags=/var/lib/dagu/dags"]
+CMD ["start-all", "--host=0.0.0.0", "--port=8080", "--dags=/var/lib/dagu/dags"]

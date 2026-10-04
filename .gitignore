@@ -20,3 +20,4 @@ analytics/configs/dev.yaml
 deploy/*
 services-compose.prod.yaml
 NOTES.md
+responses/*
