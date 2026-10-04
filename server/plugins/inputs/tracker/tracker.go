@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -70,6 +71,12 @@ func (s *Tracker) Do(ctx context.Context, state *plugins.State) bool {
 	}
 
 	info.Timestamp = time.Now().Unix()
+
+	if raw := state.Request.URL.Query().Get("price"); raw != "" {
+		if price, err := strconv.ParseFloat(raw, 64); err == nil {
+			info.Price = price
+		}
+	}
 
 	switch info.Action {
 	case ads.ActionImpression:

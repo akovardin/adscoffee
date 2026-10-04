@@ -1,74 +1,52 @@
 package com.adscoffee.sdk.inapp
 
-import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
-import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import com.adscoffee.sdk.CoffeeAds
-import com.adscoffee.sdk.internal.ApiClient
 import com.adscoffee.sdk.internal.TrackerService
-import java.net.URL
 
-class InAppAd internal constructor(
-    val description: String,
-    val information: String,
-    val image: String,
-    val target: String,
+abstract class InAppAd internal constructor(
+    val network: String,
     val impressions: List<String>,
-    val clicks: List<String>,
-    val network: String
+    val clicks: List<String>
 ) {
-    private var listener: InAppAdEventListener? = null
     private val trackerService = TrackerService()
-    private val mainHandler = Handler(Looper.getMainLooper())
-    private var placementId: Int = 0
+    private var listener: InAppAdEventListener? = null
 
-    internal fun setPlacementId(id: Int) {
-        placementId = id
-    }
+    protected val mainHandler = Handler(Looper.getMainLooper())
+
+    internal var placementId: Int = 0
+    internal var price: Double = 0.0
+
+    open val target: String? = null
 
     fun bindInAppAd(binder: InAppAdViewBinder): AdBindingResult {
         return try {
-            binder.descriptionView?.let { it.text = description }
-            binder.informationView?.let { it.text = information }
-
-            binder.imageView?.let { imageView ->
-                loadImageAsync(imageView)
-            }
-
-            binder.adView.setOnClickListener(View.OnClickListener {
-                fireClickTrackers()
-            })
-
-            fireImpressionTrackers()
+            render(binder)
             AdBindingResult.Success
         } catch (e: Exception) {
             AdBindingResult.Failure(e)
         }
     }
 
+    protected abstract fun render(binder: InAppAdViewBinder)
+
     fun setInAppAdEventListener(listener: InAppAdEventListener) {
         this.listener = listener
     }
 
     fun fireImpressionTrackers() {
-        listener?.onImpression(ImpressionData(placementId))
-        trackerService.fire(impressions)
+        listener?.onImpression(ImpressionData(placementId, network, price))
+        trackerService.fire(impressions, price)
     }
 
     fun fireClickTrackers() {
         listener?.onAdClicked()
-        trackerService.fire(clicks)
+        trackerService.fire(clicks, price)
     }
 
-    private fun loadImageAsync(imageView: ImageView) {
-        Thread {
-            try {
-                val bitmap = BitmapFactory.decodeStream(URL(image).openStream())
-                mainHandler.post { imageView.setImageBitmap(bitmap) }
-            } catch (_: Exception) { }
-        }.start()
+    protected fun notifyError(message: String) {
+        listener?.onAdError(message)
     }
+
+    open fun destroy() {}
 }

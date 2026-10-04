@@ -7,14 +7,15 @@ import (
 )
 
 type Targeting struct {
-	Bundle   ExcludeInclude
-	Audience ExcludeInclude
-	Bapp     ExcludeInclude
-	IP       ExcludeIncludeIP
-	Country  ExcludeInclude
-	City     ExcludeInclude
-	Region   ExcludeInclude
-	Network  ExcludeInclude
+	Bundle    ExcludeInclude
+	Audience  ExcludeInclude
+	Bapp      ExcludeInclude
+	IP        ExcludeIncludeIP
+	Country   ExcludeInclude
+	City      ExcludeInclude
+	Region    ExcludeInclude
+	Network   ExcludeInclude
+	Placement ExcludeInclude
 }
 
 func NewTargeting(data string) (Targeting, error) {

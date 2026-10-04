@@ -176,6 +176,33 @@ func (t *Targeting) Component(obj interface{}, field *presets.FieldContext, ctx 
 					}...),
 				).Style("padding: 16px;"),
 			).Style(border),
+
+			h.Details(
+				h.Summary(
+					h.H3("Плейсменты").Style(header),
+				).Style(summary),
+
+				h.Div(
+					h.Div([]h.HTMLComponent{
+						h.Label("Включить").Class("v-label theme--dark"),
+						v.VTextarea().
+							Hint("1 2 3").
+							Attr(web.VField("Targeting.Placement.IncludeOr",
+								strings.Join(targeting.Placement.IncludeOr, " "))...).
+							Disabled(false).
+							ErrorMessages(field.Errors...),
+					}...),
+					h.Div([]h.HTMLComponent{
+						h.Label("Исключить").Class("v-label theme--dark"),
+						v.VTextarea().
+							Hint("1 2 3").
+							Attr(web.VField("Targeting.Placement.ExcludeOr",
+								strings.Join(targeting.Placement.ExcludeOr, " "))...).
+							Disabled(false).
+							ErrorMessages(field.Errors...),
+					}...),
+				).Style("padding: 16px;"),
+			).Style(border),
 		}...),
 	}
 
@@ -224,6 +251,13 @@ func (t *Targeting) Setter(obj interface{}, field *presets.FieldContext, ctx *we
 	}
 	if ctx.R.Form.Has("Targeting.IP.Exclude") {
 		targeting.IP.Exclude = strings.Fields(ctx.R.FormValue("Targeting.IP.Exclude"))
+	}
+
+	if ctx.R.Form.Has("Targeting.Placement.IncludeOr") {
+		targeting.Placement.IncludeOr = strings.Fields(ctx.R.FormValue("Targeting.Placement.IncludeOr"))
+	}
+	if ctx.R.Form.Has("Targeting.Placement.ExcludeOr") {
+		targeting.Placement.ExcludeOr = strings.Fields(ctx.R.FormValue("Targeting.Placement.ExcludeOr"))
 	}
 
 	return reflectutils.Set(obj, field.Name, targeting.String())

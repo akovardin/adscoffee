@@ -306,14 +306,15 @@ func (e excludeInclude) toExcludeIncludeIP() ads.ExcludeIncludeIP {
 }
 
 type targeting struct {
-	Bundle   excludeInclude `json:"bundle"`
-	Audience excludeInclude `json:"audience"`
-	Bapp     excludeInclude `json:"bapp"`
-	IP       excludeInclude `json:"ip"`
-	Country  excludeInclude `json:"country"`
-	City     excludeInclude `json:"city"`
-	Region   excludeInclude `json:"region"`
-	Network  excludeInclude `json:"network"`
+	Bundle    excludeInclude `json:"bundle"`
+	Audience  excludeInclude `json:"audience"`
+	Bapp      excludeInclude `json:"bapp"`
+	IP        excludeInclude `json:"ip"`
+	Country   excludeInclude `json:"country"`
+	City      excludeInclude `json:"city"`
+	Region    excludeInclude `json:"region"`
+	Network   excludeInclude `json:"network"`
+	Placement excludeInclude `json:"placement"`
 }
 
 func newTargeting(data string) (targeting, error) {
@@ -332,26 +333,28 @@ func newTargeting(data string) (targeting, error) {
 
 func (t targeting) merge(source targeting) targeting {
 	return targeting{
-		Bundle:   t.Bundle.merge(source.Bundle),
-		Audience: t.Audience.merge(source.Audience),
-		Bapp:     t.Bapp.merge(source.Bapp),
-		IP:       t.IP.merge(source.IP),
-		Country:  t.Country.merge(source.Country),
-		City:     t.City.merge(source.City),
-		Region:   t.Region.merge(source.Region),
-		Network:  t.Network.merge(source.Network),
+		Bundle:    t.Bundle.merge(source.Bundle),
+		Audience:  t.Audience.merge(source.Audience),
+		Bapp:      t.Bapp.merge(source.Bapp),
+		IP:        t.IP.merge(source.IP),
+		Country:   t.Country.merge(source.Country),
+		City:      t.City.merge(source.City),
+		Region:    t.Region.merge(source.Region),
+		Network:   t.Network.merge(source.Network),
+		Placement: t.Placement.merge(source.Placement),
 	}
 }
 
 func (t targeting) toDomain() ads.Targeting {
 	return ads.Targeting{
-		Bundle:   t.Bundle.toExcludeIncludeString(),
-		Audience: t.Audience.toExcludeIncludeString(),
-		Bapp:     t.Bapp.toExcludeIncludeString(),
-		IP:       t.Bapp.toExcludeIncludeIP(),
-		Country:  t.Country.toExcludeIncludeString(),
-		City:     t.City.toExcludeIncludeString(),
-		Region:   t.Region.toExcludeIncludeString(),
-		Network:  t.Network.toExcludeIncludeString(),
+		Bundle:    t.Bundle.toExcludeIncludeString(),
+		Audience:  t.Audience.toExcludeIncludeString(),
+		Bapp:      t.Bapp.toExcludeIncludeString(),
+		IP:        t.Bapp.toExcludeIncludeIP(),
+		Country:   t.Country.toExcludeIncludeString(),
+		City:      t.City.toExcludeIncludeString(),
+		Region:    t.Region.toExcludeIncludeString(),
+		Network:   t.Network.toExcludeIncludeString(),
+		Placement: t.Placement.toExcludeIncludeString(),
 	}
 }

@@ -1,17 +1,17 @@
 package com.adscoffee.sdk.internal
 
-import com.adscoffee.sdk.inapp.InAppAd
+import com.adscoffee.sdk.inapp.AdResponse
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import java.net.HttpURLConnection
 import java.net.URL
 
-class ApiClient(private val baseUrl: String) {
+internal class ApiClient(private val baseUrl: String) {
 
     private val gson = Gson()
 
-    fun fetchBanners(placementId: Int): List<InAppAd> {
+    fun fetchBanners(placementId: Int): List<AdResponse> {
         val url = URL(normalizedUrl(placementId))
         val conn = url.openConnection() as HttpURLConnection
         conn.requestMethod = "GET"
@@ -24,7 +24,7 @@ class ApiClient(private val baseUrl: String) {
                 throw RuntimeException("Server returned HTTP $code for placement $placementId")
             }
             val body = conn.inputStream.bufferedReader().readText()
-            return parseBanners(body)
+            return parseResponses(body)
         } finally {
             conn.disconnect()
         }
@@ -35,25 +35,37 @@ class ApiClient(private val baseUrl: String) {
         return "$base/inapp/$placementId"
     }
 
-    private fun parseBanners(json: String): List<InAppAd> {
+    private fun parseResponses(json: String): List<AdResponse> {
         val arr = gson.fromJson(json, JsonArray::class.java)
-        return arr.map { parseBanner(it.asJsonObject) }
+        return arr.map { parseResponse(it.asJsonObject) }
     }
 
-    private fun parseBanner(obj: JsonObject): InAppAd {
-        return InAppAd(
+    private fun parseResponse(obj: JsonObject): AdResponse {
+        return AdResponse(
             description = getString(obj, "description"),
             information = getString(obj, "information"),
             image = getString(obj, "image"),
             target = getString(obj, "target"),
             impressions = getStringList(obj, "impressions"),
             clicks = getStringList(obj, "clicks"),
-            network = getString(obj, "network")
+            data = getString(obj, "data"),
+            network = getString(obj, "network"),
+            price = getDouble(obj, "price")
         )
     }
 
     private fun getString(obj: JsonObject, key: String): String {
         return obj.get(key)?.asString ?: ""
+    }
+
+    private fun getDouble(obj: JsonObject, key: String): Double {
+        val element = obj.get(key) ?: return 0.0
+        if (element.isJsonNull) return 0.0
+        return try {
+            element.asDouble
+        } catch (_: Exception) {
+            0.0
+        }
     }
 
     private fun getStringList(obj: JsonObject, key: String): List<String> {

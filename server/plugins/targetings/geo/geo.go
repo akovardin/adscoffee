@@ -3,6 +3,7 @@ package geo
 import (
 	"go.uber.org/fx"
 
+	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
@@ -32,6 +33,6 @@ func (g *Geo) Copy(cfg map[string]any) plugins.Targeting {
 	return &Geo{}
 }
 
-func (g *Geo) Filter() {
-
+func (g *Geo) Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner {
+	return candidates
 }

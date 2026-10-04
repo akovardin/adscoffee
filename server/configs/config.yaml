@@ -54,6 +54,8 @@ pipelines:
     targetings:
       - name: targetings.apps
       - name: targetings.geo
+      - name: targetings.placement
+      - name: targetings.timetable
     output:
       name: outputs.rtb
 
@@ -70,6 +72,8 @@ pipelines:
     targetings:
       - name: targetings.apps
       - name: targetings.geo
+      - name: targetings.placement
+      - name: targetings.timetable
     output:
       name: outputs.web
       config:   
@@ -88,6 +92,8 @@ pipelines:
     targetings:
       - name: targetings.apps
       - name: targetings.geo
+      - name: targetings.placement
+      - name: targetings.timetable
     output:
       name: outputs.static # save to cache
       config:

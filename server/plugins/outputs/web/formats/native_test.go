@@ -156,6 +156,31 @@ func TestNative_Render_WithMultipleWinners(t *testing.T) {
 	assert.NotEmpty(t, item2.Clicks)
 }
 
+func TestNative_Render_PriceOnlyForCoffee(t *testing.T) {
+	native := &Native{}
+	ctx := context.Background()
+
+	state := &plugins.State{
+		Winners: []ads.Banner{
+			{Network: "coffee", Price: 15},
+			{Network: "yandex", Price: 20, Data: `{"block":"R-A-1"}`},
+		},
+	}
+
+	result, err := native.Render(ctx, state)
+
+	assert.NoError(t, err)
+
+	items, ok := result.([]NativeResponse)
+	assert.True(t, ok)
+	assert.Len(t, items, 2)
+
+	assert.NotNil(t, items[0].Price)
+	assert.Equal(t, 0.015, *items[0].Price)
+
+	assert.Nil(t, items[1].Price)
+}
+
 func TestNative_Render_WithEmptyFields(t *testing.T) {
 	native := &Native{}
 	ctx := context.Background()

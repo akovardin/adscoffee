@@ -11,6 +11,8 @@ import (
 
 const TypeNative = "native"
 
+const networkCoffee = "coffee"
+
 type Native struct {
 	base string
 }
@@ -32,6 +34,7 @@ type NativeResponse struct {
 	Clicks      []string `json:"clicks"`
 	Data        string   `json:"data,omitempty"`
 	Network     string   `json:"network"`
+	Price       *float64 `json:"price,omitempty"`
 }
 
 func (f *Native) Copy(cfg map[string]any) plugins.Format {
@@ -79,6 +82,7 @@ func (f *Native) Render(ctx context.Context, state *plugins.State) (any, error) 
 			Image:       b.Media("250x250"),
 			Data:        b.Data,
 			Network:     b.Network,
+			Price:       priceFor(b),
 
 			Impressions: impressiontrackers,
 			Clicks:      clicktrackers,
@@ -86,6 +90,16 @@ func (f *Native) Render(ctx context.Context, state *plugins.State) (any, error) 
 	}
 
 	return items, nil
+}
+
+func priceFor(b ads.Banner) *float64 {
+	if b.Network != networkCoffee {
+		return nil
+	}
+
+	price := float64(b.Price) / 1000
+
+	return &price
 }
 
 func (f *Native) tracker(w ads.Banner, state *plugins.State, action string) (string, error) {

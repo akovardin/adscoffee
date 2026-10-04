@@ -15,6 +15,7 @@ repositories {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.11.0")
+    implementation("com.yandex.android:mobileads:7.14.1")
     testImplementation("org.jetbrains.kotlin:kotlin-test:2.0.21")
 }
 

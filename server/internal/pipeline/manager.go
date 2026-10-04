@@ -42,12 +42,11 @@ func NewManager(
 
 		for _, s := range c.Stages {
 			v := stages.Get(s.Name, s.Config)
-			switch s := v.(type) {
-			case plugins.WithTargetings:
-				s.Targetings(tt)
-			default:
-				ss = append(ss, v)
+			if w, ok := v.(plugins.WithTargetings); ok {
+				w.Targetings(tt)
 			}
+
+			ss = append(ss, v)
 		}
 
 		m.pipelines = append(m.pipelines, NewPipeline(

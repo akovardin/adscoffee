@@ -41,6 +41,7 @@ task certbot-renew-check # certbot renew --dry-run
 - **`.env.dev`** (`dist/.env.dev`, gitignored) holds `localhost` hosts for running binaries on the host against the Compose infra; used by VS Code `-dist` configs (`.vscode/launch.json`).
 - **`.env.deploy`** (repo root, gitignored; template `.env.deploy.example`) holds `VENATOR=root@<host>` used by Taskfile `scp`/`ssh`. The `dist/*_IMAGE_TAG` variables choose the registry tags.
 - **Taskfile/Supfile deploy to a remote host** (`venator`). `Supfile.yml` defines the `venator` network via the SSH alias `venator` (its `HostName`/`User` live in `~/.ssh/config`, not in git); Taskfile invokes `sup -sshconfig ~/.ssh/config`. `task dist-upload` rsyncs `dist/` to `/opt/platform`, `task dist-prepare` creates/chowns `data/` subdirs.
+- **`task <service>-deploy` does NOT sync `dist/`.** It only builds/pushes the image and recreates that one compose service (`Supfile.yml` `server-deploy`/`admin-deploy`/`analytics-deploy`). Since configs are mounted from the host (`./{server,admin,analytics}/configs:/configs:ro`), any change to `dist/*/configs/config.yaml` (e.g. adding a pipeline/stage/targeting) is invisible until you run `task dist-upload` and recreate the service. Config is read at startup, so restart the container after uploading. `dist-update` deliberately does NOT overwrite service configs.
 - **Migrations**: the one-shot `migrate` service applies schema; `admin` waits for it, `server` waits for `admin`. `server`/`clickhouse` also wait for `kafka-init` (which creates topics `request`, `impression`, `click`, `response`, `conversion`, `win`).
 - **nginx / TLS**: site configs in `deploy/nginx/<domain>.coffee` (gitignored via `deploy/*`) reverse-proxy to the published localhost ports; certbot (webroot) renews certs, deploy-hook reloads nginx.
 
@@ -76,6 +77,21 @@ Plugin interfaces live in `server/internal/domain/plugins/`. Implementations in 
 
 Important stages — `banners` (loads from DB/Redis cache), `limits` (budget/capping checks), `targeting` (filters candidates), `rotation` (weighted random pick), `mediation` (native-only, waterfall auction for third-party networks).
 
+### Targetings
+
+- Targeting plugins live in `server/plugins/targetings/{apps,geo,placement,timetable}` and implement `plugins.Targeting` (`server/internal/domain/plugins/targeting.go`): `Name()`, `Copy(cfg)`, `Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner`.
+- A pipeline lists targetings in `targetings:` config. `pipeline.Manager` (`server/internal/pipeline/manager.go`) instantiates them and injects them into any stage implementing `WithTargetings` (currently `stages.targeting`). The manager appends **all** stages to the pipeline (earlier it dropped stages implementing `WithTargetings`, so the targeting stage never ran).
+- `stages.targeting.Do` applies each targeting's `Filter` in config order to `state.Candidates` before `rotation` picks winners.
+- `placement` filters candidates whose (merged advertiser→campaign→group→banner) `Targeting.Placement` doesn't match `state.Placement.ID`; `timetable` filters by `Targeting` day/hour using server time (`time.Now`, Monday=0..Sunday=6 like the admin UI).
+- Targeting data is stored as JSON on each level (`targeting` column); `server/internal/repos/banners/repo.go` parses and merges the four levels into `ads.Targeting` on each `ads.Banner`. Admin UI in `admin/internal/modules/ads/components/targeting.go` + `models/targeting.go` (placement section).
+- `inputs.rtb` (`/dsp/{placement}`) is a stub that never sets `state.Placement` (and `outputs.rtb` is a no-op), so placement filtering only applies on the `web`/`static`/`inapp` inputs.
+
+### Yandex Ads mediation / bidding (research)
+
+- The Android SDK lives in `sdk/android/coffeesdk/` (`InAppAdLoader`, `InAppAdRequest`, `InAppAd`); server-side mediation types are `server/internal/domain/mediation/{network,unit}.go` and `server/plugins/stages/mediation/mediation.go` (currently weighted-random over `Price`).
+- The Yandex Mobile Ads SDK does **not** expose an eCPM/price for a loaded ad. To get a bid **before showing**, integrate Yandex as an S2S Open Bidding demand source: on-device `BidderTokenLoader` (per-request token, set `AdapterIdentity`, `YandexAds.setAdapterIdentity`/`initialize`) → your ad server sends an OpenRTB 2.5 request with the token in `user.data.segment.signal` to Yandex's endpoint (obtained via Yandex support, not public) → response `seatbid[].bid[].price` + `ext.signaldata` → if Yandex wins, load with `AdRequest.Builder(adUnitId).setBiddingData(signaldata)`.
+- Requires onboarding as a bidding partner (endpoint is gated); without it only waterfall/floor is possible (no actual price visible). Refs: `https://ads.yandex.com/helpcenter/en/support/open-bidding/open-bidding-integration-android`, `https://github.com/yandexmobile/yandex-ads-sdk-android/tree/master/ThirdPartyMediationAdapterTemplate`.
+
 ## Analytics pipeline
 
 ```
@@ -83,6 +99,13 @@ Server events -> Kafka topics -> ClickHouse raw tables (Kafka Engine) -> dagu ag
 ```
 
 Analytics aggregation is run by dagu (workflow scheduler). DAG YAMLs in `analytics/dagu/dags/` (copied into `dist/`). The binary command is `analytics aggregations -table=<requests|impressions|clicks|responses>`. ClickHouse also keeps raw tables for `conversion` and `win` topics (`analytics.*_hour` aggregates).
+
+dagu deployment notes (`analytics/Dockerfile`):
+
+- The container is `ENTRYPOINT ["/usr/local/bin/dagu"]` + `CMD ["start-all", "--host=0.0.0.0", "--port=8080", "--dags=/var/lib/dagu/dags"]`. In dagu 2.x `server` is **web UI only**; the scheduler is a separate process, so scheduled DAGs only fire when running `scheduler` or `start-all`. Never switch the CMD back to `server` — that silently disables cron.
+- `ENV DAGU_COORDINATOR_ENABLED=false` — single-instance mode, no coordinator gRPC service. This is an env var, not a `start-all` CLI flag.
+- Each DAG step does `. /var/lib/dagu/.env` then runs the binary; Compose mounts `dist/.env` there (`dev-compose.yaml` does **not**, so DAGs fail outside the dist stack). DAG data/logs are persisted under `data/dagu/{data,logs}` on the host.
+- Diagnosing "DAGs didn't run on schedule": check that the scheduler process is alive (`dagu ps` / logs contain `Scheduler started`), not just that the UI (port 8088) responds.
 
 ## Cached repositories
 

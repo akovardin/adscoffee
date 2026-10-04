@@ -20,7 +20,9 @@ var Module = fx.Module(
 	),
 )
 
-type Targeting struct{}
+type Targeting struct {
+	targetings []plugins.Targeting
+}
 
 func New() *Targeting {
 	return &Targeting{}
@@ -31,16 +33,20 @@ func (t *Targeting) Name() string {
 }
 
 func (t *Targeting) Copy(cfg map[string]any) plugins.Stage {
-	return &Targeting{}
+	return &Targeting{
+		targetings: t.targetings,
+	}
 }
 
 func (t *Targeting) Targetings(tt []plugins.Targeting) {
-	// set targetings
+	t.targetings = tt
 }
 
 func (t *Targeting) Do(ctx context.Context, state *plugins.State) error {
-	// обрабатываются таргетинги
-	state.Candidates = state.Candidates[:]
+	// последовательно применяем таргетинги к кандидатам
+	for _, targeting := range t.targetings {
+		state.Candidates = targeting.Filter(state.Candidates, state)
+	}
 
 	return nil
 }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
+	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 	"go.ads.coffee/platform/server/internal/inputs"
 	"go.ads.coffee/platform/server/internal/outputs"
@@ -75,7 +76,8 @@ func (m *mockTargeting) Copy(cfg map[string]any) plugins.Targeting {
 	return &mockTargeting{name: m.name}
 }
 
-func (m *mockTargeting) Filter() {
+func (m *mockTargeting) Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner {
+	return candidates
 }
 
 type mockOutput struct {

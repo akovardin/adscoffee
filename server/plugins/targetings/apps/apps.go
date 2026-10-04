@@ -3,6 +3,7 @@ package apps
 import (
 	"go.uber.org/fx"
 
+	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
@@ -31,4 +32,6 @@ func (a *Apps) Copy(cfg map[string]any) plugins.Targeting {
 	return &Apps{}
 }
 
-func (a *Apps) Filter() {}
+func (a *Apps) Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner {
+	return candidates
+}

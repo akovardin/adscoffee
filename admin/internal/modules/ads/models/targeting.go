@@ -16,14 +16,15 @@ type ExcludeInclude struct {
 }
 
 type Targeting struct {
-	Bundle   ExcludeIncludeOrAnd `json:"bundle"`
-	Audience ExcludeIncludeOrAnd `json:"audience"`
-	Bapp     ExcludeIncludeOrAnd `json:"bapp"`
-	Country  ExcludeIncludeOrAnd `json:"country"`
-	Region   ExcludeIncludeOrAnd `json:"region"`
-	City     ExcludeIncludeOrAnd `json:"city"`
-	IP       ExcludeInclude      `json:"ip"`
-	Network  ExcludeIncludeOrAnd `json:"network"`
+	Bundle    ExcludeIncludeOrAnd `json:"bundle"`
+	Audience  ExcludeIncludeOrAnd `json:"audience"`
+	Bapp      ExcludeIncludeOrAnd `json:"bapp"`
+	Country   ExcludeIncludeOrAnd `json:"country"`
+	Region    ExcludeIncludeOrAnd `json:"region"`
+	City      ExcludeIncludeOrAnd `json:"city"`
+	IP        ExcludeInclude      `json:"ip"`
+	Network   ExcludeIncludeOrAnd `json:"network"`
+	Placement ExcludeIncludeOrAnd `json:"placement"`
 }
 
 func NewTargeting(data string) (Targeting, error) {
