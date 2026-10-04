@@ -8,7 +8,15 @@ internal data class YandexAdData(
     val format: String?,
     val price: Double
 ) {
+    fun isInterstitial(): Boolean {
+        // Формат определяется только полем format (задаётся платформой),
+        // а не префиксом рекламного блока.
+        return format.equals(FORMAT_INTERSTITIAL, ignoreCase = true)
+    }
+
     companion object {
+        const val FORMAT_INTERSTITIAL = "interstitial"
+
         private val gson = Gson()
 
         fun parse(raw: String): YandexAdData {

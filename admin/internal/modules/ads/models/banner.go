@@ -14,6 +14,7 @@ type Banner struct {
 	Title       string
 	Label       string
 	Description string
+	Format      string
 	Active      bool
 
 	Erid         string
@@ -52,6 +53,7 @@ func (original Banner) Copy(db *gorm.DB, group int) (Banner, error) {
 		Title:       original.Title + " (Копия)",
 		Label:       original.Label,
 		Description: original.Description,
+		Format:      original.Format,
 		Start:       original.Start,
 		End:         original.End,
 		Timetable:   original.Timetable,

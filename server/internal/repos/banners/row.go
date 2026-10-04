@@ -40,6 +40,7 @@ type Row struct {
 
 	Label       string
 	Description string
+	Format      string
 	Bundle      string
 
 	Erid string

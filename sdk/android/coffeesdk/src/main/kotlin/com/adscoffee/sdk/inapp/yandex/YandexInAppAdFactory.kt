@@ -16,10 +16,16 @@ internal class YandexInAppAdFactory : InAppAdFactory {
         onLoaded: (InAppAd) -> Unit,
         onError: (AdRequestError) -> Unit
     ) {
-        val data = YandexAdData.parse(response.data)
+        var data = YandexAdData.parse(response.data)
         if (data.block.isBlank()) {
             onError(AdRequestError("Yandex response does not contain block id"))
             return
+        }
+
+        // The block payload usually has no format: fall back to the
+        // format declared by the platform for this placement.
+        if (data.format.isNullOrBlank() && response.format.isNotBlank()) {
+            data = data.copy(format = response.format)
         }
 
         val ad = YandexInAppAd(data, response.impressions, response.clicks)

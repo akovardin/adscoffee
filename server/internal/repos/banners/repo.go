@@ -65,6 +65,7 @@ func (b *Repo) All(ctx context.Context) ([]ads.Banner, error) {
 
 	banners.label as label,
 	banners.description as description,
+	banners.format as format,
 	campaigns.bundle as bundle,
 
 	banners.erid as erid,
@@ -134,6 +135,7 @@ func toModel(row Row) (ads.Banner, error) {
 
 		Label:       row.Label,
 		Description: row.Description,
+		Format:      row.Format,
 		Bundle:      row.Bundle,
 
 		Erid: row.Erid,

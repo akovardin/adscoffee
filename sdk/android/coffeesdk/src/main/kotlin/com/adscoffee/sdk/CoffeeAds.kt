@@ -1,7 +1,8 @@
 package com.adscoffee.sdk
 
 import android.content.Context
-import com.yandex.mobile.ads.common.MobileAds
+import com.yandex.mobile.ads.common.InitializationListener
+import com.yandex.mobile.ads.common.YandexAds
 
 class CoffeeAds {
     companion object {
@@ -16,9 +17,11 @@ class CoffeeAds {
 
             initialized = true
 
-            MobileAds.initialize(context.applicationContext) {
-                onReady()
-            }
+            YandexAds.initialize(context.applicationContext, object : InitializationListener {
+                override fun onInitializationCompleted() {
+                    onReady()
+                }
+            })
         }
 
         fun setBaseUrl(url: String) {

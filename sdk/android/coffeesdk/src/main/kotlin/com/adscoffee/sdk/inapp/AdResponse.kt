@@ -9,5 +9,6 @@ internal data class AdResponse(
     val clicks: List<String>,
     val data: String,
     val network: String,
+    val format: String,
     val price: Double
 )

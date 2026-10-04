@@ -23,6 +23,7 @@ android {
     defaultConfig {
         applicationId = "com.adscoffee.example"
         minSdk = 21
+        targetSdk = 35
     }
     lint {
         targetSdk = 35

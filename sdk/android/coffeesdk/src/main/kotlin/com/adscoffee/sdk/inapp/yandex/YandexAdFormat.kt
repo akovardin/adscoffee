@@ -23,4 +23,6 @@ internal interface YandexAdCallbacks {
     fun onClick()
 
     fun onError(message: String)
+
+    fun onClosed()
 }

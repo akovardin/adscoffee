@@ -230,6 +230,7 @@ func (m *Banner) Configure(b *presets.Builder) {
 				{"Title"},
 				{"Label"},
 				{"Description"},
+				{"Format"},
 				{"Image"},
 				{"Icon"},
 				{"Active"},
@@ -309,8 +310,30 @@ func (m *Banner) Configure(b *presets.Builder) {
 						Width:  450,
 						Height: 450,
 					},
+					"interstitial": {
+						Width:  640,
+						Height: 1136,
+					},
 				},
 			})
+
+	mbe.Field("Format").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
+		c := obj.(*models.Banner)
+
+		items := []Format{
+			{Title: "Баннер", Value: "banner"},
+			{Title: "Интерстишел", Value: "interstitial"},
+		}
+
+		return h.Div(
+			v.VSelect().
+				Label("Формат").
+				Items(items).
+				ItemTitle("Title").
+				ItemValue("Value").
+				Attr(web.VField("Format", c.Format)...),
+		)
+	})
 
 	mbe.Field("Icon").
 		WithContextValue(

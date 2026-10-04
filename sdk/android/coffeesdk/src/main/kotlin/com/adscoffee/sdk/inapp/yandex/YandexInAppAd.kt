@@ -11,9 +11,16 @@ internal class YandexInAppAd(
 
     private var unit: YandexAdUnit? = null
 
+    override val format: String? = data.format
+
     override fun render(binder: InAppAdViewBinder) {
         val format = YandexAdFormats.resolve(data)
             ?: throw IllegalStateException("Unsupported yandex ad format for block ${data.block}")
+
+        android.util.Log.i(
+            TAG,
+            "yandex render: block=${data.block} dataFormat=${data.format} resolved=${format.name}"
+        )
 
         val created = format.create(binder.adView.context, data)
         unit = created
@@ -24,6 +31,8 @@ internal class YandexInAppAd(
             override fun onClick() = fireClickTrackers()
 
             override fun onError(message: String) = notifyError(message)
+
+            override fun onClosed() = notifyClosed()
         })
     }
 
@@ -34,5 +43,6 @@ internal class YandexInAppAd(
 
     companion object {
         const val NETWORK = "yandex"
+        private const val TAG = "CoffeeAdsSDK"
     }
 }

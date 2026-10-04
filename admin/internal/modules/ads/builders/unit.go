@@ -168,6 +168,7 @@ func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 			Rows: [][]string{
 				{"Title"},
 				{"Price"},
+				{"Format"},
 				{"PlacementID"},
 				{"NetworkID"},
 				{"Data"},
@@ -218,6 +219,24 @@ func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 
 		return h.Div(
 			sel,
+		)
+	})
+
+	mne.Field("Format").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
+		c := obj.(*models.Unit)
+
+		items := []Format{
+			{Title: "Баннер", Value: "banner"},
+			{Title: "Интерстишел", Value: "interstitial"},
+		}
+
+		return h.Div(
+			v.VSelect().
+				Label("Формат").
+				Items(items).
+				ItemTitle("Title").
+				ItemValue("Value").
+				Attr(web.VField("Format", c.Format)...),
 		)
 	})
 

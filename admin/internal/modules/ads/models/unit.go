@@ -10,8 +10,9 @@ import (
 type Unit struct {
 	gorm.Model
 
-	Title string
-	Price int
+	Title  string
+	Price  int
+	Format string
 
 	NetworkID int
 	Network   Network

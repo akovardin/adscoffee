@@ -21,7 +21,8 @@ internal class CoffeeInAppAdFactory : InAppAdFactory {
                 description = response.description,
                 information = response.information,
                 image = response.image,
-                target = response.target
+                target = response.target,
+                format = response.format
             ),
             impressions = response.impressions,
             clicks = response.clicks

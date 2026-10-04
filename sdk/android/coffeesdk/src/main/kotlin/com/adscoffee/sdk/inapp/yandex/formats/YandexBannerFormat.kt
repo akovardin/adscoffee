@@ -17,7 +17,7 @@ internal class YandexBannerFormat : YandexAdFormat {
 
     override val name: String = "banner"
 
-    override fun matches(data: YandexAdData): Boolean = data.block.startsWith("R-A-")
+    override fun matches(data: YandexAdData): Boolean = !data.isInterstitial()
 
     override fun create(context: Context, data: YandexAdData): YandexAdUnit {
         return YandexBannerUnit(context, data)
@@ -33,8 +33,7 @@ private class YandexBannerUnit(
 
     override fun render(binder: InAppAdViewBinder, callbacks: YandexAdCallbacks) {
         val view = BannerAdView(context)
-        view.setAdUnitId(data.block)
-        view.setAdSize(BannerAdSize.stickySize(context, widthInDp()))
+        view.setAdSize(BannerAdSize.sticky(context, widthInDp()))
         view.setBannerAdEventListener(object : BannerAdEventListener {
             override fun onAdLoaded() {}
 
@@ -44,16 +43,12 @@ private class YandexBannerUnit(
 
             override fun onAdClicked() = callbacks.onClick()
 
-            override fun onLeftApplication() {}
-
-            override fun onReturnedToApplication() {}
-
             override fun onImpression(impressionData: ImpressionData?) = callbacks.onImpression()
         })
 
         bannerAdView = view
         binder.adView.addView(view)
-        view.loadAd(AdRequest.Builder().build())
+        view.loadAd(AdRequest.Builder(data.block).build())
     }
 
     override fun destroy() {

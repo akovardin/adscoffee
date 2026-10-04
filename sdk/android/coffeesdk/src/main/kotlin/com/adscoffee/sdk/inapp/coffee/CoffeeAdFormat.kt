@@ -23,4 +23,6 @@ internal interface CoffeeAdCallbacks {
     fun onClick()
 
     fun onError(message: String)
+
+    fun onClosed()
 }

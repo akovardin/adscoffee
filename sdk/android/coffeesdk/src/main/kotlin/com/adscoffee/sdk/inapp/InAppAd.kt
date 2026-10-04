@@ -19,6 +19,9 @@ abstract class InAppAd internal constructor(
 
     open val target: String? = null
 
+    /** "banner" или "interstitial"; определяет как рендерить креатив. */
+    open val format: String? = null
+
     fun bindInAppAd(binder: InAppAdViewBinder): AdBindingResult {
         return try {
             render(binder)
@@ -46,6 +49,10 @@ abstract class InAppAd internal constructor(
 
     protected fun notifyError(message: String) {
         listener?.onAdError(message)
+    }
+
+    protected fun notifyClosed() {
+        listener?.onAdClosed()
     }
 
     open fun destroy() {}

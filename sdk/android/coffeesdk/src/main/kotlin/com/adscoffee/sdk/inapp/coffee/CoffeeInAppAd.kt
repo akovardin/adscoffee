@@ -13,6 +13,8 @@ internal class CoffeeInAppAd(
 
     override val target: String = data.target
 
+    override val format: String = data.format
+
     override fun render(binder: InAppAdViewBinder) {
         val format = CoffeeAdFormats.resolve(data)
             ?: throw IllegalStateException("Unsupported coffee ad format")
@@ -26,6 +28,8 @@ internal class CoffeeInAppAd(
             override fun onClick() = fireClickTrackers()
 
             override fun onError(message: String) = notifyError(message)
+
+            override fun onClosed() = notifyClosed()
         })
     }
 

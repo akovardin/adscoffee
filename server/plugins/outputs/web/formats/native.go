@@ -13,6 +13,8 @@ const TypeNative = "native"
 
 const networkCoffee = "coffee"
 
+const formatBanner = "banner"
+
 type Native struct {
 	base string
 }
@@ -34,6 +36,7 @@ type NativeResponse struct {
 	Clicks      []string `json:"clicks"`
 	Data        string   `json:"data,omitempty"`
 	Network     string   `json:"network"`
+	Format      string   `json:"format,omitempty"`
 	Price       *float64 `json:"price,omitempty"`
 }
 
@@ -82,6 +85,7 @@ func (f *Native) Render(ctx context.Context, state *plugins.State) (any, error) 
 			Image:       b.Media("250x250"),
 			Data:        b.Data,
 			Network:     b.Network,
+			Format:      formatOf(b.Format),
 			Price:       priceFor(b),
 
 			Impressions: impressiontrackers,
@@ -90,6 +94,14 @@ func (f *Native) Render(ctx context.Context, state *plugins.State) (any, error) 
 	}
 
 	return items, nil
+}
+
+func formatOf(format string) string {
+	if format == "" {
+		return formatBanner
+	}
+
+	return format
 }
 
 func priceFor(b ads.Banner) *float64 {

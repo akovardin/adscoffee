@@ -50,6 +50,7 @@ internal class ApiClient(private val baseUrl: String) {
             clicks = getStringList(obj, "clicks"),
             data = getString(obj, "data"),
             network = getString(obj, "network"),
+            format = getString(obj, "format").ifBlank { FORMAT_BANNER },
             price = getDouble(obj, "price")
         )
     }
@@ -72,5 +73,9 @@ internal class ApiClient(private val baseUrl: String) {
         val element = obj.get(key)
         if (element == null || !element.isJsonArray) return emptyList()
         return element.asJsonArray.map { it.asString ?: "" }
+    }
+
+    companion object {
+        internal const val FORMAT_BANNER = "banner"
     }
 }

@@ -23,6 +23,7 @@ type Banner struct {
 	Active bool
 
 	Type    string
+	Format  string
 	Network string
 
 	Targeting Targeting

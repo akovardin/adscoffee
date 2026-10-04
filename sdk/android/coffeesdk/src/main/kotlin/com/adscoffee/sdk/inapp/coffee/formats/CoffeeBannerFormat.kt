@@ -26,7 +26,7 @@ internal class CoffeeBannerFormat : CoffeeAdFormat {
 
     override val name: String = "banner"
 
-    override fun matches(data: CoffeeAdData): Boolean = true
+    override fun matches(data: CoffeeAdData): Boolean = !CoffeeAdData.isInterstitial(data.format)
 
     override fun create(context: Context, data: CoffeeAdData): CoffeeAdUnit {
         return CoffeeBannerUnit(data)
