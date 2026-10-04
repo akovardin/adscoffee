@@ -93,7 +93,7 @@ class MainActivity : Activity() {
 
     companion object {
         const val BASE_URL = "https://platform.ads.coffee"
-        const val BANNER_PLACEMENT = 2
-        const val INTERSTITIAL_PLACEMENT = 3
+        const val BANNER_PLACEMENT = 4
+        const val INTERSTITIAL_PLACEMENT = 5
     }
 }

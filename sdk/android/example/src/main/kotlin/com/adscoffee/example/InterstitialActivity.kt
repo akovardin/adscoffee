@@ -1,22 +1,22 @@
 package com.adscoffee.example
 
 import android.app.Activity
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import com.adscoffee.sdk.CoffeeAds
-import com.adscoffee.sdk.inapp.*
+import com.adscoffee.sdk.inapp.AdRequestError
+import com.adscoffee.sdk.inapp.InAppAd
+import com.adscoffee.sdk.inapp.InAppAdLoadListener
+import com.adscoffee.sdk.inapp.InAppAdLoader
+import com.adscoffee.sdk.inapp.InAppAdRequest
+import com.adscoffee.sdk.inapp.InAppInterstitial
 
 class InterstitialActivity : Activity() {
 
     private var currentAd: InAppAd? = null
-    private lateinit var adView: InAppAdView
+    private var interstitial: InAppInterstitial? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        adView = InAppAdView(this)
-        setContentView(adView)
 
         CoffeeAds.setBaseUrl(MainActivity.BASE_URL)
         CoffeeAds.initialize(this) {
@@ -32,24 +32,13 @@ class InterstitialActivity : Activity() {
             override fun onAdLoaded(ad: InAppAd) {
                 currentAd = ad
 
-                ad.setInAppAdEventListener(object : InAppAdEventListener {
-                    override fun onAdClicked() {
-                        ad.target?.let { openTarget(it) }
-                    }
-
-                    override fun onImpression(data: ImpressionData?) { }
-
-                    override fun onAdError(message: String) {
-                        finish()
-                    }
-
-                    override fun onAdClosed() {
-                        finish()
-                    }
-                })
-
-                val binder = InAppAdViewBinder.Builder(adView).build()
-                ad.bindInAppAd(binder)
+                interstitial = InAppInterstitial.show(
+                    context = this@InterstitialActivity,
+                    ad = ad
+                ) {
+                    interstitial = null
+                    finish()
+                }
             }
 
             override fun onAdFailedToLoad(error: AdRequestError) {
@@ -59,14 +48,12 @@ class InterstitialActivity : Activity() {
     }
 
     override fun onDestroy() {
+        interstitial?.dismiss()
+        interstitial = null
+
         currentAd?.destroy()
         currentAd = null
-        super.onDestroy()
-    }
 
-    private fun openTarget(url: String) {
-        try {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-        } catch (_: Exception) { }
+        super.onDestroy()
     }
 }
