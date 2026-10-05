@@ -199,7 +199,7 @@
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
           "queryType": "sql",
-          "rawSql": "SELECT $__timeInterval(timestamp) AS t, sum(price) AS \"Revenue\" FROM analytics.impressions_hour WHERE $__timeFilter(timestamp) GROUP BY t ORDER BY t",
+          "rawSql": "SELECT $__timeInterval(timestamp) AS t, sum(revenue) AS \"Revenue\" FROM analytics.impressions_hour WHERE $__timeFilter(timestamp) GROUP BY t ORDER BY t",
           "format": 0,
           "refId": "A"
         }

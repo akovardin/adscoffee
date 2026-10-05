@@ -34,8 +34,9 @@ CREATE TABLE IF NOT EXISTS analytics.requests
     city String,
     country String,
     region String,
-    price Decimal64(3),
-    network String
+    revenue Decimal64(3),
+    network String,
+    unit_id String
 )
 ENGINE = MergeTree()
 ORDER BY (timestamp, id)
@@ -60,9 +61,10 @@ SELECT
     JSONExtractString(raw_data, 'city') as city,
     JSONExtractString(raw_data, 'country') as country,
     JSONExtractString(raw_data, 'region') as region,
-    if(empty(JSONExtractString(raw_data, 'price')), 0, 
-       toDecimal64OrNull(JSONExtractString(raw_data, 'price'), 3)) as price,
-    JSONExtractString(raw_data, 'network') as network
+    if(empty(JSONExtractString(raw_data, 'revenue')), 0, 
+       toDecimal64OrNull(JSONExtractString(raw_data, 'revenue'), 3)) as revenue,
+    JSONExtractString(raw_data, 'network') as network,
+    JSONExtractString(raw_data, 'unit_id') as unit_id
 FROM analytics.kafka_requests_raw;
 
 ------ impressions
@@ -102,8 +104,9 @@ CREATE TABLE IF NOT EXISTS analytics.impressions
     city String,
     country String,
     region String,
-    price Decimal64(3),
-    network String
+    revenue Decimal64(3),
+    network String,
+    unit_id String
 )
 ENGINE = MergeTree()
 ORDER BY (timestamp, id)
@@ -128,9 +131,10 @@ SELECT
     JSONExtractString(raw_data, 'city') as city,
     JSONExtractString(raw_data, 'country') as country,
     JSONExtractString(raw_data, 'region') as region,
-    if(empty(JSONExtractString(raw_data, 'price')), 0, 
-       toDecimal64OrNull(JSONExtractString(raw_data, 'price'), 3)) as price,
-    JSONExtractString(raw_data, 'network') as network
+    if(empty(JSONExtractString(raw_data, 'revenue')), 0, 
+       toDecimal64OrNull(JSONExtractString(raw_data, 'revenue'), 3)) as revenue,
+    JSONExtractString(raw_data, 'network') as network,
+    JSONExtractString(raw_data, 'unit_id') as unit_id
 FROM analytics.kafka_impressions_raw;
 
 ------ clicks
@@ -170,8 +174,9 @@ CREATE TABLE IF NOT EXISTS analytics.clicks
     city String,
     country String,
     region String,
-    price Decimal64(3),
-    network String
+    revenue Decimal64(3),
+    network String,
+    unit_id String
 )
 ENGINE = MergeTree()
 ORDER BY (timestamp, id)
@@ -196,9 +201,10 @@ SELECT
     JSONExtractString(raw_data, 'city') as city,
     JSONExtractString(raw_data, 'country') as country,
     JSONExtractString(raw_data, 'region') as region,
-    if(empty(JSONExtractString(raw_data, 'price')), 0, 
-       toDecimal64OrNull(JSONExtractString(raw_data, 'price'), 3)) as price,
-    JSONExtractString(raw_data, 'network') as network
+    if(empty(JSONExtractString(raw_data, 'revenue')), 0, 
+       toDecimal64OrNull(JSONExtractString(raw_data, 'revenue'), 3)) as revenue,
+    JSONExtractString(raw_data, 'network') as network,
+    JSONExtractString(raw_data, 'unit_id') as unit_id
 FROM analytics.kafka_clicks_raw;
 
 ------ responses
@@ -238,8 +244,9 @@ CREATE TABLE IF NOT EXISTS analytics.responses
     city String,
     country String,
     region String,
-    price Decimal64(3),
-    network String
+    revenue Decimal64(3),
+    network String,
+    unit_id String
 )
 ENGINE = MergeTree()
 ORDER BY (timestamp, id)
@@ -263,9 +270,10 @@ SELECT
     JSONExtractString(raw_data, 'bundle') as bundle,
     JSONExtractString(raw_data, 'city') as city,
     JSONExtractString(raw_data, 'country') as country,
-    if(empty(JSONExtractString(raw_data, 'price')), 0, 
-       toDecimal64OrNull(JSONExtractString(raw_data, 'price'), 3)) as price,
-    JSONExtractString(raw_data, 'network') as network
+    if(empty(JSONExtractString(raw_data, 'revenue')), 0, 
+       toDecimal64OrNull(JSONExtractString(raw_data, 'revenue'), 3)) as revenue,
+    JSONExtractString(raw_data, 'network') as network,
+    JSONExtractString(raw_data, 'unit_id') as unit_id
 FROM analytics.kafka_responses_raw;
 
 ------ conversions
@@ -305,8 +313,9 @@ CREATE TABLE IF NOT EXISTS analytics.conversions
     city String,
     country String,
     region String,
-    price Decimal64(3),
-    network String
+    revenue Decimal64(3),
+    network String,
+    unit_id String
 )
 ENGINE = MergeTree()
 ORDER BY (timestamp, id)
@@ -331,9 +340,10 @@ SELECT
     JSONExtractString(raw_data, 'city') as city,
     JSONExtractString(raw_data, 'country') as country,
     JSONExtractString(raw_data, 'region') as region,
-    if(empty(JSONExtractString(raw_data, 'price')), 0, 
-       toDecimal64OrNull(JSONExtractString(raw_data, 'price'), 3)) as price,
-    JSONExtractString(raw_data, 'network') as network
+    if(empty(JSONExtractString(raw_data, 'revenue')), 0, 
+       toDecimal64OrNull(JSONExtractString(raw_data, 'revenue'), 3)) as revenue,
+    JSONExtractString(raw_data, 'network') as network,
+    JSONExtractString(raw_data, 'unit_id') as unit_id
 FROM analytics.kafka_conversions_raw;
 
 
@@ -374,8 +384,9 @@ CREATE TABLE IF NOT EXISTS analytics.wins
     city String,
     country String,
     region String,
-    price Decimal64(3),
-    network String
+    revenue Decimal64(3),
+    network String,
+    unit_id String
 )
 ENGINE = MergeTree()
 ORDER BY (timestamp, id)
@@ -400,7 +411,8 @@ SELECT
     JSONExtractString(raw_data, 'city') as city,
     JSONExtractString(raw_data, 'country') as country,
     JSONExtractString(raw_data, 'region') as region,
-    if(empty(JSONExtractString(raw_data, 'price')), 0, 
-       toDecimal64OrNull(JSONExtractString(raw_data, 'price'), 3)) as price,
-    JSONExtractString(raw_data, 'network') as network
+    if(empty(JSONExtractString(raw_data, 'revenue')), 0, 
+       toDecimal64OrNull(JSONExtractString(raw_data, 'revenue'), 3)) as revenue,
+    JSONExtractString(raw_data, 'network') as network,
+    JSONExtractString(raw_data, 'unit_id') as unit_id
 FROM analytics.kafka_wins_raw;

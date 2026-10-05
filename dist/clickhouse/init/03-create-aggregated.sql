@@ -9,9 +9,10 @@ CREATE TABLE IF NOT EXISTS analytics.requests_hour
     city String,
     country String,
     region String,
-    price Decimal64(3),
+    revenue Decimal64(3),
     count Integer,
     network String,
+    unit_id String,
     bundle String
 )
 ENGINE = MergeTree()
@@ -28,9 +29,10 @@ CREATE TABLE IF NOT EXISTS analytics.impressions_hour
     city String,
     country String,
     region String,
-    price Decimal64(3),
+    revenue Decimal64(3),
     count Integer,
     network String,
+    unit_id String,
     bundle String
 )
 ENGINE = MergeTree()
@@ -47,9 +49,10 @@ CREATE TABLE IF NOT EXISTS analytics.responses_hour
     city String,
     country String,
     region String,
-    price Decimal64(3),
+    revenue Decimal64(3),
     count Integer,
     network String,
+    unit_id String,
     bundle String
 )
 ENGINE = MergeTree()
@@ -66,9 +69,10 @@ CREATE TABLE IF NOT EXISTS analytics.clicks_hour
     city String,
     country String,
     region String,
-    price Decimal64(3),
+    revenue Decimal64(3),
     count Integer,
     network String,
+    unit_id String,
     bundle String
 )
 ENGINE = MergeTree()
@@ -85,9 +89,10 @@ CREATE TABLE IF NOT EXISTS analytics.conversions_hour
     city String,
     country String,
     region String,
-    price Decimal64(3),
+    revenue Decimal64(3),
     count Integer,
     network String,
+    unit_id String,
     bundle String
 )
 ENGINE = MergeTree()
@@ -104,9 +109,10 @@ CREATE TABLE IF NOT EXISTS analytics.wins_hour
     city String,
     country String,
     region String,
-    price Decimal64(3),
+    revenue Decimal64(3),
     count Integer,
     network String,
+    unit_id String,
     bundle String
 )
 ENGINE = MergeTree()

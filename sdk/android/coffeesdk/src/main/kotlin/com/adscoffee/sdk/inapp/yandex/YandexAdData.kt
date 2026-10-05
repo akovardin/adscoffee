@@ -6,7 +6,7 @@ import com.google.gson.JsonObject
 internal data class YandexAdData(
     val block: String,
     val format: String?,
-    val price: Double
+    val revenue: Double
 ) {
     fun isInterstitial(): Boolean {
         // Формат определяется только полем format (задаётся платформой),
@@ -27,7 +27,7 @@ internal data class YandexAdData(
                 YandexAdData(
                     block = obj.get("block")?.asString.orEmpty(),
                     format = obj.get("format")?.asString,
-                    price = obj.get("price")?.asDouble ?: 0.0
+                    revenue = obj.get("revenue")?.asDouble ?: 0.0
                 )
             } catch (_: Exception) {
                 YandexAdData("", null, 0.0)

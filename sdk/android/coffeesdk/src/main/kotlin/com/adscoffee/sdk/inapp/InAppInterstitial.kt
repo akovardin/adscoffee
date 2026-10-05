@@ -4,7 +4,9 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -62,7 +64,9 @@ class InAppInterstitial private constructor(
 
             ad.setInAppAdEventListener(object : InAppAdEventListener {
                 override fun onImpression(data: ImpressionData?) {}
-                override fun onAdClicked() {}
+                override fun onAdClicked() {
+                    ad.target?.let { openTarget(activity, it) }
+                }
                 override fun onAdClosed() = close()
                 override fun onAdError(message: String) = close()
             })
@@ -117,6 +121,13 @@ class InAppInterstitial private constructor(
             } else {
                 close()
                 null
+            }
+        }
+
+        private fun openTarget(context: Context, url: String) {
+            try {
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            } catch (_: Exception) {
             }
         }
 

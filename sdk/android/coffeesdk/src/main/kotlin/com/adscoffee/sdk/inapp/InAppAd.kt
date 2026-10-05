@@ -15,7 +15,7 @@ abstract class InAppAd internal constructor(
     protected val mainHandler = Handler(Looper.getMainLooper())
 
     internal var placementId: Int = 0
-    internal var price: Double = 0.0
+    internal var revenue: Double = 0.0
 
     open val target: String? = null
 
@@ -37,14 +37,15 @@ abstract class InAppAd internal constructor(
         this.listener = listener
     }
 
-    fun fireImpressionTrackers() {
-        listener?.onImpression(ImpressionData(placementId, network, price))
-        trackerService.fire(impressions, price)
+    fun fireImpressionTrackers(revenue: Double? = null) {
+        val value = revenue ?: this.revenue
+        listener?.onImpression(ImpressionData(placementId, network, value))
+        trackerService.fire(impressions, value)
     }
 
     fun fireClickTrackers() {
         listener?.onAdClicked()
-        trackerService.fire(clicks, price)
+        trackerService.fire(clicks, revenue)
     }
 
     protected fun notifyError(message: String) {

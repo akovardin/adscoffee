@@ -17,8 +17,9 @@ type Event struct {
 	City         string  `json:"city"`
 	Country      string  `json:"country"`
 	Region       string  `json:"region"`
-	Price        float64 `json:"price"`
+	Revenue      float64 `json:"revenue"`
 	Network      string  `json:"network"`
+	UnitID       uint    `json:"unit_id"`
 	Size         string  `json:"size"`
 	Make         string  `json:"make"`
 }

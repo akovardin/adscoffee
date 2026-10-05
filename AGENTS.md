@@ -100,6 +100,48 @@ Server events -> Kafka topics -> ClickHouse raw tables (Kafka Engine) -> dagu ag
 
 Analytics aggregation is run by dagu (workflow scheduler). DAG YAMLs in `analytics/dagu/dags/` (copied into `dist/`). The binary command is `analytics aggregations -table=<requests|impressions|clicks|responses>`. ClickHouse also keeps raw tables for `conversion` and `win` topics (`analytics.*_hour` aggregates).
 
+### Event money field: `revenue` (бывший `price`)
+
+Денежное поле событий называется `revenue`, а не `price`, на всём пути:
+`ads.Event`/`ads.TrackerInfo` (`json:"revenue"`) → Kafka → ClickHouse
+`analytics.<table>.revenue` и `<table>_hour.revenue`. Существующий прод
+мигрирован файлом `data/clickhouse/migrations/001-price-to-revenue.sql`
+(`RENAME COLUMN` + пересоздание `*_parsed_mv`); для новых инсталляций DDL уже
+с `revenue` (`data/clickhouse/initprod|initdev`, `dist/clickhouse/init`).
+
+- Трекер-URL заканчивается `?revenue={revenue}` (inapp native), трекер читает
+  query-параметр `revenue`; SDK подставляет значение (Yandex — `revenue` из
+  `ImpressionData.rawData`, Coffee — из `revenue` в ответе API).
+- Пайплайн `/inapp/{placement}` в `dist/server/configs/config.yaml` использует
+  `outputs.inapp` (а не `outputs.web`), иначе макрос в URL не появляется.
+- Money-метрика в админке отображается через Grafana (`admin/internal/modules/stats/stats.go` — iframe с дашбордом); нативная агрегация из ClickHouse (`stats/query.go`) удалена как неиспользуемая.
+- Агрегат `analytics/internal/handlers/aggregate.go` пишет `sum(revenue)` без
+  `/1000` (сырой `revenue` — уже доход за показ). Старые часы пересчитаны
+  одноразовым `data/clickhouse/migrations/002-backfill-impressions-hour-revenue.sql`.
+- Prometheus-метрика денег переименована `analytics_actions_price` →
+  `analytics_actions_revenue` (`server/internal/analytics/metrics.go`);
+  дашборд `docker/grafana/dashboards/analytics.json` читает `sum(revenue)`.
+- `Banner.Price`/`Unit.Price` (CPM/ставка, выбор победителя в mediation/rotation)
+  намеренно оставлены с именем `price` — это не поле события.
+
+### Поля `network` и `unit_id`
+
+События response/impression/click несут `network` и `unit_id`:
+
+- `unit_id` заполняется, когда в mediation/rotation победил `ads.Unit`:
+  `stages.mediation` превращает юнит в `ads.Banner{Type: "mediator", ID: u.ID,
+  Network: u.Network.Name}`, а `ads.Banner.UnitID()` возвращает `ID`, если
+  `Type == CreativeTypeMediator`, иначе `0`.
+- `LogResponse` (`server/internal/analytics/analytics.go`) пишет `Network`/`UnitID`
+  победителя; трекер (`outputs/inapp|web/formats/native.go`, `TrackerInfo`)
+  кладёт их в base64 трекер-URL, а `inputs.tracker` пишет в событие
+  impression/click.
+- ClickHouse: колонки `network` (была) и `unit_id` (новая) в raw и `*_hour`
+  таблицах; `*_parsed_mv` извлекают `JSONExtractString(raw_data, 'unit_id')`.
+  Миграция: `data/clickhouse/migrations/003-add-unit-id.sql`.
+- Часовой агрегат (`aggregate.go`) группирует по `network, unit_id`.
+
+
 dagu deployment notes (`analytics/Dockerfile`):
 
 - The container is `ENTRYPOINT ["/usr/local/bin/dagu"]` + `CMD ["start-all", "--host=0.0.0.0", "--port=8080", "--dags=/var/lib/dagu/dags"]`. In dagu 2.x `server` is **web UI only**; the scheduler is a separate process, so scheduled DAGs only fire when running `scheduler` or `start-all`. Never switch the CMD back to `server` — that silently disables cron.

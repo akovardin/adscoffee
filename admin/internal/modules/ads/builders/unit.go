@@ -41,7 +41,7 @@ func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 		// Label("Рекламодатели").
 		RightDrawerWidth("1000")
 
-	mnl := mn.Listing("ID", "Title", "Price", "Placement", "Network", "Active").
+	mnl := mn.Listing("ID", "Title", "Format", "Price", "Placement", "Network", "Active").
 		SearchFunc(func(ctx *web.EventContext, params *presets.SearchParams) (result *presets.SearchResult, err error) {
 			// по умоланию архивные сущности не показываются
 			// только если явно выбрать их в фильтре
@@ -84,6 +84,20 @@ func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 		})
 
 	mnl.FilterDataFunc(func(ctx *web.EventContext) vuetifyx.FilterData {
+		var placements []*vuetifyx.SelectItem
+		if err := n.db.Model(&models.Placement{}).Select("title as text, id as value").Scan(&placements).Error; err != nil {
+			n.logger.Error("error on load placements", zap.Error(err))
+
+			return nil
+		}
+
+		var networks []*vuetifyx.SelectItem
+		if err := n.db.Model(&models.Network{}).Select("title as text, id as value").Scan(&networks).Error; err != nil {
+			n.logger.Error("error on load networks", zap.Error(err))
+
+			return nil
+		}
+
 		return []*vuetifyx.FilterItem{
 			{
 				Key:          "archived",
@@ -122,7 +136,43 @@ func (n *Unit) Configure(b *presets.Builder) *presets.ModelBuilder {
 					},
 				},
 			},
+			{
+				Key:          "format",
+				Label:        "Формат",
+				ItemType:     vuetifyx.ItemTypeSelect,
+				SQLCondition: `format %s ?`,
+				Options: []*vuetifyx.SelectItem{
+					{
+						Text:  "Баннер",
+						Value: "banner",
+					},
+					{
+						Text:  "Интерстишел",
+						Value: "interstitial",
+					},
+				},
+			},
+			{
+				Key:          "placement",
+				Label:        "Плейсмент",
+				ItemType:     vuetifyx.ItemTypeSelect,
+				SQLCondition: `placement_id %s ?`,
+				Options:      placements,
+			},
+			{
+				Key:          "network",
+				Label:        "Рекламная сеть",
+				ItemType:     vuetifyx.ItemTypeSelect,
+				SQLCondition: `network_id %s ?`,
+				Options:      networks,
+			},
 		}
+	})
+
+	mnl.Field("Format").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
+		c := obj.(*models.Unit)
+
+		return h.Td().Text(formatLabel(c.Format))
 	})
 
 	mnl.Field("Placement").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {

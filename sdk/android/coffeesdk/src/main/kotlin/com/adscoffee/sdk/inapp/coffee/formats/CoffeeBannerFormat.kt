@@ -8,8 +8,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.TypedValue
 import android.view.Gravity
-import android.view.View
-import android.view.ViewTreeObserver
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -19,8 +17,8 @@ import com.adscoffee.sdk.inapp.coffee.CoffeeAdData
 import com.adscoffee.sdk.inapp.coffee.CoffeeAdFormat
 import com.adscoffee.sdk.inapp.coffee.CoffeeAdUnit
 import com.adscoffee.sdk.inapp.coffee.CoffeeBannerSize
+import com.adscoffee.sdk.inapp.observeAdContentWidth
 import java.net.URL
-import kotlin.math.roundToInt
 
 internal class CoffeeBannerFormat : CoffeeAdFormat {
 
@@ -58,7 +56,7 @@ private class CoffeeBannerUnit(
             view.applySize(size, loaded)
         }
 
-        observeAdWidth(container) { dp ->
+        observeAdContentWidth(container) { dp ->
             widthInDp = dp
             applySize()
         }
@@ -164,26 +162,4 @@ internal class CoffeeBannerView(context: Context) : LinearLayout(context) {
     companion object {
         private val TEXT_COLOR = Color.parseColor("#212121")
     }
-}
-
-private fun observeAdWidth(container: View, onWidth: (Int) -> Unit) {
-    container.viewTreeObserver.addOnGlobalLayoutListener(
-        object : ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                if (container.viewTreeObserver.isAlive) {
-                    container.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                }
-
-                var widthPixels = container.width
-                if (widthPixels == 0) {
-                    widthPixels = container.resources.displayMetrics.widthPixels
-                }
-
-                val widthInDp =
-                    (widthPixels / container.resources.displayMetrics.density).roundToInt()
-
-                onWidth(widthInDp)
-            }
-        }
-    )
 }

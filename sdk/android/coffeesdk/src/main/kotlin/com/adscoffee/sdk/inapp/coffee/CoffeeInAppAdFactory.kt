@@ -27,7 +27,7 @@ internal class CoffeeInAppAdFactory : InAppAdFactory {
             impressions = response.impressions,
             clicks = response.clicks
         )
-        ad.price = response.price
+        ad.revenue = response.revenue
 
         onLoaded(ad)
     }

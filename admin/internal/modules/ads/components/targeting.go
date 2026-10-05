@@ -2,6 +2,7 @@ package components
 
 import (
 	"errors"
+	"strconv"
 	"strings"
 
 	"github.com/qor5/admin/v3/presets"
@@ -10,18 +11,58 @@ import (
 	"github.com/sunfmin/reflectutils"
 	h "github.com/theplant/htmlgo"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 
 	"go.ads.coffee/platform/admin/internal/modules/ads/models"
 )
 
 type Targeting struct {
 	logger *zap.Logger
+	db     *gorm.DB
 }
 
-func NewTargeting(logger *zap.Logger) *Targeting {
+func NewTargeting(logger *zap.Logger, db *gorm.DB) *Targeting {
 	return &Targeting{
 		logger: logger,
+		db:     db,
 	}
+}
+
+type placementOption struct {
+	Title string
+	Value string
+}
+
+func (t *Targeting) placementOptions() []placementOption {
+	options := []placementOption{}
+	if t.db == nil {
+		return options
+	}
+
+	var placements []models.Placement
+	t.db.Where("deleted_at is null").Order("title").Find(&placements)
+
+	for _, placement := range placements {
+		options = append(options, placementOption{
+			Title: placement.Title,
+			Value: strconv.FormatUint(uint64(placement.ID), 10),
+		})
+	}
+
+	return options
+}
+
+func placementSelect(name string, values []string, options []placementOption) h.HTMLComponent {
+	return v.VAutocomplete().
+		Variant("outlined").
+		Density("compact").
+		Multiple(true).
+		Chips(true).
+		ClosableChips(true).
+		Items(options).
+		ItemTitle("Title").
+		ItemValue("Value").
+		Attr(web.VField(name, values)...)
 }
 
 func (t *Targeting) Component(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
@@ -185,21 +226,19 @@ func (t *Targeting) Component(obj interface{}, field *presets.FieldContext, ctx 
 				h.Div(
 					h.Div([]h.HTMLComponent{
 						h.Label("Включить").Class("v-label theme--dark"),
-						v.VTextarea().
-							Hint("1 2 3").
-							Attr(web.VField("Targeting.Placement.IncludeOr",
-								strings.Join(targeting.Placement.IncludeOr, " "))...).
-							Disabled(false).
-							ErrorMessages(field.Errors...),
+						placementSelect(
+							"Targeting.Placement.IncludeOr",
+							targeting.Placement.IncludeOr,
+							t.placementOptions(),
+						),
 					}...),
 					h.Div([]h.HTMLComponent{
 						h.Label("Исключить").Class("v-label theme--dark"),
-						v.VTextarea().
-							Hint("1 2 3").
-							Attr(web.VField("Targeting.Placement.ExcludeOr",
-								strings.Join(targeting.Placement.ExcludeOr, " "))...).
-							Disabled(false).
-							ErrorMessages(field.Errors...),
+						placementSelect(
+							"Targeting.Placement.ExcludeOr",
+							targeting.Placement.ExcludeOr,
+							t.placementOptions(),
+						),
 					}...),
 				).Style("padding: 16px;"),
 			).Style(border),
@@ -254,10 +293,10 @@ func (t *Targeting) Setter(obj interface{}, field *presets.FieldContext, ctx *we
 	}
 
 	if ctx.R.Form.Has("Targeting.Placement.IncludeOr") {
-		targeting.Placement.IncludeOr = strings.Fields(ctx.R.FormValue("Targeting.Placement.IncludeOr"))
+		targeting.Placement.IncludeOr = ctx.R.Form["Targeting.Placement.IncludeOr"]
 	}
 	if ctx.R.Form.Has("Targeting.Placement.ExcludeOr") {
-		targeting.Placement.ExcludeOr = strings.Fields(ctx.R.FormValue("Targeting.Placement.ExcludeOr"))
+		targeting.Placement.ExcludeOr = ctx.R.Form["Targeting.Placement.ExcludeOr"]
 	}
 
 	return reflectutils.Set(obj, field.Name, targeting.String())

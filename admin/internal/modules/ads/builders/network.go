@@ -149,6 +149,25 @@ func (n *Network) Configure(b *presets.Builder) *presets.ModelBuilder {
 		}
 	})
 
+	mnl.Field("Title").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
+		c := obj.(*models.Network)
+
+		style := ""
+		text := ""
+		if c.ArchivedAt != nil {
+			style = "color:#bb0"
+			text = " - архив"
+		}
+
+		return h.Td().Children(
+			h.A().
+				Text(c.Title+text).
+				Style(style).
+				Attr("onclick", "event.stopPropagation();").
+				Href(fmt.Sprintf("/units?f_network=%d", c.ID)),
+		)
+	})
+
 	mnl.Field("Active").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
 		c := obj.(*models.Network)
 

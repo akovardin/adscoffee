@@ -95,6 +95,8 @@ func (r *Analytics) LogResponse(ctx context.Context, w ads.Banner, state *plugin
 			GroupID:      w.GroupID,
 			CampaignID:   w.CampaignID,
 			AdvertiserID: w.AdvertiserID,
+			Network:      w.Network,
+			UnitID:       w.UnitID(),
 
 			GAID: "",
 			OAID: "",
@@ -102,7 +104,7 @@ func (r *Analytics) LogResponse(ctx context.Context, w ads.Banner, state *plugin
 			// Region:  rc.Request.Region(),
 			// City:    rc.Request.City(),
 			// Network:   rc.Network,
-			Price: float64(w.Price),
+			Revenue: float64(w.Price),
 		},
 	)
 }
@@ -120,7 +122,7 @@ func (r *Analytics) LogConversion(ctx context.Context, data ads.TrackerInfo) err
 func (r *Analytics) LogImpression(ctx context.Context, data ads.TrackerInfo) error {
 	money.WithLabelValues(
 		ads.ActionImpression,
-	).Add(data.Price)
+	).Add(data.Revenue)
 
 	data.Action = ads.ActionImpression
 	return r.Log(ctx, ads.ActionImpression, ads.Event(data))

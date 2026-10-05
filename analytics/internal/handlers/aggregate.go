@@ -42,9 +42,10 @@ func (a *Aggregate) Run(ctx context.Context, cmd *cli.Command) error {
 		city,
 		country,
 		region,
-		sum( multiIf(price > 0, price/1000, 0 )) as price,
+		sum(revenue) as revenue,
 		count(*) as count,
 		network,
+		unit_id,
 		bundle
 	FROM analytics.` + table + `
 	WHERE timestamp >= ? AND timestamp < ?
@@ -59,6 +60,7 @@ func (a *Aggregate) Run(ctx context.Context, cmd *cli.Command) error {
 		country,
 		region,
 		network,
+		unit_id,
 		bundle
 	`
 

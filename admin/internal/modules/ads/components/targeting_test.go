@@ -21,7 +21,7 @@ type testTargetingObj struct {
 
 func TestTargetingComponent(t *testing.T) {
 	logger := zap.NewNop()
-	targetingComponent := NewTargeting(logger)
+	targetingComponent := NewTargeting(logger, nil)
 
 	t.Run("Component with valid targeting data", func(t *testing.T) {
 		obj := &testTargetingObj{
@@ -160,7 +160,7 @@ func TestTargetingComponent(t *testing.T) {
 
 func TestTargetingSetter(t *testing.T) {
 	logger := zap.NewNop()
-	targetingComponent := NewTargeting(logger)
+	targetingComponent := NewTargeting(logger, nil)
 
 	t.Run("Setter with valid form data", func(t *testing.T) {
 		obj := &testTargetingObj{

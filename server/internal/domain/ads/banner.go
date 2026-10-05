@@ -74,6 +74,16 @@ func (b Banner) PriceFormated() string {
 	return strconv.FormatFloat(float64(b.Price), 'f', -1, 64)
 }
 
+// UnitID returns the mediation unit ID if this banner was produced from a
+// rotation/mediation unit, otherwise 0.
+func (b Banner) UnitID() uint {
+	if b.Type == CreativeTypeMediator {
+		return b.ID
+	}
+
+	return 0
+}
+
 func (b Banner) Media(style string) string {
 	if b.Image.Url == "" {
 		return ""

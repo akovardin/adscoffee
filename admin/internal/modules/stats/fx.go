@@ -6,6 +6,5 @@ var Module = fx.Module(
 	"stats",
 	fx.Provide(
 		New,
-		NewQuery,
 	),
 )

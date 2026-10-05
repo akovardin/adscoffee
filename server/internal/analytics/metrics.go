@@ -16,8 +16,8 @@ var money = prometheus.NewCounterVec(
 	prometheus.CounterOpts{
 		Namespace: "analytics",
 		Subsystem: "actions",
-		Name:      "price",
-		Help:      "Total money.",
+		Name:      "revenue",
+		Help:      "Total revenue.",
 	},
 	[]string{"action"},
 )

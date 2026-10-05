@@ -39,7 +39,7 @@ type NativeResponse struct {
 	Data        string   `json:"data,omitempty"`
 	Network     string   `json:"network"`
 	Format      string   `json:"format,omitempty"`
-	Price       *float64 `json:"price,omitempty"`
+	Revenue     *float64 `json:"revenue,omitempty"`
 }
 
 func (f *Native) Copy(cfg map[string]any) plugins.Format {
@@ -88,7 +88,7 @@ func (f *Native) Render(ctx context.Context, state *plugins.State) (any, error) 
 			Data:        b.Data,
 			Network:     b.Network,
 			Format:      formatOf(b.Format),
-			Price:       priceFor(b),
+			Revenue:     revenueFor(b),
 
 			Impressions: impressiontrackers,
 			Clicks:      clicktrackers,
@@ -114,14 +114,14 @@ func imageStyle(format string) string {
 	return "250x250"
 }
 
-func priceFor(b ads.Banner) *float64 {
+func revenueFor(b ads.Banner) *float64 {
 	if b.Network != networkCoffee {
 		return nil
 	}
 
-	price := float64(b.Price) / 1000
+	revenue := float64(b.Price) / 1000
 
-	return &price
+	return &revenue
 }
 
 func (f *Native) tracker(w ads.Banner, state *plugins.State, action string) (string, error) {
@@ -131,6 +131,8 @@ func (f *Native) tracker(w ads.Banner, state *plugins.State, action string) (str
 		GroupID:      w.GroupID,
 		CampaignID:   w.CampaignID,
 		AdvertiserID: w.AdvertiserID,
+		Network:      w.Network,
+		UnitID:       w.UnitID(),
 		ClickID:      state.ClickID,
 		RequestID:    state.RequestID,
 	}
@@ -140,5 +142,5 @@ func (f *Native) tracker(w ads.Banner, state *plugins.State, action string) (str
 		return "", err
 	}
 
-	return f.base + "/tracker/" + base64.URLEncoding.EncodeToString(data) + ".gif?price={price}", nil
+	return f.base + "/tracker/" + base64.URLEncoding.EncodeToString(data) + ".gif?revenue={revenue}", nil
 }

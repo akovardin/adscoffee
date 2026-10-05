@@ -112,7 +112,7 @@ pipelines:
       - name: targetings.placement
       - name: targetings.timetable
     output:
-      name: outputs.web
+      name: outputs.inapp
       config:
         base: https://platform.ads.coffee
         format: native

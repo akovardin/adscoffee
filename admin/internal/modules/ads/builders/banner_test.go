@@ -129,7 +129,7 @@ func TestCopyBanner(t *testing.T) {
 
 	// Use ExpectQuery instead of ExpectExec for INSERT with RETURNING
 	rowsInsert := sqlmock.NewRows([]string{"id"}).AddRow(2)
-	mock.ExpectQuery(`INSERT INTO "banners" \("created_at","updated_at","deleted_at","title","label","description","active","erid","ord_category","ord_targeting","ord_format","ord_kktu","price","image","icon","start","end","clicktracker","imptracker","target","targeting","budget","capping","bgroup_id","timetable","archived_at"\) VALUES \(\$1,\$2,\$3,\$4,\$5,\$6,\$7,\$8,\$9,\$10,\$11,\$12,\$13,\$14,\$15,\$16,\$17,\$18,\$19,\$20,\$21,\$22,\$23,\$24,\$25,\$26\) RETURNING "id"`).
+	mock.ExpectQuery(`INSERT INTO "banners" \("created_at","updated_at","deleted_at","title","label","description","format","active","erid","ord_category","ord_targeting","ord_format","ord_kktu","price","image","icon","start","end","clicktracker","imptracker","target","targeting","budget","capping","bgroup_id","timetable","archived_at"\) VALUES \(\$1,\$2,\$3,\$4,\$5,\$6,\$7,\$8,\$9,\$10,\$11,\$12,\$13,\$14,\$15,\$16,\$17,\$18,\$19,\$20,\$21,\$22,\$23,\$24,\$25,\$26,\$27\) RETURNING "id"`).
 		WithArgs(
 			sqlmock.AnyArg(),      // created_at
 			sqlmock.AnyArg(),      // updated_at
@@ -137,6 +137,7 @@ func TestCopyBanner(t *testing.T) {
 			"Test Banner (Копия)", // title
 			"Test Label",          // label
 			"Test Description",    // description
+			sqlmock.AnyArg(),      // format
 			false,                 // active
 			"test-erid",           // erid
 			"category",            // ord_category
@@ -230,7 +231,7 @@ func TestArchiveBanner(t *testing.T) {
 
 	// Mock the database calls for updating the banner
 	mock.ExpectBegin()
-	mock.ExpectExec(`UPDATE "banners" SET "id"=\$1,"created_at"=\$2,"updated_at"=\$3,"deleted_at"=\$4,"title"=\$5,"label"=\$6,"description"=\$7,"active"=\$8,"erid"=\$9,"ord_category"=\$10,"ord_targeting"=\$11,"ord_format"=\$12,"ord_kktu"=\$13,"price"=\$14,"image"=\$15,"icon"=\$16,"start"=\$17,"end"=\$18,"clicktracker"=\$19,"imptracker"=\$20,"target"=\$21,"targeting"=\$22,"budget"=\$23,"capping"=\$24,"bgroup_id"=\$25,"timetable"=\$26,"archived_at"=\$27 WHERE "banners"\."deleted_at" IS NULL AND "id" = \$28`).
+	mock.ExpectExec(`UPDATE "banners" SET "id"=\$1,"created_at"=\$2,"updated_at"=\$3,"deleted_at"=\$4,"title"=\$5,"label"=\$6,"description"=\$7,"format"=\$8,"active"=\$9,"erid"=\$10,"ord_category"=\$11,"ord_targeting"=\$12,"ord_format"=\$13,"ord_kktu"=\$14,"price"=\$15,"image"=\$16,"icon"=\$17,"start"=\$18,"end"=\$19,"clicktracker"=\$20,"imptracker"=\$21,"target"=\$22,"targeting"=\$23,"budget"=\$24,"capping"=\$25,"bgroup_id"=\$26,"timetable"=\$27,"archived_at"=\$28 WHERE "banners"\."deleted_at" IS NULL AND "id" = \$29`).
 		WithArgs(
 			sqlmock.AnyArg(), // id
 			sqlmock.AnyArg(), // created_at
@@ -239,6 +240,7 @@ func TestArchiveBanner(t *testing.T) {
 			sqlmock.AnyArg(), // title
 			sqlmock.AnyArg(), // label
 			sqlmock.AnyArg(), // description
+			sqlmock.AnyArg(), // format
 			sqlmock.AnyArg(), // active
 			sqlmock.AnyArg(), // erid
 			sqlmock.AnyArg(), // ord_category
@@ -333,7 +335,7 @@ func TestUnarchiveBanner(t *testing.T) {
 
 	// Mock the database calls for updating the banner
 	mock.ExpectBegin()
-	mock.ExpectExec(`UPDATE "banners" SET "id"=\$1,"created_at"=\$2,"updated_at"=\$3,"deleted_at"=\$4,"title"=\$5,"label"=\$6,"description"=\$7,"active"=\$8,"erid"=\$9,"ord_category"=\$10,"ord_targeting"=\$11,"ord_format"=\$12,"ord_kktu"=\$13,"price"=\$14,"image"=\$15,"icon"=\$16,"start"=\$17,"end"=\$18,"clicktracker"=\$19,"imptracker"=\$20,"target"=\$21,"targeting"=\$22,"budget"=\$23,"capping"=\$24,"bgroup_id"=\$25,"timetable"=\$26,"archived_at"=\$27 WHERE "banners"\."deleted_at" IS NULL AND "id" = \$28`).
+	mock.ExpectExec(`UPDATE "banners" SET "id"=\$1,"created_at"=\$2,"updated_at"=\$3,"deleted_at"=\$4,"title"=\$5,"label"=\$6,"description"=\$7,"format"=\$8,"active"=\$9,"erid"=\$10,"ord_category"=\$11,"ord_targeting"=\$12,"ord_format"=\$13,"ord_kktu"=\$14,"price"=\$15,"image"=\$16,"icon"=\$17,"start"=\$18,"end"=\$19,"clicktracker"=\$20,"imptracker"=\$21,"target"=\$22,"targeting"=\$23,"budget"=\$24,"capping"=\$25,"bgroup_id"=\$26,"timetable"=\$27,"archived_at"=\$28 WHERE "banners"\."deleted_at" IS NULL AND "id" = \$29`).
 		WithArgs(
 			sqlmock.AnyArg(), // id
 			sqlmock.AnyArg(), // created_at
@@ -342,6 +344,7 @@ func TestUnarchiveBanner(t *testing.T) {
 			sqlmock.AnyArg(), // title
 			sqlmock.AnyArg(), // label
 			sqlmock.AnyArg(), // description
+			sqlmock.AnyArg(), // format
 			sqlmock.AnyArg(), // active
 			sqlmock.AnyArg(), // erid
 			sqlmock.AnyArg(), // ord_category

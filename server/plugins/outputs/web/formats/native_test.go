@@ -175,10 +175,10 @@ func TestNative_Render_PriceOnlyForCoffee(t *testing.T) {
 	assert.True(t, ok)
 	assert.Len(t, items, 2)
 
-	assert.NotNil(t, items[0].Price)
-	assert.Equal(t, 0.015, *items[0].Price)
+	assert.NotNil(t, items[0].Revenue)
+	assert.Equal(t, 0.015, *items[0].Revenue)
 
-	assert.Nil(t, items[1].Price)
+	assert.Nil(t, items[1].Revenue)
 }
 
 func TestNative_Render_WithEmptyFields(t *testing.T) {

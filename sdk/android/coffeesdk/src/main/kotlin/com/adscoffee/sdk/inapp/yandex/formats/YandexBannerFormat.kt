@@ -2,10 +2,12 @@ package com.adscoffee.sdk.inapp.yandex.formats
 
 import android.content.Context
 import com.adscoffee.sdk.inapp.InAppAdViewBinder
+import com.adscoffee.sdk.inapp.observeAdContentWidth
 import com.adscoffee.sdk.inapp.yandex.YandexAdCallbacks
 import com.adscoffee.sdk.inapp.yandex.YandexAdData
 import com.adscoffee.sdk.inapp.yandex.YandexAdFormat
 import com.adscoffee.sdk.inapp.yandex.YandexAdUnit
+import com.adscoffee.sdk.inapp.yandex.revenue
 import com.yandex.mobile.ads.banner.BannerAdEventListener
 import com.yandex.mobile.ads.banner.BannerAdSize
 import com.yandex.mobile.ads.banner.BannerAdView
@@ -33,7 +35,6 @@ private class YandexBannerUnit(
 
     override fun render(binder: InAppAdViewBinder, callbacks: YandexAdCallbacks) {
         val view = BannerAdView(context)
-        view.setAdSize(BannerAdSize.sticky(context, widthInDp()))
         view.setBannerAdEventListener(object : BannerAdEventListener {
             override fun onAdLoaded() {}
 
@@ -43,21 +44,23 @@ private class YandexBannerUnit(
 
             override fun onAdClicked() = callbacks.onClick()
 
-            override fun onImpression(impressionData: ImpressionData?) = callbacks.onImpression()
+            override fun onImpression(impressionData: ImpressionData?) =
+                callbacks.onImpression(impressionData.revenue())
         })
 
         bannerAdView = view
         binder.adView.addView(view)
-        view.loadAd(AdRequest.Builder(data.block).build())
+
+        // Ширина берётся из фактической ширины контейнера, а не из размеров
+        // экрана: контейнер может быть уже из-за safe area / паддингов.
+        observeAdContentWidth(binder.adView) { widthDp ->
+            view.setAdSize(BannerAdSize.sticky(context, widthDp))
+            view.loadAd(AdRequest.Builder(data.block).build())
+        }
     }
 
     override fun destroy() {
         bannerAdView?.destroy()
         bannerAdView = null
-    }
-
-    private fun widthInDp(): Int {
-        val metrics = context.resources.displayMetrics
-        return (metrics.widthPixels / metrics.density).toInt()
     }
 }

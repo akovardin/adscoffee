@@ -87,6 +87,25 @@ func (m *Placement) Configure(b *presets.Builder) {
 		return h.Td().Children(h.Text(c.Site.Title))
 	})
 
+	mpl.Field("Title").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
+		c := obj.(*models.Placement)
+
+		style := ""
+		text := ""
+		if c.ArchivedAt != nil {
+			style = "color:#bb0"
+			text = " - архив"
+		}
+
+		return h.Td().Children(
+			h.A().
+				Text(c.Title+text).
+				Style(style).
+				Attr("onclick", "event.stopPropagation();").
+				Href(fmt.Sprintf("/units?f_placement=%d", c.ID)),
+		)
+	})
+
 	mp.Editing(
 		&presets.FieldsSection{
 			// Title: "Info",
@@ -121,6 +140,13 @@ func (m *Placement) Configure(b *presets.Builder) {
 	})
 
 	mpl.FilterDataFunc(func(ctx *web.EventContext) vuetifyx.FilterData {
+		var sites []*vuetifyx.SelectItem
+		if err := m.db.Model(&models.Site{}).Select("title as text, id as value").Scan(&sites).Error; err != nil {
+			m.logger.Error("error on load sites", zap.Error(err))
+
+			return nil
+		}
+
 		return []*vuetifyx.FilterItem{
 			{
 				Key:          "archived",
@@ -158,6 +184,13 @@ func (m *Placement) Configure(b *presets.Builder) {
 						SQLCondition: "active = false",
 					},
 				},
+			},
+			{
+				Key:          "site",
+				Label:        "Сайт",
+				ItemType:     vuetifyx.ItemTypeSelect,
+				SQLCondition: `site_id %s ?`,
+				Options:      sites,
 			},
 			{
 				Key:          "created",

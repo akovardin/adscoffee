@@ -18,7 +18,7 @@ internal interface YandexAdUnit {
 }
 
 internal interface YandexAdCallbacks {
-    fun onImpression()
+    fun onImpression(revenue: Double)
 
     fun onClick()
 

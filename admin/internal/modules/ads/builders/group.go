@@ -163,7 +163,7 @@ func (m *Group) Configure(b *presets.Builder) *presets.ModelBuilder {
 			h.A().
 				Text(comp.Title).
 				Attr("onclick", "event.stopPropagation();").
-				Href(fmt.Sprintf("/admin/bgroups?f_campaign=%d", c.CampaignID)),
+				Href(fmt.Sprintf("/bgroups?f_campaign=%d", c.CampaignID)),
 		)
 	})
 
@@ -182,7 +182,7 @@ func (m *Group) Configure(b *presets.Builder) *presets.ModelBuilder {
 				Text(c.Title+text).
 				Style(style).
 				Attr("onclick", "event.stopPropagation();").
-				Href(fmt.Sprintf("/admin/banners?f_group=%d", c.ID)),
+				Href(fmt.Sprintf("/banners?f_group=%d", c.ID)),
 		)
 	})
 
@@ -305,7 +305,7 @@ func (m *Group) Configure(b *presets.Builder) *presets.ModelBuilder {
 		ComponentFunc(timetable.Component).
 		SetterFunc(timetable.Setter)
 
-	targeting := components.NewTargeting(m.logger)
+	targeting := components.NewTargeting(m.logger, m.db)
 	mge.Field("Targeting").
 		ComponentFunc(targeting.Component).
 		SetterFunc(targeting.Setter)

@@ -10,5 +10,5 @@ internal data class AdResponse(
     val data: String,
     val network: String,
     val format: String,
-    val price: Double
+    val revenue: Double
 )

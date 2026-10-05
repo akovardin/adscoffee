@@ -36,7 +36,8 @@ internal class ApiClient(private val baseUrl: String) {
     }
 
     private fun parseResponses(json: String): List<AdResponse> {
-        val arr = gson.fromJson(json, JsonArray::class.java)
+        if (json.isBlank()) return emptyList()
+        val arr = gson.fromJson(json, JsonArray::class.java) ?: return emptyList()
         return arr.map { parseResponse(it.asJsonObject) }
     }
 
@@ -51,7 +52,7 @@ internal class ApiClient(private val baseUrl: String) {
             data = getString(obj, "data"),
             network = getString(obj, "network"),
             format = getString(obj, "format").ifBlank { FORMAT_BANNER },
-            price = getDouble(obj, "price")
+            revenue = getDouble(obj, "revenue")
         )
     }
 

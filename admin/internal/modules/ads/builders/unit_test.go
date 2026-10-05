@@ -34,7 +34,7 @@ func TestUnit_Configure(t *testing.T) {
 	assert.NotNil(t, modelBuilder)
 
 	listing := modelBuilder.Listing()
-	assert.Equal(t, []interface{}{"Title", "Price", "NetworkID", "PlacementID", "Data", "Active", "ArchivedAt"}, listing.FieldNames())
+	assert.Equal(t, []interface{}{"Title", "Price", "Format", "NetworkID", "PlacementID", "Data", "Active", "ArchivedAt"}, listing.FieldNames())
 }
 
 func TestUnit_Validation(t *testing.T) {

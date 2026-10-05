@@ -26,8 +26,13 @@ func NewRepo(logger *zap.Logger, db *gorm.DB) *Repo {
 func (b *Repo) All(ctx context.Context) ([]ads.Placement, error) {
 	rows := []ads.Placement{}
 
+	// Плейсменты выключенных сайтов не отдаём: запрос по такому плейсменту
+	// завершится 200 OK с пустым ответом (SDK вызовет noad).
 	err := b.db.Model(ads.Placement{}).
-		Where("deleted_at is null and active = true").
+		Select("placements.*").
+		Joins("join sites on sites.id = placements.site_id").
+		Where("placements.deleted_at is null and placements.active = true").
+		Where("sites.deleted_at is null and sites.active = true").
 		Find(&rows).Error
 	if err != nil {
 		return nil, err

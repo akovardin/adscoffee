@@ -5,9 +5,9 @@ version: '3'
 dotenv: ['.env.prod', '.env.deploy']
 
 vars:
-  SERVER_VERSION: v0.7
-  ADMIN_VERSION: v0.4
-  ANALYTICS_VERSION: v0.5
+  SERVER_VERSION: v0.10
+  ADMIN_VERSION: v0.6
+  ANALYTICS_VERSION: v0.8
   SUP: sup -sshconfig ~/.ssh/config
   SERVICE_GROUP: adscoffee
 

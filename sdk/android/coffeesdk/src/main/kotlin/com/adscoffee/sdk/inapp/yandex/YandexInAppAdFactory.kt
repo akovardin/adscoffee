@@ -29,7 +29,7 @@ internal class YandexInAppAdFactory : InAppAdFactory {
         }
 
         val ad = YandexInAppAd(data, response.impressions, response.clicks)
-        ad.price = if (data.price > 0.0) data.price else response.price
+        ad.revenue = if (data.revenue > 0.0) data.revenue else response.revenue
 
         onLoaded(ad)
     }

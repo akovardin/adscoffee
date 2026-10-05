@@ -72,9 +72,9 @@ func (s *Tracker) Do(ctx context.Context, state *plugins.State) bool {
 
 	info.Timestamp = time.Now().Unix()
 
-	if raw := state.Request.URL.Query().Get("price"); raw != "" {
-		if price, err := strconv.ParseFloat(raw, 64); err == nil {
-			info.Price = price
+	if raw := state.Request.URL.Query().Get("revenue"); raw != "" {
+		if revenue, err := strconv.ParseFloat(raw, 64); err == nil {
+			info.Revenue = revenue
 		}
 	}
 

@@ -7,6 +7,7 @@ import com.adscoffee.sdk.inapp.yandex.YandexAdCallbacks
 import com.adscoffee.sdk.inapp.yandex.YandexAdData
 import com.adscoffee.sdk.inapp.yandex.YandexAdFormat
 import com.adscoffee.sdk.inapp.yandex.YandexAdUnit
+import com.adscoffee.sdk.inapp.yandex.revenue
 import com.yandex.mobile.ads.common.AdError
 import com.yandex.mobile.ads.common.AdRequest
 import com.yandex.mobile.ads.common.AdRequestError
@@ -68,7 +69,7 @@ private class YandexInterstitialUnit(
                         }
 
                         override fun onAdImpression(data: ImpressionData?) {
-                            callbacks.onImpression()
+                            callbacks.onImpression(data.revenue())
                         }
                     })
 

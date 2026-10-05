@@ -26,7 +26,7 @@ internal class YandexInAppAd(
         unit = created
 
         created.render(binder, object : YandexAdCallbacks {
-            override fun onImpression() = fireImpressionTrackers()
+            override fun onImpression(revenue: Double) = fireImpressionTrackers(revenue)
 
             override fun onClick() = fireClickTrackers()
 

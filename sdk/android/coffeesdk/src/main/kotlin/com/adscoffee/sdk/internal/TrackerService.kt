@@ -6,11 +6,11 @@ import java.net.URL
 
 class TrackerService {
 
-    fun fire(urls: List<String>, price: Double = 0.0) {
-        val priceValue = formatPrice(price)
+    fun fire(urls: List<String>, revenue: Double = 0.0) {
+        val revenueValue = formatRevenue(revenue)
 
         urls.forEach { raw ->
-            val urlStr = raw.replace(PRICE_MACRO, priceValue)
+            val urlStr = applyRevenue(raw, revenueValue, revenue)
 
             Thread {
                 try {
@@ -26,11 +26,27 @@ class TrackerService {
         }
     }
 
-    private fun formatPrice(price: Double): String {
-        return BigDecimal.valueOf(price).stripTrailingZeros().toPlainString()
+    private fun applyRevenue(raw: String, revenueValue: String, revenue: Double): String {
+        if (raw.contains(REVENUE_MACRO)) {
+            return raw.replace(REVENUE_MACRO, revenueValue)
+        }
+
+        if (revenue <= 0.0) {
+            return raw
+        }
+
+        // Старые версии сервера не подставляют {revenue} в URL. Трекер читает
+        // доход из query-параметра revenue, поэтому добавляем его сами.
+        val separator = if (raw.contains('?')) '&' else '?'
+        return "$raw$separator$REVENUE_QUERY=$revenueValue"
+    }
+
+    private fun formatRevenue(revenue: Double): String {
+        return BigDecimal.valueOf(revenue).stripTrailingZeros().toPlainString()
     }
 
     companion object {
-        private const val PRICE_MACRO = "{price}"
+        private const val REVENUE_MACRO = "{revenue}"
+        private const val REVENUE_QUERY = "revenue"
     }
 }

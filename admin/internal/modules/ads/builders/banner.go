@@ -47,7 +47,7 @@ func (m *Banner) Configure(b *presets.Builder) {
 		// Label("Креативы").
 		RightDrawerWidth("1000")
 
-	mbl := mb.Listing("ID", "Title", "Icon", "Price", "Bgroup", "Active").
+	mbl := mb.Listing("ID", "Title", "Format", "Icon", "Price", "Bgroup", "Active").
 		SearchFunc(func(ctx *web.EventContext, params *presets.SearchParams) (result *presets.SearchResult, err error) {
 			// по умоланию архивные сущности не показываются
 			// только если явно выбрать их в фильтре
@@ -158,6 +158,12 @@ func (m *Banner) Configure(b *presets.Builder) {
 	})
 
 	mbl.Field("Price").Label("CPM")
+
+	mbl.Field("Format").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
+		c := obj.(*models.Banner)
+
+		return h.Td().Text(formatLabel(c.Format))
+	})
 
 	mbl.Field("Active").ComponentFunc(func(obj interface{}, field *presets.FieldContext, ctx *web.EventContext) h.HTMLComponent {
 		c := obj.(*models.Banner)
@@ -387,7 +393,7 @@ func (m *Banner) Configure(b *presets.Builder) {
 		ComponentFunc(timetable.Component).
 		SetterFunc(timetable.Setter)
 
-	targeting := components.NewTargeting(m.logger)
+	targeting := components.NewTargeting(m.logger, m.db)
 	mbe.Field("Targeting").
 		ComponentFunc(targeting.Component).
 		SetterFunc(targeting.Setter)
@@ -406,6 +412,14 @@ func (m *Banner) Configure(b *presets.Builder) {
 type Format struct {
 	Title string
 	Value string
+}
+
+func formatLabel(value string) string {
+	if strings.EqualFold(value, "interstitial") {
+		return "Интерстишел"
+	}
+
+	return "Баннер"
 }
 
 func (m *Banner) copyBanner(ctx *web.EventContext) (r web.EventResponse, err error) {
