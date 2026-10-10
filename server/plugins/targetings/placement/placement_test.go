@@ -10,17 +10,11 @@ import (
 )
 
 func TestPlacement_Name(t *testing.T) {
-	assert.Equal(t, "targetings.placement", New().Name())
-}
-
-func TestPlacement_Copy(t *testing.T) {
-	p := New()
-	copied := p.Copy(map[string]any{})
-	assert.IsType(t, &Placement{}, copied)
+	assert.Equal(t, "targetings.placement", New().Name)
 }
 
 func TestPlacement_Filter(t *testing.T) {
-	p := New()
+	p := &Placement{}
 
 	state := &plugins.State{
 		Placement: ads.Placement{ID: 5},
@@ -41,7 +35,7 @@ func TestPlacement_Filter(t *testing.T) {
 }
 
 func TestPlacement_FilterWithoutPlacement(t *testing.T) {
-	p := New()
+	p := &Placement{}
 
 	candidates := []ads.Banner{
 		{ID: 1, Targeting: ads.Targeting{Placement: ads.ExcludeInclude{IncludeOr: []string{"5"}}}},

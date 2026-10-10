@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
@@ -16,59 +17,53 @@ func (m *mockInput) Name() string {
 	return m.name
 }
 
-func (m *mockInput) Copy(cfg map[string]any) plugins.Input {
-	return &mockInput{name: m.name}
-}
-
 func (m *mockInput) Do(ctx context.Context, state *plugins.State) bool {
 	return true
 }
 
-func TestNew(t *testing.T) {
-	inputList := []plugins.Input{
-		&mockInput{name: "inputs.rtb"},
-		&mockInput{name: "inputs.web"},
+func mockProvider(name string) plugins.Provider[plugins.Input] {
+	return plugins.Provider[plugins.Input]{
+		Name: name,
+		Factory: func(cfg map[string]any) (plugins.Input, error) {
+			return &mockInput{name: name}, nil
+		},
 	}
+}
 
-	inputs := New(inputList)
+func TestNew(t *testing.T) {
+	inputs := New([]plugins.Provider[plugins.Input]{
+		mockProvider("inputs.rtb"),
+		mockProvider("inputs.web"),
+	})
 
 	assert.NotNil(t, inputs)
-	assert.Len(t, inputs.plugins, 2)
-	assert.Contains(t, inputs.plugins, "inputs.rtb")
-	assert.Contains(t, inputs.plugins, "inputs.web")
 }
 
 func TestInputs_Get(t *testing.T) {
-	inputList := []plugins.Input{
-		&mockInput{name: "inputs.rtb"},
-		&mockInput{name: "inputs.web"},
-	}
-
-	inputs := New(inputList)
+	inputs := New([]plugins.Provider[plugins.Input]{
+		mockProvider("inputs.rtb"),
+		mockProvider("inputs.web"),
+	})
 
 	cfg := map[string]any{"key": "value"}
-	input := inputs.Get("inputs.rtb", cfg)
+	input, err := inputs.Get("inputs.rtb", cfg)
+	require.NoError(t, err)
 
 	assert.NotNil(t, input)
 	assert.Equal(t, "inputs.rtb", input.Name())
 }
 
 func TestNewWithEmptySlice(t *testing.T) {
-	inputs := New([]plugins.Input{})
+	inputs := New([]plugins.Provider[plugins.Input]{})
 
 	assert.NotNil(t, inputs)
-	assert.Len(t, inputs.plugins, 0)
 }
 
 func TestInput_GetNonExistentInput(t *testing.T) {
-	inputList := []plugins.Input{
-		&mockInput{name: "inputs.rtb"},
-	}
-
-	inputs := New(inputList)
-
-	assert.Panics(t, func() {
-		cfg := map[string]any{}
-		inputs.Get("non-existent", cfg)
+	inputs := New([]plugins.Provider[plugins.Input]{
+		mockProvider("inputs.rtb"),
 	})
+
+	_, err := inputs.Get("non-existent", map[string]any{})
+	assert.Error(t, err)
 }

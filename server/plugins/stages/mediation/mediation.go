@@ -17,7 +17,6 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(plugins.Stage)),
 			fx.ResultTags(`group:"stages"`),
 		),
 	),
@@ -32,16 +31,17 @@ var Module = fx.Module(
 // что нужно вызвать рекламу из подключенного нужного SDK
 type Mediation struct{}
 
-func New() *Mediation {
-	return &Mediation{}
+func New() plugins.Provider[plugins.Stage] {
+	return plugins.Provider[plugins.Stage]{
+		Name: "stages.mediation",
+		Factory: func(cfg map[string]any) (plugins.Stage, error) {
+			return &Mediation{}, nil
+		},
+	}
 }
 
 func (t *Mediation) Name() string {
 	return "stages.mediation"
-}
-
-func (t *Mediation) Copy(cfg map[string]any) plugins.Stage {
-	return &Mediation{}
 }
 
 func (t *Mediation) Do(ctx context.Context, state *plugins.State) error {

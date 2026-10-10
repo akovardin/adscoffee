@@ -20,14 +20,9 @@ func (m *mockBannersCache) All(ctx context.Context) []ads.Banner {
 }
 
 func TestNew(t *testing.T) {
-	mockCache := &mockBannersCache{}
-
-	banners := &Banners{
-		cache: mockCache,
-	}
-
-	assert.NotNil(t, banners)
-	assert.Equal(t, mockCache, banners.cache)
+	v, err := New(nil).Factory(nil)
+	assert.NoError(t, err)
+	assert.IsType(t, &Banners{}, v)
 }
 
 func TestBanners_Name(t *testing.T) {
@@ -39,19 +34,6 @@ func TestBanners_Name(t *testing.T) {
 	name := banners.Name()
 
 	assert.Equal(t, "stages.banners", name)
-}
-
-func TestBanners_Copy(t *testing.T) {
-	mockCache := &mockBannersCache{}
-	banners := &Banners{
-		cache: mockCache,
-	}
-
-	cfgMap := map[string]any{"key": "value"}
-	copied := banners.Copy(cfgMap)
-
-	assert.NotNil(t, copied)
-	assert.IsType(t, &Banners{}, copied)
 }
 
 func TestBanners_Do(t *testing.T) {

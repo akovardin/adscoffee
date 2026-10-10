@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
@@ -16,59 +17,53 @@ func (m *mockStage) Name() string {
 	return m.name
 }
 
-func (m *mockStage) Copy(cfg map[string]any) plugins.Stage {
-	return &mockStage{name: m.name}
-}
-
 func (m *mockStage) Do(ctx context.Context, state *plugins.State) error {
 	return nil
 }
 
-func TestNew(t *testing.T) {
-	stageList := []plugins.Stage{
-		&mockStage{name: "stages.banners"},
-		&mockStage{name: "stages.rotation"},
+func mockProvider(name string) plugins.Provider[plugins.Stage] {
+	return plugins.Provider[plugins.Stage]{
+		Name: name,
+		Factory: func(cfg map[string]any) (plugins.Stage, error) {
+			return &mockStage{name: name}, nil
+		},
 	}
+}
 
-	stages := New(stageList)
+func TestNew(t *testing.T) {
+	stages := New([]plugins.Provider[plugins.Stage]{
+		mockProvider("stages.banners"),
+		mockProvider("stages.rotation"),
+	})
 
 	assert.NotNil(t, stages)
-	assert.Len(t, stages.list, 2)
-	assert.Contains(t, stages.list, "stages.banners")
-	assert.Contains(t, stages.list, "stages.rotation")
 }
 
 func TestStages_Get(t *testing.T) {
-	stageList := []plugins.Stage{
-		&mockStage{name: "stages.banners"},
-		&mockStage{name: "stages.rotation"},
-	}
-
-	stages := New(stageList)
+	stages := New([]plugins.Provider[plugins.Stage]{
+		mockProvider("stages.banners"),
+		mockProvider("stages.rotation"),
+	})
 
 	cfg := map[string]any{"key": "value"}
-	stage := stages.Get("stages.banners", cfg)
+	stage, err := stages.Get("stages.banners", cfg)
+	require.NoError(t, err)
 
 	assert.NotNil(t, stage)
 	assert.Equal(t, "stages.banners", stage.Name())
 }
 
 func TestNewWithEmptySlice(t *testing.T) {
-	stages := New([]plugins.Stage{})
+	stages := New([]plugins.Provider[plugins.Stage]{})
 
 	assert.NotNil(t, stages)
-	assert.Len(t, stages.list, 0)
 }
 
 func TestStages_GetNonExistentStage(t *testing.T) {
-	stageList := []plugins.Stage{
-		&mockStage{name: "stages.banners"},
-	}
-
-	stages := New(stageList)
-
-	assert.Panics(t, func() {
-		cfg := map[string]any{}
-		stages.Get("non-existent", cfg)
+	stages := New([]plugins.Provider[plugins.Stage]{
+		mockProvider("stages.banners"),
 	})
+
+	_, err := stages.Get("non-existent", map[string]any{})
+	assert.Error(t, err)
 }

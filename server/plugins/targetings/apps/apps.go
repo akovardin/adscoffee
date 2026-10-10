@@ -12,7 +12,6 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(plugins.Targeting)),
 			fx.ResultTags(`group:"targetings"`),
 		),
 	),
@@ -20,16 +19,17 @@ var Module = fx.Module(
 
 type Apps struct{}
 
-func New() *Apps {
-	return &Apps{}
+func New() plugins.Provider[plugins.Targeting] {
+	return plugins.Provider[plugins.Targeting]{
+		Name: "targetings.apps",
+		Factory: func(cfg map[string]any) (plugins.Targeting, error) {
+			return &Apps{}, nil
+		},
+	}
 }
 
 func (a *Apps) Name() string {
 	return "targetings.apps"
-}
-
-func (a *Apps) Copy(cfg map[string]any) plugins.Targeting {
-	return &Apps{}
 }
 
 func (a *Apps) Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner {

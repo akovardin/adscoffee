@@ -17,7 +17,6 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(plugins.Stage)),
 			fx.ResultTags(`group:"stages"`),
 		),
 	),
@@ -25,16 +24,17 @@ var Module = fx.Module(
 
 type Rotattion struct{}
 
-func New() *Rotattion {
-	return &Rotattion{}
+func New() plugins.Provider[plugins.Stage] {
+	return plugins.Provider[plugins.Stage]{
+		Name: "stages.rotation",
+		Factory: func(cfg map[string]any) (plugins.Stage, error) {
+			return &Rotattion{}, nil
+		},
+	}
 }
 
 func (r *Rotattion) Name() string {
 	return "stages.rotation"
-}
-
-func (r *Rotattion) Copy(cfg map[string]any) plugins.Stage {
-	return &Rotattion{}
 }
 
 func (r *Rotattion) Do(ctx context.Context, state *plugins.State) error {

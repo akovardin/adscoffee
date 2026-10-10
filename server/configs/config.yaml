@@ -48,7 +48,7 @@ pipelines:
       name: inputs.rtb
     stages:
       - name: stages.banners
-      - name: stages.limits
+      - name: stages.limit
       - name: stages.targeting
       - name: stages.rotation
     targetings:
@@ -56,6 +56,9 @@ pipelines:
       - name: targetings.geo
       - name: targetings.placement
       - name: targetings.timetable
+    limits:
+      - name: limits.budget
+      - name: limits.capping
     output:
       name: outputs.rtb
 
@@ -65,7 +68,7 @@ pipelines:
       name: inputs.web
     stages:
       - name: stages.banners
-      - name: stages.limits
+      - name: stages.limit
       - name: stages.targeting
       - name: stages.rotation
       - name: stages.mediation
@@ -74,6 +77,9 @@ pipelines:
       - name: targetings.geo
       - name: targetings.placement
       - name: targetings.timetable
+    limits:
+      - name: limits.budget
+      - name: limits.capping
     output:
       name: outputs.web
       config:   
@@ -86,7 +92,7 @@ pipelines:
       name: inputs.static
     stages:
       - name: stages.banners
-      - name: stages.limits
+      - name: stages.limit
       - name: stages.targeting
       - name: stages.rotation
     targetings:
@@ -94,6 +100,9 @@ pipelines:
       - name: targetings.geo
       - name: targetings.placement
       - name: targetings.timetable
+    limits:
+      - name: limits.budget
+      - name: limits.capping
     output:
       name: outputs.static # save to cache
       config:

@@ -15,9 +15,8 @@ import (
 )
 
 const (
-	baseUrlKey = "base"
-	actionImg  = "img"
-	actionKey  = "action"
+	actionImg = "img"
+	actionKey = "action"
 )
 
 var Module = fx.Module(
@@ -26,7 +25,6 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(plugins.Output)),
 			fx.ResultTags(`group:"outputs"`),
 		),
 		formats.NewBanner,
@@ -53,37 +51,37 @@ type Static struct {
 	format    Banner
 }
 
+type Config struct {
+	Base string `json:"base"`
+}
+
 func New(
 	logger *zap.Logger,
 	format *formats.Banner,
 	sessions *sessions.Sessions,
 	analytics *analytics.Analytics,
-) *Static {
-	return &Static{
-		format:    format,
-		sessions:  sessions,
-		analytics: analytics,
+) plugins.Provider[plugins.Output] {
+	return plugins.Provider[plugins.Output]{
+		Name: "outputs.static",
+		Factory: func(cfg map[string]any) (plugins.Output, error) {
+			c, err := plugins.Decode[Config](cfg)
+			if err != nil {
+				return nil, fmt.Errorf("outputs.static config: %w", err)
+			}
+
+			return &Static{
+				base:      c.Base,
+				logger:    logger,
+				format:    format,
+				sessions:  sessions,
+				analytics: analytics,
+			}, nil
+		},
 	}
 }
 
 func (w *Static) Name() string {
 	return "outputs.static"
-}
-
-func (w *Static) Copy(cfg map[string]any) plugins.Output {
-	base := ""
-
-	if cfg != nil {
-		base = cfg[baseUrlKey].(string)
-	}
-
-	return &Static{
-		base:      base,
-		logger:    w.logger,
-		format:    w.format,
-		sessions:  w.sessions,
-		analytics: w.analytics,
-	}
 }
 
 func (w *Static) Do(ctx context.Context, state *plugins.State) error {

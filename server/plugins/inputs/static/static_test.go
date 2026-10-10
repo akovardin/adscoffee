@@ -100,33 +100,6 @@ func TestStatic_Name(t *testing.T) {
 	assert.Equal(t, "inputs.static", name)
 }
 
-func TestStatic_Copy(t *testing.T) {
-	logger := zaptest.NewLogger(t)
-	cache := &MockBanners{}
-	session := &MockSession{}
-	analytics := &MockAnalytics{}
-
-	static := &Static{
-		logger:    logger,
-		banners:   cache,
-		sessions:  session,
-		analytics: analytics,
-	}
-
-	cfgMap := map[string]any{"key": "value"}
-
-	copied := static.Copy(cfgMap)
-
-	assert.NotNil(t, copied)
-	assert.IsType(t, &Static{}, copied)
-
-	copiedStatic := copied.(*Static)
-	assert.Equal(t, cache, copiedStatic.banners)
-	assert.Equal(t, logger, copiedStatic.logger)
-	assert.Equal(t, session, copiedStatic.sessions)
-	assert.Equal(t, analytics, copiedStatic.analytics)
-}
-
 func TestStatic_Do_ViewAction(t *testing.T) {
 	logger := zaptest.NewLogger(t)
 	banners := &MockBanners{}

@@ -46,35 +46,27 @@ func TestTargetingComponent(t *testing.T) {
 		require.NoError(t, err)
 
 		// Check that all section headers are present
-		assert.Contains(t, string(html), "Бандлы")
-		assert.Contains(t, string(html), "Страны")
-		assert.Contains(t, string(html), "Регионы")
-		assert.Contains(t, string(html), "Города")
-		assert.Contains(t, string(html), "IP")
+		assert.Contains(t, string(html), "Плейсменты")
 
 		// Check that all textarea fields are present with correct values
-		assert.Contains(t, string(html), "Targeting.Bundle.IncludeOr")
-		assert.Contains(t, string(html), "Targeting.Bundle.ExcludeOr")
-		assert.Contains(t, string(html), "Targeting.Country.IncludeOr")
-		assert.Contains(t, string(html), "Targeting.Country.ExcludeOr")
-		assert.Contains(t, string(html), "Targeting.Region.IncludeOr")
-		assert.Contains(t, string(html), "Targeting.Region.ExcludeOr")
-		assert.Contains(t, string(html), "Targeting.City.IncludeOr")
-		assert.Contains(t, string(html), "Targeting.City.ExcludeOr")
-		assert.Contains(t, string(html), "Targeting.IP.Include")
-		assert.Contains(t, string(html), "Targeting.IP.Exclude")
+		assert.Contains(t, string(html), "Targeting.Placement.IncludeOr")
+		assert.Contains(t, string(html), "Targeting.Placement.ExcludeOr")
 
-		// Check that values are correctly set in textareas
-		assert.Contains(t, string(html), "com.example ru.rustore")
-		assert.Contains(t, string(html), "com.test")
-		assert.Contains(t, string(html), "RU US")
-		assert.Contains(t, string(html), "CN")
-		assert.Contains(t, string(html), "SPE MOW")
-		assert.Contains(t, string(html), "LEN")
-		assert.Contains(t, string(html), "KUF OMS")
-		assert.Contains(t, string(html), "MOW")
-		assert.Contains(t, string(html), "188.170.172.0/22")
-		assert.Contains(t, string(html), "188.170.192.0/22")
+		// Скрытые секции таргетинга не должны рендериться
+		assert.NotContains(t, string(html), "Бандлы")
+		assert.NotContains(t, string(html), "Страны")
+		assert.NotContains(t, string(html), "Регионы")
+		assert.NotContains(t, string(html), "Города")
+		assert.NotContains(t, string(html), "Targeting.Bundle.IncludeOr")
+		assert.NotContains(t, string(html), "Targeting.Bundle.ExcludeOr")
+		assert.NotContains(t, string(html), "Targeting.Country.IncludeOr")
+		assert.NotContains(t, string(html), "Targeting.Country.ExcludeOr")
+		assert.NotContains(t, string(html), "Targeting.Region.IncludeOr")
+		assert.NotContains(t, string(html), "Targeting.Region.ExcludeOr")
+		assert.NotContains(t, string(html), "Targeting.City.IncludeOr")
+		assert.NotContains(t, string(html), "Targeting.City.ExcludeOr")
+		assert.NotContains(t, string(html), "Targeting.IP.Include")
+		assert.NotContains(t, string(html), "Targeting.IP.Exclude")
 	})
 
 	t.Run("Component with invalid targeting data", func(t *testing.T) {

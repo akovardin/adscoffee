@@ -52,31 +52,6 @@ func TestWeb_Name(t *testing.T) {
 	assert.Equal(t, "inputs.web", name)
 }
 
-func TestWeb_Copy(t *testing.T) {
-	analytics := &MockAnalytics{}
-	placements := &MockPlacements{}
-	units := &MockUnits{}
-
-	web := &Web{
-		analytics:  analytics,
-		placements: placements,
-		units:      units,
-		logger:     zap.NewNop(),
-	}
-
-	cfgMap := map[string]any{"key": "value"}
-
-	copied := web.Copy(cfgMap)
-
-	assert.NotNil(t, copied)
-	assert.IsType(t, &Web{}, copied)
-
-	w := copied.(*Web)
-	assert.Equal(t, analytics, w.analytics)
-	assert.Equal(t, placements, w.placements)
-	assert.Equal(t, units, w.units)
-}
-
 func TestWeb_Do(t *testing.T) {
 	analytics := &MockAnalytics{}
 	placements := &MockPlacements{}

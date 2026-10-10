@@ -14,7 +14,6 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(plugins.Output)),
 			fx.ResultTags(`group:"outputs"`),
 		),
 	),
@@ -23,16 +22,17 @@ var Module = fx.Module(
 type Rtb struct {
 }
 
-func New() *Rtb {
-	return &Rtb{}
+func New() plugins.Provider[plugins.Output] {
+	return plugins.Provider[plugins.Output]{
+		Name: "outputs.rtb",
+		Factory: func(cfg map[string]any) (plugins.Output, error) {
+			return &Rtb{}, nil
+		},
+	}
 }
 
 func (r *Rtb) Name() string {
 	return "outputs.rtb"
-}
-
-func (r *Rtb) Copy(cfg map[string]any) plugins.Output {
-	return &Rtb{}
 }
 
 func (rtb *Rtb) Do(ctx context.Context, state *plugins.State) error {

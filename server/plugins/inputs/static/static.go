@@ -30,7 +30,6 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(plugins.Input)),
 			fx.ResultTags(`group:"inputs"`),
 		),
 	),
@@ -72,30 +71,24 @@ func New(
 	analytics *analytics.Analytics,
 	placements *placements.Cache,
 	units *units.Cache,
-) *Static {
-	return &Static{
-		logger:     logger,
-		banners:    cache,
-		sessions:   sessions,
-		analytics:  analytics,
-		placements: placements,
-		units:      units,
+) plugins.Provider[plugins.Input] {
+	return plugins.Provider[plugins.Input]{
+		Name: "inputs.static",
+		Factory: func(cfg map[string]any) (plugins.Input, error) {
+			return &Static{
+				logger:     logger,
+				banners:    cache,
+				sessions:   sessions,
+				analytics:  analytics,
+				placements: placements,
+				units:      units,
+			}, nil
+		},
 	}
 }
 
 func (s *Static) Name() string {
 	return "inputs.static"
-}
-
-func (s *Static) Copy(cfg map[string]any) plugins.Input {
-	return &Static{
-		banners:    s.banners,
-		logger:     s.logger,
-		sessions:   s.sessions,
-		analytics:  s.analytics,
-		placements: s.placements,
-		units:      s.units,
-	}
 }
 
 func (s *Static) Do(ctx context.Context, state *plugins.State) bool {

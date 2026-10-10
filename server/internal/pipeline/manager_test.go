@@ -9,9 +9,11 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.ads.coffee/platform/server/internal/domain/ads"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 	"go.ads.coffee/platform/server/internal/inputs"
+	"go.ads.coffee/platform/server/internal/limits"
 	"go.ads.coffee/platform/server/internal/outputs"
 	"go.ads.coffee/platform/server/internal/stages"
 	"go.ads.coffee/platform/server/internal/targetings"
@@ -25,10 +27,6 @@ func (m *mockInput) Name() string {
 	return m.name
 }
 
-func (m *mockInput) Copy(cfg map[string]any) plugins.Input {
-	return &mockInput{name: m.name}
-}
-
 func (m *mockInput) Do(ctx context.Context, state *plugins.State) bool {
 	return true
 }
@@ -39,10 +37,6 @@ type mockStage struct {
 
 func (m *mockStage) Name() string {
 	return m.name
-}
-
-func (m *mockStage) Copy(cfg map[string]any) plugins.Stage {
-	return &mockStage{name: m.name}
 }
 
 func (m *mockStage) Do(ctx context.Context, state *plugins.State) error {
@@ -58,10 +52,13 @@ func (m *mockStageWithTargetings) Targetings(tt []plugins.Targeting) {
 	m.targetings = tt
 }
 
-func (m *mockStageWithTargetings) Copy(cfg map[string]any) plugins.Stage {
-	return &mockStageWithTargetings{
-		mockStage: mockStage{name: m.name},
-	}
+type mockStageWithLimits struct {
+	mockStage
+	limits []plugins.Limit
+}
+
+func (m *mockStageWithLimits) Limits(ll []plugins.Limit) {
+	m.limits = ll
 }
 
 type mockTargeting struct {
@@ -72,59 +69,111 @@ func (m *mockTargeting) Name() string {
 	return m.name
 }
 
-func (m *mockTargeting) Copy(cfg map[string]any) plugins.Targeting {
-	return &mockTargeting{name: m.name}
-}
-
 func (m *mockTargeting) Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner {
 	return candidates
 }
 
+type mockLimit struct {
+	name string
+}
+
+func (m *mockLimit) Name() string {
+	return m.name
+}
+
+func (m *mockLimit) Apply(candidates []ads.Banner, state *plugins.State) []ads.Banner {
+	return candidates
+}
+
 type mockOutput struct {
-	name    string
-	formats []plugins.Format
+	name string
 }
 
 func (m *mockOutput) Name() string {
 	return m.name
 }
 
-func (m *mockOutput) Copy(cfg map[string]any) plugins.Output {
-	return &mockOutput{name: m.name}
-}
-
-func (m *mockOutput) Formats(ff []plugins.Format) {
-	m.formats = ff
-}
-
 func (m *mockOutput) Do(ctx context.Context, state *plugins.State) error {
 	return nil
 }
 
+func inputProvider(name string) plugins.Provider[plugins.Input] {
+	return plugins.Provider[plugins.Input]{
+		Name: name,
+		Factory: func(cfg map[string]any) (plugins.Input, error) {
+			return &mockInput{name: name}, nil
+		},
+	}
+}
+
+func outputProvider(name string) plugins.Provider[plugins.Output] {
+	return plugins.Provider[plugins.Output]{
+		Name: name,
+		Factory: func(cfg map[string]any) (plugins.Output, error) {
+			return &mockOutput{name: name}, nil
+		},
+	}
+}
+
+func stageProvider(name string, build func() plugins.Stage) plugins.Provider[plugins.Stage] {
+	return plugins.Provider[plugins.Stage]{
+		Name: name,
+		Factory: func(cfg map[string]any) (plugins.Stage, error) {
+			return build(), nil
+		},
+	}
+}
+
+func targetingProvider(name string) plugins.Provider[plugins.Targeting] {
+	return plugins.Provider[plugins.Targeting]{
+		Name: name,
+		Factory: func(cfg map[string]any) (plugins.Targeting, error) {
+			return &mockTargeting{name: name}, nil
+		},
+	}
+}
+
+func limitProvider(name string) plugins.Provider[plugins.Limit] {
+	return plugins.Provider[plugins.Limit]{
+		Name: name,
+		Factory: func(cfg map[string]any) (plugins.Limit, error) {
+			return &mockLimit{name: name}, nil
+		},
+	}
+}
+
 func TestNewManager(t *testing.T) {
-	inputList := []plugins.Input{
-		&mockInput{name: "inputs.rtb"},
-		&mockInput{name: "inputs.web"},
-	}
-	inputs := inputs.New(inputList)
+	in := inputs.New([]plugins.Provider[plugins.Input]{
+		inputProvider("inputs.rtb"),
+		inputProvider("inputs.web"),
+	})
 
-	outputList := []plugins.Output{
-		&mockOutput{name: "outputs.rtb"},
-		&mockOutput{name: "outputs.web"},
-	}
-	outputs := outputs.New(outputList)
+	out := outputs.New([]plugins.Provider[plugins.Output]{
+		outputProvider("outputs.rtb"),
+		outputProvider("outputs.web"),
+	})
 
-	stageList := []plugins.Stage{
-		&mockStage{name: "stages.banners"},
-		&mockStageWithTargetings{mockStage: mockStage{name: "stages.targeting"}},
-	}
-	stages := stages.New(stageList)
+	limitStage := &mockStageWithLimits{mockStage: mockStage{name: "stages.limit"}}
 
-	targetingList := []plugins.Targeting{
-		&mockTargeting{name: "targetings.apps"},
-		&mockTargeting{name: "targetings.geo"},
-	}
-	targetings := targetings.New(targetingList)
+	st := stages.New([]plugins.Provider[plugins.Stage]{
+		stageProvider("stages.banners", func() plugins.Stage { return &mockStage{name: "stages.banners"} }),
+		stageProvider("stages.targeting", func() plugins.Stage { return &mockStageWithTargetings{mockStage: mockStage{name: "stages.targeting"}} }),
+		{
+			Name: "stages.limit",
+			Factory: func(cfg map[string]any) (plugins.Stage, error) {
+				return limitStage, nil
+			},
+		},
+	})
+
+	tg := targetings.New([]plugins.Provider[plugins.Targeting]{
+		targetingProvider("targetings.apps"),
+		targetingProvider("targetings.geo"),
+	})
+
+	lm := limits.New([]plugins.Provider[plugins.Limit]{
+		limitProvider("limits.budget"),
+	})
 
 	cfg := []Config{
 		{
@@ -137,10 +186,14 @@ func TestNewManager(t *testing.T) {
 			Stages: []Stage{
 				{Name: "stages.banners", Config: map[string]any{}},
 				{Name: "stages.targeting", Config: map[string]any{}},
+				{Name: "stages.limit", Config: map[string]any{}},
 			},
 			Targetings: []Targeting{
 				{Name: "targetings.apps", Config: map[string]any{}},
 				{Name: "targetings.geo", Config: map[string]any{}},
+			},
+			Limits: []Limit{
+				{Name: "limits.budget", Config: map[string]any{}},
 			},
 			Output: Output{
 				Name:   "outputs.rtb",
@@ -149,7 +202,8 @@ func TestNewManager(t *testing.T) {
 		},
 	}
 
-	manager := NewManager(cfg, inputs, outputs, stages, targetings)
+	manager, err := NewManager(cfg, in, out, st, tg, lm)
+	require.NoError(t, err)
 
 	assert.NotNil(t, manager)
 	assert.Len(t, manager.pipelines, 1)
@@ -157,28 +211,51 @@ func TestNewManager(t *testing.T) {
 	pipeline := manager.pipelines[0]
 	assert.Equal(t, "dsp", pipeline.Name())
 	assert.Equal(t, "/dsp", pipeline.Route())
+
+	// лимиты из конфига проброшены в стейдж, реализующий WithLimits
+	assert.Len(t, limitStage.limits, 1)
+}
+
+func TestNewManager_UnknownPlugin(t *testing.T) {
+	cfg := []Config{
+		{
+			Name:  "dsp",
+			Route: "/dsp",
+			Input: Input{Name: "inputs.missing", Config: map[string]any{}},
+			Output: Output{
+				Name:   "outputs.rtb",
+				Config: map[string]any{},
+			},
+		},
+	}
+
+	_, err := NewManager(
+		cfg,
+		inputs.New(nil),
+		outputs.New(nil),
+		stages.New(nil),
+		targetings.New(nil),
+		limits.New(nil),
+	)
+	assert.Error(t, err)
 }
 
 func TestManager_Mount(t *testing.T) {
-	inputList := []plugins.Input{
-		&mockInput{name: "inputs.rtb"},
-	}
-	inputs := inputs.New(inputList)
+	in := inputs.New([]plugins.Provider[plugins.Input]{
+		inputProvider("inputs.rtb"),
+	})
 
-	outputList := []plugins.Output{
-		&mockOutput{name: "outputs.rtb"},
-	}
-	outputs := outputs.New(outputList)
+	out := outputs.New([]plugins.Provider[plugins.Output]{
+		outputProvider("outputs.rtb"),
+	})
 
-	stageList := []plugins.Stage{
-		&mockStage{name: "stages.banners"},
-	}
-	stages := stages.New(stageList)
+	st := stages.New([]plugins.Provider[plugins.Stage]{
+		stageProvider("stages.banners", func() plugins.Stage { return &mockStage{name: "stages.banners"} }),
+	})
 
-	targetingList := []plugins.Targeting{
-		&mockTargeting{name: "targetings.apps"},
-	}
-	targetings := targetings.New(targetingList)
+	tg := targetings.New([]plugins.Provider[plugins.Targeting]{
+		targetingProvider("targetings.apps"),
+	})
 
 	cfg := []Config{
 		{
@@ -201,39 +278,31 @@ func TestManager_Mount(t *testing.T) {
 		},
 	}
 
-	manager := NewManager(cfg, inputs, outputs, stages, targetings)
+	manager, err := NewManager(cfg, in, out, st, tg, limits.New(nil))
+	require.NoError(t, err)
 
 	router := chi.NewRouter()
 
 	manager.Mount(router)
 
-	assert.NotNil(t, manager)
 	assert.Len(t, manager.pipelines, 1)
 }
 
 func TestManager_MountHandlers(t *testing.T) {
-	// Create mock components
-	inputList := []plugins.Input{
-		&mockInput{name: "inputs.rtb"},
-	}
-	inputs := inputs.New(inputList)
+	in := inputs.New([]plugins.Provider[plugins.Input]{
+		inputProvider("inputs.rtb"),
+	})
 
-	outputList := []plugins.Output{
-		&mockOutput{name: "outputs.rtb"},
-	}
-	outputs := outputs.New(outputList)
+	out := outputs.New([]plugins.Provider[plugins.Output]{
+		outputProvider("outputs.rtb"),
+	})
 
-	stageList := []plugins.Stage{
-		&mockStage{name: "stages.banners"},
-	}
-	stages := stages.New(stageList)
+	st := stages.New([]plugins.Provider[plugins.Stage]{
+		stageProvider("stages.banners", func() plugins.Stage { return &mockStage{name: "stages.banners"} }),
+	})
 
-	targetingList := []plugins.Targeting{
-		&mockTargeting{name: "targetings.apps"},
-	}
-	targetings := targetings.New(targetingList)
+	tg := targetings.New(nil)
 
-	// Create config with multiple pipelines
 	cfg := []Config{
 		{
 			Name:  "dsp",
@@ -244,9 +313,6 @@ func TestManager_MountHandlers(t *testing.T) {
 			},
 			Stages: []Stage{
 				{Name: "stages.banners", Config: map[string]any{}},
-			},
-			Targetings: []Targeting{
-				{Name: "targetings.apps", Config: map[string]any{}},
 			},
 			Output: Output{
 				Name:   "outputs.rtb",
@@ -263,9 +329,6 @@ func TestManager_MountHandlers(t *testing.T) {
 			Stages: []Stage{
 				{Name: "stages.banners", Config: map[string]any{}},
 			},
-			Targetings: []Targeting{
-				{Name: "targetings.apps", Config: map[string]any{}},
-			},
 			Output: Output{
 				Name:   "outputs.rtb",
 				Config: map[string]any{},
@@ -273,24 +336,21 @@ func TestManager_MountHandlers(t *testing.T) {
 		},
 	}
 
-	manager := NewManager(cfg, inputs, outputs, stages, targetings)
+	manager, err := NewManager(cfg, in, out, st, tg, limits.New(nil))
+	require.NoError(t, err)
 
 	router := chi.NewRouter()
 
-	// Mount the pipelines
 	manager.Mount(router)
 
-	// Test that routes are registered by making requests
 	ts := httptest.NewServer(router)
 	defer ts.Close()
 
-	// Test first route
 	resp, err := http.Get(ts.URL + "/dsp")
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	resp.Body.Close()
 
-	// Test second route
 	resp, err = http.Get(ts.URL + "/web")
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -298,28 +358,20 @@ func TestManager_MountHandlers(t *testing.T) {
 }
 
 func TestManager_MountWithPipelineDo(t *testing.T) {
-	// Create mock components
-	inputList := []plugins.Input{
-		&mockInput{name: "inputs.rtb"},
-	}
-	inputs := inputs.New(inputList)
+	in := inputs.New([]plugins.Provider[plugins.Input]{
+		inputProvider("inputs.rtb"),
+	})
 
-	outputList := []plugins.Output{
-		&mockOutput{name: "outputs.rtb"},
-	}
-	outputs := outputs.New(outputList)
+	out := outputs.New([]plugins.Provider[plugins.Output]{
+		outputProvider("outputs.rtb"),
+	})
 
-	stageList := []plugins.Stage{
-		&mockStage{name: "stages.banners"},
-	}
-	stages := stages.New(stageList)
+	st := stages.New([]plugins.Provider[plugins.Stage]{
+		stageProvider("stages.banners", func() plugins.Stage { return &mockStage{name: "stages.banners"} }),
+	})
 
-	targetingList := []plugins.Targeting{
-		&mockTargeting{name: "targetings.apps"},
-	}
-	targetings := targetings.New(targetingList)
+	tg := targetings.New(nil)
 
-	// Create config with a single pipeline
 	cfg := []Config{
 		{
 			Name:  "test",
@@ -331,9 +383,6 @@ func TestManager_MountWithPipelineDo(t *testing.T) {
 			Stages: []Stage{
 				{Name: "stages.banners", Config: map[string]any{}},
 			},
-			Targetings: []Targeting{
-				{Name: "targetings.apps", Config: map[string]any{}},
-			},
 			Output: Output{
 				Name:   "outputs.rtb",
 				Config: map[string]any{},
@@ -341,18 +390,16 @@ func TestManager_MountWithPipelineDo(t *testing.T) {
 		},
 	}
 
-	manager := NewManager(cfg, inputs, outputs, stages, targetings)
+	manager, err := NewManager(cfg, in, out, st, tg, limits.New(nil))
+	require.NoError(t, err)
 
 	router := chi.NewRouter()
 
-	// Mount the pipelines
 	manager.Mount(router)
 
-	// Test that the handler is properly mounted
 	ts := httptest.NewServer(router)
 	defer ts.Close()
 
-	// Make a request to trigger the handler
 	resp, err := http.Get(ts.URL + "/test")
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)

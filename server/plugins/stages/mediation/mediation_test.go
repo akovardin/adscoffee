@@ -11,26 +11,19 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	mediation := New()
-	assert.NotNil(t, mediation)
+	v, err := New().Factory(nil)
+	assert.NoError(t, err)
+	assert.IsType(t, &Mediation{}, v)
 }
 
 func TestMediation_Name(t *testing.T) {
-	mediation := New()
+	mediation := &Mediation{}
 	name := mediation.Name()
 	assert.Equal(t, "stages.mediation", name)
 }
 
-func TestMediation_Copy(t *testing.T) {
-	mediation := New()
-	cfgMap := map[string]any{"key": "value"}
-	copied := mediation.Copy(cfgMap)
-	assert.NotNil(t, copied)
-	assert.IsType(t, &Mediation{}, copied)
-}
-
 func TestMediation_Do(t *testing.T) {
-	mediation := New()
+	mediation := &Mediation{}
 
 	t.Run("single unit", func(t *testing.T) {
 		ctx := context.Background()

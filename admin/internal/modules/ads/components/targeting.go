@@ -16,6 +16,14 @@ import (
 	"go.ads.coffee/platform/admin/internal/modules/ads/models"
 )
 
+// Секции таргетинга скрыты в админке. Включите нужный флаг, чтобы вернуть
+// соответствующую секцию в форму.
+const (
+	showBundleTargeting = false
+	showGeoTargeting    = false
+	showIPTargeting     = false
+)
+
 type Targeting struct {
 	logger *zap.Logger
 	db     *gorm.DB
@@ -80,36 +88,39 @@ func (t *Targeting) Component(obj interface{}, field *presets.FieldContext, ctx 
 	header := "display: inline; margin: 0;"
 	summary := "cursor: pointer; padding: 12px;"
 
-	components := []h.HTMLComponent{
-		v.VCol([]h.HTMLComponent{
+	fields := []h.HTMLComponent{}
 
-			h.Details(
-				h.Summary(
-					h.H3("Бандлы").Style(header),
-				).Style(summary),
+	if showBundleTargeting {
+		fields = append(fields, h.Details(
+			h.Summary(
+				h.H3("Бандлы").Style(header),
+			).Style(summary),
 
-				h.Div(
-					h.Div([]h.HTMLComponent{
-						h.Label("Включить").Class("v-label theme--dark"),
-						v.VTextarea().
-							Hint("com.example ru.rustore").
-							Attr(web.VField("Targeting.Bundle.IncludeOr",
-								strings.Join(targeting.Bundle.IncludeOr, " "))...).
-							Disabled(false).
-							ErrorMessages(field.Errors...),
-					}...),
-					h.Div([]h.HTMLComponent{
-						h.Label("Исключить").Class("v-label theme--dark"),
-						v.VTextarea().
-							Hint("com.example ru.rustore").
-							Attr(web.VField("Targeting.Bundle.ExcludeOr",
-								strings.Join(targeting.Bundle.ExcludeOr, " "))...).
-							Disabled(false).
-							ErrorMessages(field.Errors...),
-					}...),
-				).Style("padding: 16px;"),
-			).Style(border),
+			h.Div(
+				h.Div([]h.HTMLComponent{
+					h.Label("Включить").Class("v-label theme--dark"),
+					v.VTextarea().
+						Hint("com.example ru.rustore").
+						Attr(web.VField("Targeting.Bundle.IncludeOr",
+							strings.Join(targeting.Bundle.IncludeOr, " "))...).
+						Disabled(false).
+						ErrorMessages(field.Errors...),
+				}...),
+				h.Div([]h.HTMLComponent{
+					h.Label("Исключить").Class("v-label theme--dark"),
+					v.VTextarea().
+						Hint("com.example ru.rustore").
+						Attr(web.VField("Targeting.Bundle.ExcludeOr",
+							strings.Join(targeting.Bundle.ExcludeOr, " "))...).
+						Disabled(false).
+						ErrorMessages(field.Errors...),
+				}...),
+			).Style("padding: 16px;"),
+		).Style(border))
+	}
 
+	if showGeoTargeting {
+		fields = append(fields,
 			h.Details(
 				h.Summary(
 					h.H3("Страны").Style(header),
@@ -190,7 +201,11 @@ func (t *Targeting) Component(obj interface{}, field *presets.FieldContext, ctx 
 					}...),
 				).Style("padding: 16px;"),
 			).Style(border),
+		)
+	}
 
+	if showIPTargeting {
+		fields = append(fields,
 			h.Details(
 				h.Summary(
 					h.H3("IP").Style(header),
@@ -217,32 +232,38 @@ func (t *Targeting) Component(obj interface{}, field *presets.FieldContext, ctx 
 					}...),
 				).Style("padding: 16px;"),
 			).Style(border),
+		)
+	}
 
-			h.Details(
-				h.Summary(
-					h.H3("Плейсменты").Style(header),
-				).Style(summary),
+	fields = append(fields,
+		h.Details(
+			h.Summary(
+				h.H3("Плейсменты").Style(header),
+			).Style(summary),
 
-				h.Div(
-					h.Div([]h.HTMLComponent{
-						h.Label("Включить").Class("v-label theme--dark"),
-						placementSelect(
-							"Targeting.Placement.IncludeOr",
-							targeting.Placement.IncludeOr,
-							t.placementOptions(),
-						),
-					}...),
-					h.Div([]h.HTMLComponent{
-						h.Label("Исключить").Class("v-label theme--dark"),
-						placementSelect(
-							"Targeting.Placement.ExcludeOr",
-							targeting.Placement.ExcludeOr,
-							t.placementOptions(),
-						),
-					}...),
-				).Style("padding: 16px;"),
-			).Style(border),
-		}...),
+			h.Div(
+				h.Div([]h.HTMLComponent{
+					h.Label("Включить").Class("v-label theme--dark"),
+					placementSelect(
+						"Targeting.Placement.IncludeOr",
+						targeting.Placement.IncludeOr,
+						t.placementOptions(),
+					),
+				}...),
+				h.Div([]h.HTMLComponent{
+					h.Label("Исключить").Class("v-label theme--dark"),
+					placementSelect(
+						"Targeting.Placement.ExcludeOr",
+						targeting.Placement.ExcludeOr,
+						t.placementOptions(),
+					),
+				}...),
+			).Style("padding: 16px;"),
+		).Style(border),
+	)
+
+	components := []h.HTMLComponent{
+		v.VCol(fields...),
 	}
 
 	return h.Div(components...).Class("targeting-field")

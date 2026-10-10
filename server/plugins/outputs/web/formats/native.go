@@ -19,8 +19,22 @@ type Native struct {
 	base string
 }
 
-func NewNative() *Native {
-	return &Native{}
+type Config struct {
+	Base string `json:"base"`
+}
+
+func NewNative() plugins.Provider[plugins.Format] {
+	return plugins.Provider[plugins.Format]{
+		Name: TypeNative,
+		Factory: func(cfg map[string]any) (plugins.Format, error) {
+			c, err := plugins.Decode[Config](cfg)
+			if err != nil {
+				return nil, err
+			}
+
+			return &Native{base: c.Base}, nil
+		},
+	}
 }
 
 func (b *Native) Name() string {

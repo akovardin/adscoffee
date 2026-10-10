@@ -18,32 +18,22 @@ func TestNative_Name(t *testing.T) {
 	assert.Equal(t, "native", name)
 }
 
-func TestNative_Copy(t *testing.T) {
-	native := &Native{}
-	cfg := map[string]any{
-		"base": "https://example.com",
-	}
+func TestNative_Factory(t *testing.T) {
+	v, err := NewNative().Factory(map[string]any{"base": "https://example.com"})
+	assert.NoError(t, err)
 
-	copied := native.Copy(cfg)
-
-	assert.NotNil(t, copied)
-	assert.IsType(t, &Native{}, copied)
-
-	copiedNative := copied.(*Native)
-	assert.Equal(t, "https://example.com", copiedNative.base)
+	native, ok := v.(*Native)
+	assert.True(t, ok)
+	assert.Equal(t, "https://example.com", native.base)
 }
 
-func TestNative_Copy_WithEmptyConfig(t *testing.T) {
-	native := &Native{}
-	cfg := map[string]any{}
+func TestNative_Factory_WithEmptyConfig(t *testing.T) {
+	v, err := NewNative().Factory(map[string]any{})
+	assert.NoError(t, err)
 
-	copied := native.Copy(cfg)
-
-	assert.NotNil(t, copied)
-	assert.IsType(t, &Native{}, copied)
-
-	copiedNative := copied.(*Native)
-	assert.Equal(t, "", copiedNative.base)
+	native, ok := v.(*Native)
+	assert.True(t, ok)
+	assert.Equal(t, "", native.base)
 }
 
 func TestNative_Render_WithEmptyWinners(t *testing.T) {

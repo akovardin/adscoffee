@@ -48,21 +48,6 @@ func TestStatic_Name(t *testing.T) {
 	assert.Equal(t, "outputs.static", name)
 }
 
-func TestStatic_Copy(t *testing.T) {
-	original := &Static{
-		base: "http://example.com",
-	}
-
-	cfg := map[string]any{
-		"base": "http://newbase.com",
-	}
-
-	copied := original.Copy(cfg)
-	staticCopied, ok := copied.(*Static)
-	assert.True(t, ok)
-	assert.Equal(t, "http://newbase.com", staticCopied.base)
-}
-
 func TestStatic_Do_NonImgAction(t *testing.T) {
 	static := &Static{}
 

@@ -18,10 +18,6 @@ func (m *testMockInput) Name() string {
 	return m.name
 }
 
-func (m *testMockInput) Copy(cfg map[string]any) plugins.Input {
-	return &testMockInput{name: m.name}
-}
-
 func (m *testMockInput) Do(ctx context.Context, state *plugins.State) bool {
 	m.doCalled = true
 	return true
@@ -34,10 +30,6 @@ type testMockStage struct {
 
 func (m *testMockStage) Name() string {
 	return m.name
-}
-
-func (m *testMockStage) Copy(cfg map[string]any) plugins.Stage {
-	return &testMockStage{name: m.name}
 }
 
 func (m *testMockStage) Do(ctx context.Context, state *plugins.State) error {
@@ -53,13 +45,6 @@ type testMockOutput struct {
 
 func (m *testMockOutput) Name() string {
 	return m.name
-}
-
-func (m *testMockOutput) Copy(cfg map[string]any) plugins.Output {
-	return &testMockOutput{name: m.name}
-}
-
-func (m *testMockOutput) Formats(ff []plugins.Format) {
 }
 
 func (m *testMockOutput) Do(ctx context.Context, state *plugins.State) error {

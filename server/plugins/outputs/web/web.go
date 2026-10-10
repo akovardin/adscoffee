@@ -1,6 +1,7 @@
 package web
 
 import (
+	"cmp"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -16,6 +17,11 @@ type Analytics interface {
 	LogResponse(ctx context.Context, w ads.Banner, state *plugins.State) error
 }
 
+type Config struct {
+	Base   string `json:"base"`
+	Format string `json:"format"`
+}
+
 type Web struct {
 	format    string
 	formats   map[string]plugins.Format
@@ -23,41 +29,41 @@ type Web struct {
 	logger    *zap.Logger
 }
 
-func New(ff []plugins.Format, logger *zap.Logger, analytics *analytics.Analytics) *Web {
-	formats := map[string]plugins.Format{}
+func New(
+	ff []plugins.Provider[plugins.Format],
+	logger *zap.Logger,
+	analytics *analytics.Analytics,
+) plugins.Provider[plugins.Output] {
+	return plugins.Provider[plugins.Output]{
+		Name: "outputs.web",
+		Factory: func(cfg map[string]any) (plugins.Output, error) {
+			c, err := plugins.Decode[Config](cfg)
+			if err != nil {
+				return nil, fmt.Errorf("outputs.web config: %w", err)
+			}
 
-	for _, f := range ff {
-		formats[f.Name()] = f
-	}
+			formats := make(map[string]plugins.Format, len(ff))
+			for _, p := range ff {
+				f, err := p.Factory(cfg)
+				if err != nil {
+					return nil, fmt.Errorf("outputs.web format %q: %w", p.Name, err)
+				}
 
-	return &Web{
-		analytics: analytics,
-		formats:   formats,
-		logger:    logger,
+				formats[p.Name] = f
+			}
+
+			return &Web{
+				analytics: analytics,
+				formats:   formats,
+				logger:    logger,
+				format:    cmp.Or(c.Format, "native"),
+			}, nil
+		},
 	}
 }
 
 func (w *Web) Name() string {
 	return "outputs.web"
-}
-
-func (w *Web) Copy(cfg map[string]any) plugins.Output {
-	format := "native" // default format
-	if cfg != nil {
-		format = cfg["format"].(string)
-	}
-
-	dest := make(map[string]plugins.Format, len(w.formats))
-	for _, f := range w.formats {
-		dest[f.Name()] = f.Copy(cfg)
-	}
-
-	return &Web{
-		analytics: w.analytics,
-		format:    format,
-		formats:   dest,
-		logger:    w.logger,
-	}
 }
 
 //nolint:errcheck

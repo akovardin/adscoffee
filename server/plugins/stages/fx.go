@@ -4,7 +4,7 @@ import (
 	"go.uber.org/fx"
 
 	"go.ads.coffee/platform/server/plugins/stages/banners"
-	"go.ads.coffee/platform/server/plugins/stages/limits"
+	"go.ads.coffee/platform/server/plugins/stages/limit"
 	"go.ads.coffee/platform/server/plugins/stages/mediation"
 	"go.ads.coffee/platform/server/plugins/stages/rotation"
 	"go.ads.coffee/platform/server/plugins/stages/targeting"
@@ -13,7 +13,7 @@ import (
 var Module = fx.Module(
 	"stages.stages",
 
-	limits.Module,
+	limit.Module,
 	targeting.Module,
 	rotation.Module,
 	banners.Module,

@@ -18,7 +18,6 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(plugins.Output)),
 			fx.ResultTags(`group:"outputs"`),
 		),
 	),
@@ -27,16 +26,17 @@ var Module = fx.Module(
 type Pixel struct {
 }
 
-func New() *Pixel {
-	return &Pixel{}
+func New() plugins.Provider[plugins.Output] {
+	return plugins.Provider[plugins.Output]{
+		Name: "outputs.pixel",
+		Factory: func(cfg map[string]any) (plugins.Output, error) {
+			return &Pixel{}, nil
+		},
+	}
 }
 
 func (r *Pixel) Name() string {
 	return "outputs.pixel"
-}
-
-func (r *Pixel) Copy(cfg map[string]any) plugins.Output {
-	return &Pixel{}
 }
 
 func (rtb *Pixel) Do(ctx context.Context, state *plugins.State) error {

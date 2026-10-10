@@ -14,7 +14,6 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(plugins.Targeting)),
 			fx.ResultTags(`group:"targetings"`),
 		),
 	),
@@ -26,20 +25,17 @@ type Timetable struct {
 	now func() time.Time
 }
 
-func New() *Timetable {
-	return &Timetable{
-		now: time.Now,
+func New() plugins.Provider[plugins.Targeting] {
+	return plugins.Provider[plugins.Targeting]{
+		Name: "targetings.timetable",
+		Factory: func(cfg map[string]any) (plugins.Targeting, error) {
+			return &Timetable{now: time.Now}, nil
+		},
 	}
 }
 
 func (t *Timetable) Name() string {
 	return "targetings.timetable"
-}
-
-func (t *Timetable) Copy(cfg map[string]any) plugins.Targeting {
-	return &Timetable{
-		now: t.now,
-	}
 }
 
 func (t *Timetable) Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner {

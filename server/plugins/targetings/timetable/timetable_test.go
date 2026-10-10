@@ -11,16 +11,16 @@ import (
 )
 
 func TestTimetable_Name(t *testing.T) {
-	assert.Equal(t, "targetings.timetable", New().Name())
+	assert.Equal(t, "targetings.timetable", (&Timetable{}).Name())
 }
 
-func TestTimetable_Copy(t *testing.T) {
-	now := func() time.Time { return time.Date(2026, time.October, 5, 10, 0, 0, 0, time.UTC) }
-	tt := &Timetable{now: now}
+func TestTimetable_New(t *testing.T) {
+	v, err := New().Factory(map[string]any{})
+	assert.NoError(t, err)
 
-	copied, ok := tt.Copy(map[string]any{}).(*Timetable)
+	tt, ok := v.(*Timetable)
 	assert.True(t, ok)
-	assert.NotNil(t, copied.now)
+	assert.NotNil(t, tt.now)
 }
 
 func TestTimetable_Filter(t *testing.T) {

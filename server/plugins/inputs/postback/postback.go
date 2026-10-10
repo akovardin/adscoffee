@@ -15,7 +15,6 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(plugins.Input)),
 			fx.ResultTags(`group:"inputs"`),
 		),
 	),
@@ -24,16 +23,17 @@ var Module = fx.Module(
 type Postback struct {
 }
 
-func New() *Postback {
-	return &Postback{}
+func New() plugins.Provider[plugins.Input] {
+	return plugins.Provider[plugins.Input]{
+		Name: "inputs.postback",
+		Factory: func(cfg map[string]any) (plugins.Input, error) {
+			return &Postback{}, nil
+		},
+	}
 }
 
 func (s *Postback) Name() string {
 	return "inputs.postback"
-}
-
-func (s *Postback) Copy(cfg map[string]any) plugins.Input {
-	return &Postback{}
 }
 
 func (stages *Postback) Do(ctx context.Context, state *plugins.State) bool {

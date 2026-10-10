@@ -24,11 +24,6 @@ func (m *MockFormat) Name() string {
 	return args.String(0)
 }
 
-func (m *MockFormat) Copy(cfg map[string]any) plugins.Format {
-	args := m.Called(cfg)
-	return args.Get(0).(plugins.Format)
-}
-
 func (m *MockFormat) Render(ctx context.Context, state *plugins.State) (any, error) {
 	args := m.Called(ctx, state)
 	return args.Get(0), args.Error(1)
@@ -303,34 +298,4 @@ func TestWeb_Name(t *testing.T) {
 
 	// Assert
 	assert.Equal(t, "outputs.web", name)
-}
-
-func TestWeb_Copy(t *testing.T) {
-	// Arrange
-	mockFormat := new(MockFormat)
-	mockFormat.On("Name").Return("banner")
-	mockFormat.On("Copy", mock.Anything).Return(mockFormat)
-
-	formats := []plugins.Format{mockFormat}
-	mockAnalytics := new(MockAnalytics)
-
-	web := newWebWithMockAnalytics(formats, mockAnalytics)
-	web.format = "banner"
-
-	cfg := map[string]any{
-		"format": "banner",
-	}
-
-	// Act
-	copied := web.Copy(cfg)
-
-	// Assert
-	assert.NotNil(t, copied)
-	assert.IsType(t, &Web{}, copied)
-
-	// Check that the copied web has the correct format
-	copiedWeb := copied.(*Web)
-	assert.Equal(t, "banner", copiedWeb.format)
-
-	mockFormat.AssertExpectations(t)
 }

@@ -14,7 +14,6 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(plugins.Targeting)),
 			fx.ResultTags(`group:"targetings"`),
 		),
 	),
@@ -24,16 +23,17 @@ var Module = fx.Module(
 // Таргетинг хранится в кампании и денормализуется в ads.Banner.Targeting.
 type Placement struct{}
 
-func New() *Placement {
-	return &Placement{}
+func New() plugins.Provider[plugins.Targeting] {
+	return plugins.Provider[plugins.Targeting]{
+		Name: "targetings.placement",
+		Factory: func(cfg map[string]any) (plugins.Targeting, error) {
+			return &Placement{}, nil
+		},
+	}
 }
 
 func (p *Placement) Name() string {
 	return "targetings.placement"
-}
-
-func (p *Placement) Copy(cfg map[string]any) plugins.Targeting {
-	return &Placement{}
 }
 
 func (p *Placement) Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner {

@@ -22,7 +22,6 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(plugins.Input)),
 			fx.ResultTags(`group:"inputs"`),
 		),
 	),
@@ -52,26 +51,22 @@ func New(
 	analytics *analytics.Analytics,
 	placements *placements.Cache,
 	units *units.Cache,
-) *Web {
-	return &Web{
-		logger:     logger,
-		analytics:  analytics,
-		placements: placements,
-		units:      units,
+) plugins.Provider[plugins.Input] {
+	return plugins.Provider[plugins.Input]{
+		Name: "inputs.web",
+		Factory: func(cfg map[string]any) (plugins.Input, error) {
+			return &Web{
+				logger:     logger,
+				analytics:  analytics,
+				placements: placements,
+				units:      units,
+			}, nil
+		},
 	}
 }
 
 func (w *Web) Name() string {
 	return "inputs.web"
-}
-
-func (w *Web) Copy(cfg map[string]any) plugins.Input {
-	return &Web{
-		logger:     w.logger,
-		analytics:  w.analytics,
-		placements: w.placements,
-		units:      w.units,
-	}
 }
 
 func (w *Web) Do(ctx context.Context, state *plugins.State) bool {

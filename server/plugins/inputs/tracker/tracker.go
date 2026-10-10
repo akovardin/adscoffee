@@ -23,7 +23,6 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(plugins.Input)),
 			fx.ResultTags(`group:"inputs"`),
 		),
 	),
@@ -39,22 +38,20 @@ type Tracker struct {
 	analytics Analytics
 }
 
-func New(logger *zap.Logger, analytics *analytics.Analytics) *Tracker {
-	return &Tracker{
-		logger:    logger,
-		analytics: analytics,
+func New(logger *zap.Logger, analytics *analytics.Analytics) plugins.Provider[plugins.Input] {
+	return plugins.Provider[plugins.Input]{
+		Name: "inputs.tracker",
+		Factory: func(cfg map[string]any) (plugins.Input, error) {
+			return &Tracker{
+				logger:    logger,
+				analytics: analytics,
+			}, nil
+		},
 	}
 }
 
 func (s *Tracker) Name() string {
 	return "inputs.tracker"
-}
-
-func (s *Tracker) Copy(cfg map[string]any) plugins.Input {
-	return &Tracker{
-		logger:    s.logger,
-		analytics: s.analytics,
-	}
 }
 
 func (s *Tracker) Do(ctx context.Context, state *plugins.State) bool {

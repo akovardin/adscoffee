@@ -21,8 +21,22 @@ type Native struct {
 	base string
 }
 
-func NewNative() *Native {
-	return &Native{}
+type Config struct {
+	Base string `json:"base"`
+}
+
+func NewNative() plugins.Provider[plugins.Format] {
+	return plugins.Provider[plugins.Format]{
+		Name: TypeNative,
+		Factory: func(cfg map[string]any) (plugins.Format, error) {
+			c, err := plugins.Decode[Config](cfg)
+			if err != nil {
+				return nil, err
+			}
+
+			return &Native{base: c.Base}, nil
+		},
+	}
 }
 
 func (b *Native) Name() string {
@@ -40,14 +54,6 @@ type NativeResponse struct {
 	Network     string   `json:"network"`
 	Format      string   `json:"format,omitempty"`
 	Revenue     *float64 `json:"revenue,omitempty"`
-}
-
-func (f *Native) Copy(cfg map[string]any) plugins.Format {
-	base, _ := cfg["base"].(string)
-
-	return &Native{
-		base: base,
-	}
 }
 
 func (f *Native) Render(ctx context.Context, state *plugins.State) (any, error) {

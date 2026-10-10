@@ -16,7 +16,6 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(plugins.Stage)),
 			fx.ResultTags(`group:"stages"`),
 		),
 	),
@@ -30,20 +29,17 @@ type Banners struct {
 	cache BannersCache
 }
 
-func New(cache *banners.Cache) *Banners {
-	return &Banners{
-		cache: cache,
+func New(cache *banners.Cache) plugins.Provider[plugins.Stage] {
+	return plugins.Provider[plugins.Stage]{
+		Name: "stages.banners",
+		Factory: func(cfg map[string]any) (plugins.Stage, error) {
+			return &Banners{cache: cache}, nil
+		},
 	}
 }
 
 func (b *Banners) Name() string {
 	return "stages.banners"
-}
-
-func (b *Banners) Copy(cfg map[string]any) plugins.Stage {
-	return &Banners{
-		cache: b.cache,
-	}
 }
 
 func (b *Banners) Do(ctx context.Context, state *plugins.State) error {

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.ads.coffee/platform/server/internal/domain/plugins"
 )
 
@@ -16,62 +17,53 @@ func (m *mockOutput) Name() string {
 	return m.name
 }
 
-func (m *mockOutput) Copy(cfg map[string]any) plugins.Output {
-	return &mockOutput{name: m.name}
-}
-
-func (m *mockOutput) Formats(ff []plugins.Format) {
-}
-
 func (m *mockOutput) Do(ctx context.Context, state *plugins.State) error {
 	return nil
 }
 
-func TestNew(t *testing.T) {
-	outputList := []plugins.Output{
-		&mockOutput{name: "outputs.rtb"},
-		&mockOutput{name: "outputs.web"},
+func mockProvider(name string) plugins.Provider[plugins.Output] {
+	return plugins.Provider[plugins.Output]{
+		Name: name,
+		Factory: func(cfg map[string]any) (plugins.Output, error) {
+			return &mockOutput{name: name}, nil
+		},
 	}
+}
 
-	outputs := New(outputList)
+func TestNew(t *testing.T) {
+	outputs := New([]plugins.Provider[plugins.Output]{
+		mockProvider("outputs.rtb"),
+		mockProvider("outputs.web"),
+	})
 
 	assert.NotNil(t, outputs)
-	assert.Len(t, outputs.list, 2)
-	assert.Contains(t, outputs.list, "outputs.rtb")
-	assert.Contains(t, outputs.list, "outputs.web")
 }
 
 func TestOutputs_Get(t *testing.T) {
-	outputList := []plugins.Output{
-		&mockOutput{name: "outputs.rtb"},
-		&mockOutput{name: "outputs.web"},
-	}
-
-	outputs := New(outputList)
+	outputs := New([]plugins.Provider[plugins.Output]{
+		mockProvider("outputs.rtb"),
+		mockProvider("outputs.web"),
+	})
 
 	cfg := map[string]any{"key": "value"}
-	output := outputs.Get("outputs.rtb", cfg)
+	output, err := outputs.Get("outputs.rtb", cfg)
+	require.NoError(t, err)
 
 	assert.NotNil(t, output)
 	assert.Equal(t, "outputs.rtb", output.Name())
 }
 
 func TestNewWithEmptySlice(t *testing.T) {
-	outputs := New([]plugins.Output{})
+	outputs := New([]plugins.Provider[plugins.Output]{})
 
 	assert.NotNil(t, outputs)
-	assert.Len(t, outputs.list, 0)
 }
 
 func TestOutput_GetNonExistentOutput(t *testing.T) {
-	outputList := []plugins.Output{
-		&mockOutput{name: "outputs.rtb"},
-	}
-
-	outputs := New(outputList)
-
-	assert.Panics(t, func() {
-		cfg := map[string]any{}
-		outputs.Get("non-existent", cfg)
+	outputs := New([]plugins.Provider[plugins.Output]{
+		mockProvider("outputs.rtb"),
 	})
+
+	_, err := outputs.Get("non-existent", map[string]any{})
+	assert.Error(t, err)
 }

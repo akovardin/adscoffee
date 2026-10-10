@@ -12,7 +12,6 @@ var Module = fx.Module(
 	fx.Provide(
 		fx.Annotate(
 			New,
-			fx.As(new(plugins.Targeting)),
 			fx.ResultTags(`group:"targetings"`),
 		),
 	),
@@ -21,16 +20,17 @@ var Module = fx.Module(
 type Geo struct {
 }
 
-func New() *Geo {
-	return &Geo{}
+func New() plugins.Provider[plugins.Targeting] {
+	return plugins.Provider[plugins.Targeting]{
+		Name: "targetings.geo",
+		Factory: func(cfg map[string]any) (plugins.Targeting, error) {
+			return &Geo{}, nil
+		},
+	}
 }
 
 func (g *Geo) Name() string {
 	return "targetings.geo"
-}
-
-func (g *Geo) Copy(cfg map[string]any) plugins.Targeting {
-	return &Geo{}
 }
 
 func (g *Geo) Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner {
