@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+      content="Опенсорсный рекламный сервер с медиацией и созданием собственных рекламных кампаний. Можно поднять самостоятельно и полностью контролировать монетизацию.">
+    <meta name="keywords"
+      content="реклама,опенсорс,рекламный сервер,медиация,монетизация,self-hosted">
+    <meta name="author" content="Artem Kovardin">
+
+    <title>Кофеин | Опенсорсный рекламный сервер</title>
+
+    <meta name="yandex-verification" content="b8ab17b2ddc8fa98" />
+
+    <link rel="icon" href="/static/img/logo.png">
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet" crossorigin="anonymous">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
+      rel="stylesheet">
+
+    <link rel="stylesheet" href="index.css">
+
+  </head>
+  <body>
+
+    <main>
+      <div class="container pt-4">
+        <header class="pb-3 mb-4 border-bottom">
+
+          <nav class="navbar navbar-expand-lg w-100">
+            <div class="container-fluid">
+              <!-- Бренд или логотип -->
+              <a href="/"
+                class="d-flex align-items-center text-dark text-decoration-none navbar-brand">
+                <svg fill="#000000" width="40px" height="40px"
+                  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <g id="Coffee_Cup" data-name="Coffee Cup">
+                    <path
+                      d="M18.79,5.67a1.5,1.5,0,0,0-1.16-1.46l-.38-1.38a1.081,1.081,0,0,0-1.05-.76H7.79a1.06,1.06,0,0,0-1.04.76L6.37,4.21A1.537,1.537,0,0,0,5.21,5.76,1.476,1.476,0,0,0,6.27,7.18l.1,2.77a.75.75,0,0,0-.42.22.768.768,0,0,0-.21.56l.24,5.76a.759.759,0,0,0,.65.72l.08,2.22a2.579,2.579,0,0,0,2.59,2.5h5.39a2.581,2.581,0,0,0,2.6-2.5l.08-2.22a.76.76,0,0,0,.64-.72l.24-5.76a.768.768,0,0,0-.21-.56.72.72,0,0,0-.41-.22l.1-2.77A1.534,1.534,0,0,0,18.79,5.67Zm-11-2.6,8.49.03.3,1.07H7.44Zm8.5,16.33a1.578,1.578,0,0,1-1.6,1.53H9.3A1.575,1.575,0,0,1,7.71,19.4l-.08-2.18h8.74ZM9.9,13.58a2.1,2.1,0,1,1,2.1,2.1A2.1,2.1,0,0,1,9.9,13.58Zm6.73-3.65H7.37l-.1-2.67h9.45Zm.66-3.67H6.71a.522.522,0,0,1-.5-.59.5.5,0,0,1,.5-.5H17.29a.528.528,0,0,1,.5.59A.5.5,0,0,1,17.29,6.26Z" />
+                  </g>
+                </svg>
+                <span class="fs-4">Кофеин</span>
+              </a>
+
+              <!-- Кнопка гамбургера для мобильных устройств -->
+              <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+
+              <!-- Основное меню -->
+              <div class="collapse navbar-collapse text-end w-20"
+                id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 ">
+                  <!-- <li class="nav-item pt-1 pb-3">
+                    <a href="/book" class="ms-4 link-dark">Книга</a>
+                  </li> -->
+                  <li class="nav-item pt-1 pb-3">
+                    <a href="/glossaries" class="ms-4 link-dark">Глоссарий</a>
+                  </li>
+                  <li class="nav-item pt-1 pb-3">
+                    <a href="/docs" class="ms-4 link-dark">Документация</a>
+                  </li>
+                  <li class="nav-item pb-3">
+                    <a href="https://github.com/akovardin/adscoffee" target="_blank" rel="noopener" class="ms-4 btn btn-dark">GitHub</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+
+        </header>
+
+        <div class="p-5 mb-4 bg-light rounded-3">
+            <div class="container-fluid py-5">
+                <h1 class="display-5 fw-bold">Кофеин</h1>
+                <p class="col-md-12 fs-4">
+                    Опенсорсный рекламный сервер, который можно поднять самостоятельно. 
+                    Медиация, показ этичной рекламы в документации проекта, 
+                    десктопных и мобильных приложениях на альтернативных ОС, 
+                    на всех площадках и даже в README файлах опенсорсных проектов. 
+                    Создавайте собственные рекламные кампании или работайте с прямыми рекламодателями. 
+                    Работает там, где остальные сервисы рекламы не работают.
+                </p>
+                <p>
+
+                    <a href="https://github.com/akovardin/adscoffee" class="btn btn-dark mt-5">Начать бесплатно</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="row pt-5 mb-4 align-items-md-stretch">
+            <div class="row pt-5">
+                <div class="col-md-4 p-3">
+                    <span class="material-symbols-outlined fs-1">
+                        code
+                    </span>
+                    <h3>Открытый код</h3>
+                    <p>Весь исходный код платформы открыт. Разверните рекламный
+                        сервер у себя через Docker Compose — целиком или отдельными
+                        сервисами. Никаких «чёрных ящиков»: вы всегда знаете, как
+                        выбирается реклама и как обрабатываются данные.</p>
+                </div>
+                <div class="col-md-4 p-3">
+                    <span class="material-symbols-outlined fs-1">
+                        hub
+                    </span>
+                    <h3>Медиация</h3>
+                    <p>Подключайте несколько источников рекламы одновременно:
+                        прямых рекламодателей, партнёрские предложения из CPA и
+                        тизерных сетей, собственные кампании. Платформа сама
+                        распределит показы и выберет лучший оффер.</p>
+                </div>
+                <div class="col-md-4 p-3">
+                    <span class="material-symbols-outlined fs-1">
+                        campaign
+                    </span>
+                    <h3>Свои рекламные кампании</h3>
+                    <p>Создавайте и запускайте собственные кампании прямо в
+                        интерфейсе: заводите рекламодателей, баннеры, группы и
+                        правила таргетинга. Работайте с прямыми рекламодателями
+                        без посредников.</p>
+                </div>
+            </div>
+
+            <div class="row pt-5 mb-5">
+                <div class="col-md-4 p-3">
+                    <span class="material-symbols-outlined fs-1">
+                        groups
+                    </span>
+                    <h3>Полный контроль</h3>
+                    <p>Вы сами управляете всеми аспектами монетизации: от
+                        дизайна и размещения блоков до тонкой настройки
+                        таргетинга и частоты показа. Платформа — ваш
+                        инструмент, а не набор навязанных правил.</p>
+                </div>
+                <div class="col-md-4 p-3">
+                    <span class="material-symbols-outlined fs-1">
+                        ad_off
+                    </span>
+                    <h3>Ненавязчивые форматы</h3>
+                    <p>Мы используем только те форматы рекламы, которые не мешают
+                        пользователям работать с проектом. Простые баннеры, нативный
+                        формат JSON
+                        и другие ненавязчивые варианты — ваш проект останется
+                        удобным и чистым.</p>
+                </div>
+                <div class="col-md-4 p-3">
+                    <span class="material-symbols-outlined fs-1">
+                        monitoring
+                    </span>
+                    <h3>Прозрачная аналитика</h3>
+                    <p>Отслеживайте показы, клики и деньги в реальном
+                        времени. События и агрегаты собираются в ClickHouse,
+                        дашборды строятся в Grafana. Все данные доступны в вашем
+                        личном кабинете.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- <div class="row pt-5 mb-4 mt-4 bd-teal-100 rounded-3 p-5">
+            <h2 id="example">Как выглядит реклама</h2>
+            <div class="pt-4">
+                <div class="row pt-5">
+                    <div class="col-md-4 p-3">
+                        <a href="https://ads.coffee/banner/35qleqc71q48d3h/click">
+                            <img src="https://ads.coffee/banner/35qleqc71q48d3h"
+                                class="img-fluid">
+                        </a>
+                    </div>
+
+                    <div class="col-md-8 p-3">
+
+                        <h3>Статически</h3>
+                        <p>Самый простой вариант - это отображение подготовленной
+                            картинки на вашей площадке. Картинка формируется на лету, на картинку
+                            добавляется креатив, описание и маркировка, указанные рекламодателем.
+                        </p>
+                    </div>
+                    
+                </div>
+
+                <div class="row pt-5">
+                    <div class="col-md-4 p-3">
+                        <script src="https://ads.coffee/static/js/coffee.js" async></script>
+
+                        <div id="ads-cf-container"></div>
+                    </div>
+
+                   
+                    <div class="col-md-8 p-3">
+
+                        <h3>Динамически</h3>
+                        <p>Вы можете интегрировать JS-код на свой сайт, и реклама будет
+                            генерироваться динамически. 
+                            Объявления будут минималистичны и впишутся в любой дизайн.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+        <div class="row pt-5 mb-4 mt-4 bd-yellow-100 rounded-3 p-5">
+            <h2>Частые вопросы</h2>
+            <div class="pt-4">
+                <dl class="space-y-8">
+                    <div class="mb-4">
+                        <dt>
+                            <i> – Почему бы мне не использовать другие рекламные сети?
+                            </i>
+                        </dt>
+                        <dd class="pt-3">
+                            Крупные рекламные сети, такие как Яндекс или ВК
+                            Реклама, не дают возможность монетизировать
+                            такие площадки, как репозитории с кодом, сайты с
+                            документацией или приложения для альтернативных ОС.
+                            А ещё вы не можете поднять их у себя и увидеть, как
+                            всё устроено внутри. Кофеин — опенсорсный сервер,
+                            который можно развернуть самостоятельно и полностью
+                            контролировать.
+                        </dd>
+                    </div>
+
+                    <div class="mb-4">
+                        <dt>
+                            <i> – Как это работает? </i>
+                        </dt>
+                        <dd class="pt-3">
+                            Вы поднимаете рекламный сервер у себя — целиком через
+                            Docker Compose или отдельными сервисами. Затем
+                            создаёте площадку и «блок» — место, где должна
+                            размещаться реклама. Через медиацию подключаете
+                            источники: собственные кампании, прямых
+                            рекламодателей или партнёрские предложения из CPA и
+                            рекламных сетей. Сервер сам выбирает подходящий оффер
+                            и отдаёт рекламу.
+                        </dd>
+                    </div>
+
+                    <div class="mb-4">
+                        <dt>
+                            <i> – Можно ли поднять платформу самостоятельно? </i>
+                        </dt>
+                        <dd class="pt-3">
+                            Да, это основа проекта. Весь исходный код открыт, а
+                            для запуска есть готовый самодостаточный пакет на
+                            базе Docker Compose: сервер показа, админка,
+                            аналитика и вся инфраструктура (PostgreSQL, Redis,
+                            Kafka, ClickHouse, Grafana). Все зависимости
+                            задаются через переменные окружения, поэтому любой
+                            компонент можно заменить на облачный или управляемый.
+                        </dd>
+                    </div>
+
+                    <div class="mb-4">
+                        <dt>
+                            <i> – Мне обязательно создавать рекламные кампании? </i>
+                        </dt>
+                        <dd class="pt-3">
+                            Нет. Если у вас нет своих кампаний, площадки можно
+                            заполнить через медиацию — партнёрскими предложениями
+                            из CPA и тизерных сетей. А при желании создавайте
+                            собственные кампании и работайте с прямыми
+                            рекламодателями, с которыми договоритесь сами.
+                        </dd>
+                    </div>
+
+                    <div class="mb-4">
+                        <dt>
+                            <i> – Не повлияет ли реклама на пользовательский опыт в
+                                open-source проектах? </i>
+                        </dt>
+                        <dd class="pt-3">
+                            Мы делаем рекламу ненавязчивой и полезной, интегрируя её в
+                            README,
+                            документацию или другие разделы площадки через блоки с
+                            изображениями и текстом. Рекламные баннеры минималистичны
+                            и не мешают работе с проектом. Наша цель — встроить рекламу
+                            в экосистему, а не создать помехи.
+                        </dd>
+                    </div>
+                    <div class="mb-4">
+                        <dt>
+                            <i> – Какие форматы рекламы доступны? </i>
+                        </dt>
+                        <dd class="pt-3">
+                            Мы предлагаем два формата: баннеры для размещения на
+                            страницах документации, README, других страницах вашего
+                            сервиса и нативный JSON.
+                            Оба адаптированы под проекты разработчиков, не мешая их
+                            функциональности.
+                        </dd>
+                    </div>
+
+                </dl>
+            </div>
+            <div class="pt-8">Остались вопросы? Напишите нам на почту
+                <a class="underline hover:no-underline"
+                    href="mailto:artem-kovardin@yandex.ru">artem-kovardin@yandex.ru</a> или сразу мне в
+                телеграм <a href="https://t.me/akovardin">@akovardin</a>.
+            </div>
+        </div>
+
+        <footer class="pt-5 mt-5 pb-5 text-body-secondary border-top">
+          <div>
+            <div class="d-flex justify-content-center flex-wrap">
+              <!-- <a href="/book" class="me-4 link-dark">Книга</a> -->
+              <a href="/glossaries" class="me-4 link-dark">Глоссарий</a>
+              <a href="/docs" class="me-4 link-dark">Документация</a>
+            </div>
+            <div class="d-flex justify-content-center pt-5">
+
+              &copy; 2026
+
+            </div>
+          </div>
+
+        </footer>
+      </div>
+    </main>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"></script>
+    <script src="index.js"></script>
+  </body>
+</html>

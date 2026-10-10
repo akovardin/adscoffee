@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<meta property="og:title" content="Эксплуатация" />
+<title>Эксплуатация</title>
+
+<link rel='canonical' href='https://ads.coffee/docs/articles/12-operations/'>
+<meta name="description" content="12 Эксплуатация и масштабирование  
+Платформа не привязана к инфраструктуре из dist/: все внешние зависимости задаются через переменные окружения (.env), поэтому любой компонент можно заменить на облачный или управляемый без изменения кода.
+Внешние зависимости Kafka. Вместо локального кластера из Docker достаточно указать адреса любых серверов Kafka в KAFKA_SEEDS; конфиг поддерживает SASL (sasl_mechanism, username, password) и TLS. PostgreSQL. Выносится так же, как Kafka, через POSTGRES_HOST, POSTGRES_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB. ClickHouse. Внешний или облачный инстанс через CLICKHOUSE_HOST, CLICKHOUSE_PORT, CLICKHOUSE_USER, CLICKHOUSE_PASSWORD, CLICKHOUSE_DB. Redis. Внешний Redis Cluster через REDIS_ADDRS. S3. Любое S3-совместимое хранилище (Yandex Object Storage, MinIO, AWS S3) через переменные S3_*. Для MinIO установите S3_FORCE_PATH_STYLE=true. Горизонтальное масштабирование Рекламный сервер не хранит состояние в процессе: данные берутся из PostgreSQL и Redis, события летят в Kafka. Поэтому можно запускать сколько угодно инстансов сервера за балансировщиком — на отдельных серверах или в Kubernetes. Админка масштабируется по числу одновременных пользователей. Аналитика масштабируется по нагрузке и объёму данных. Миграции БД и init-скрипты ClickHouse идемпотентны, вся конфигурация выполняется через переменные окружения. В итоге систему можно разнести на несколько серверов или перевести в Kubernetes.">
+
+<link rel="icon" href="https://ads.coffee/docs/coffee.png">
+
+<link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
+    rel="stylesheet">
+</style>
+
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet" crossorigin="anonymous">
+<link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    rel="stylesheet" />
+    
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+      <link rel="stylesheet" href="/docs/css/main.min.472899cebc9cc094da51d286db9931709f75c62f645c147ae58d18f0660c4e54.css" integrity="sha256-RyiZzrycwJTaUdKG25kxcJ91xi9kXBR65Y0Y8GYMTlQ=" crossorigin="anonymous">
+
+
+      <script src="/docs/js/main.23cd0c7d837263b9eaeb96ee2d9ccfa2969daa3fa00fa1c1fe8701a9b87251a1.js" integrity="sha256-I80MfYNyY7nq65buLZzPopadqj&#43;gD6HB/ocBqbhyUaE=" crossorigin="anonymous"></script>
+
+
+
+  </head>
+  <body>
+
+    <main>
+      <div class="container pt-4">
+        <header class="pb-3 mb-4 border-bottom">
+          <nav class="navbar navbar-expand-lg w-100">
+  <div class="container-fluid">
+    
+      <a href="/"
+        class="d-flex align-items-center text-dark text-decoration-none navbar-brand">
+        <svg fill="#000000" width="40px" height="40px"
+          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <g id="Coffee_Cup" data-name="Coffee Cup">
+            <path
+              d="M18.79,5.67a1.5,1.5,0,0,0-1.16-1.46l-.38-1.38a1.081,1.081,0,0,0-1.05-.76H7.79a1.06,1.06,0,0,0-1.04.76L6.37,4.21A1.537,1.537,0,0,0,5.21,5.76,1.476,1.476,0,0,0,6.27,7.18l.1,2.77a.75.75,0,0,0-.42.22.768.768,0,0,0-.21.56l.24,5.76a.759.759,0,0,0,.65.72l.08,2.22a2.579,2.579,0,0,0,2.59,2.5h5.39a2.581,2.581,0,0,0,2.6-2.5l.08-2.22a.76.76,0,0,0,.64-.72l.24-5.76a.768.768,0,0,0-.21-.56.72.72,0,0,0-.41-.22l.1-2.77A1.534,1.534,0,0,0,18.79,5.67Zm-11-2.6,8.49.03.3,1.07H7.44Zm8.5,16.33a1.578,1.578,0,0,1-1.6,1.53H9.3A1.575,1.575,0,0,1,7.71,19.4l-.08-2.18h8.74ZM9.9,13.58a2.1,2.1,0,1,1,2.1,2.1A2.1,2.1,0,0,1,9.9,13.58Zm6.73-3.65H7.37l-.1-2.67h9.45Zm.66-3.67H6.71a.522.522,0,0,1-.5-.59.5.5,0,0,1,.5-.5H17.29a.528.528,0,0,1,.5.59A.5.5,0,0,1,17.29,6.26Z" />
+          </g>
+        </svg>
+        <span class="fs-4">Кофеин</span>
+      </a>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarNav" aria-controls="navbarNav"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div class="collapse navbar-collapse text-end w-20" id="navbarNav">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 ">
+        <li class="nav-item pt-1 pb-3">
+          
+        </li>
+        <li class="nav-item pt-1 pb-3">
+          <a href="/glossaries" class="ms-4 link-dark">Глоссарий</a>
+        </li>
+        <li class="nav-item pt-1 pb-3">
+          <a href="/docs" class="ms-4 link-dark">Документация</a>
+        </li>
+        <li class="nav-item pb-3">
+          <a href="https://github.com/akovardin/adscoffee" target="_blank" rel="noopener" class="ms-4 btn btn-dark">GitHub</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+        </header>
+
+        <div class="row align-items-start">
+          <div class="col-3">
+            <p><a href="/docs" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Введение</a></p>
+            
+            <p><a href="/docs/articles/01-start/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Быстрый старт</a></p>
+            
+            <p><a href="/docs/articles/02-architecture/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Архитектура</a></p>
+            
+            <p><a href="/docs/articles/03-config/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Конфигурация</a></p>
+            
+            <p><a href="/docs/articles/04-users/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Пользователи</a></p>
+            
+            <p><a href="/docs/articles/05-sites/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Сайты</a></p>
+            
+            <p><a href="/docs/articles/06-placements/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Плейсменты и юниты</a></p>
+            
+            <p><a href="/docs/articles/07-campaigns/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Рекламодатели и кампании</a></p>
+            
+            <p><a href="/docs/articles/08-creatives/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Креативы</a></p>
+            
+            <p><a href="/docs/articles/09-integration/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Интеграция рекламы</a></p>
+            
+            <p><a href="/docs/articles/10-analytics/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Аналитика и мониторинг</a></p>
+            
+            <p><a href="/docs/articles/11-sources/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Источники рекламы</a></p>
+            
+            <p><a href="/docs/articles/12-operations/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Эксплуатация</a></p>
+            
+            <p><a href="/docs/articles/13-development/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Разработка</a></p>
+            
+          </div>
+
+          <div class="col-8 ps-5">
+            
+
+  <h1 id="12-эксплуатация-и-масштабирование">12 Эксплуатация и масштабирование</h1>
+<p>&nbsp;</p>
+<p>Платформа не привязана к инфраструктуре из <code>dist/</code>: все внешние зависимости задаются через переменные окружения (<code>.env</code>), поэтому любой компонент можно заменить на облачный или управляемый без изменения кода.</p>
+<h2 id="внешние-зависимости">Внешние зависимости</h2>
+<ul>
+<li><strong>Kafka.</strong> Вместо локального кластера из Docker достаточно указать адреса любых серверов Kafka в <code>KAFKA_SEEDS</code>; конфиг поддерживает SASL (<code>sasl_mechanism</code>, <code>username</code>, <code>password</code>) и TLS.</li>
+<li><strong>PostgreSQL.</strong> Выносится так же, как Kafka, через <code>POSTGRES_HOST</code>, <code>POSTGRES_PORT</code>, <code>POSTGRES_USER</code>, <code>POSTGRES_PASSWORD</code>, <code>POSTGRES_DB</code>.</li>
+<li><strong>ClickHouse.</strong> Внешний или облачный инстанс через <code>CLICKHOUSE_HOST</code>, <code>CLICKHOUSE_PORT</code>, <code>CLICKHOUSE_USER</code>, <code>CLICKHOUSE_PASSWORD</code>, <code>CLICKHOUSE_DB</code>.</li>
+<li><strong>Redis.</strong> Внешний Redis Cluster через <code>REDIS_ADDRS</code>.</li>
+<li><strong>S3.</strong> Любое S3-совместимое хранилище (Yandex Object Storage, MinIO, AWS S3) через переменные <code>S3_*</code>. Для MinIO установите <code>S3_FORCE_PATH_STYLE=true</code>.</li>
+</ul>
+<h2 id="горизонтальное-масштабирование">Горизонтальное масштабирование</h2>
+<ul>
+<li><strong>Рекламный сервер</strong> не хранит состояние в процессе: данные берутся из PostgreSQL и Redis, события летят в Kafka. Поэтому можно запускать сколько угодно инстансов сервера за балансировщиком — на отдельных серверах или в Kubernetes.</li>
+<li><strong>Админка</strong> масштабируется по числу одновременных пользователей.</li>
+<li><strong>Аналитика</strong> масштабируется по нагрузке и объёму данных.</li>
+</ul>
+<p>Миграции БД и init-скрипты ClickHouse идемпотентны, вся конфигурация выполняется через переменные окружения. В итоге систему можно разнести на несколько серверов или перевести в Kubernetes.</p>
+<h2 id="обновление">Обновление</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>cd dist
+</span></span><span style="display:flex;"><span>docker compose pull        <span style="color:#75715e"># подтянуть новые образы сервисов</span>
+</span></span><span style="display:flex;"><span>docker compose up -d       <span style="color:#75715e"># применить обновление</span>
+</span></span><span style="display:flex;"><span>docker compose run --rm migrate   <span style="color:#75715e"># применить миграции БД</span>
+</span></span></code></pre></div><p>Для удалённого хоста в репозитории есть Taskfile: <code>task dist-deploy</code> (загрузить <code>dist/</code> и поднять стек) и <code>task {server,admin,analytics}-deploy</code> (собрать образ сервиса, опубликовать в реестр и пересоздать только его). Конфиги сервисов монтируются с хоста (<code>./{server,admin,analytics}/configs</code>), поэтому правки <code>config.yaml</code> применяются только после <code>task dist-update</code>/<code>dist-upload</code> и пересоздания сервиса.</p>
+<p>Данные сохраняются в каталоге <code>dist/data</code> (PostgreSQL, ClickHouse, Grafana, Kafka, dagu и другие) и переживают перезапуск стека.</p>
+<h2 id="резервное-копирование">Резервное копирование</h2>
+<p>Резервируйте как минимум:</p>
+<ul>
+<li>каталог <code>dist/data/postgres</code> — данные админки и рекламного сервера;</li>
+<li>каталог <code>dist/data/clickhouse</code> — события и агрегаты;</li>
+<li>S3-бакет с загруженными изображениями;</li>
+<li>файл <code>dist/.env</code> с секретами.</li>
+</ul>
+<p>Для продакшена рекомендуется использовать управляемые PostgreSQL/ClickHouse/Redis/S3 и настраивать их штатные бэкапы.</p>
+<h2 id="безопасность">Безопасность</h2>
+<ul>
+<li>Обязательно смените все пароли из <code>.env.example</code> (<code>POSTGRES_PASSWORD</code>, <code>CLICKHOUSE_PASSWORD</code>, <code>GRAFANA_ADMIN_PASSWORD</code>, <code>KAFKA_UI_PASSWORD</code>, <code>DAGU_AUTH_BASIC_PASSWORD</code>, <code>S3_*</code>).</li>
+<li>Не коммитьте <code>dist/.env</code>.</li>
+<li>Для HTTPS за reverse-proxy устанавливайте <code>CookieSecure=true</code>.</li>
+<li>Ограничьте доступ к инфраструктурным портам (ClickHouse, PostgreSQL, Redis, Kafka) из интернета.</li>
+</ul>
+
+
+          </div>
+        </div>
+
+        
+        <footer class="pt-5 mt-5 pb-5 text-body-secondary border-top">
+          <div>
+  <div class="d-flex justify-content-center flex-wrap">
+      <a href="/book" class="me-4 link-dark">Книга</a>
+      <a href="/glossaries" class="me-4 link-dark">Глоссарий</a>
+      <a href="/docs" class="me-4 link-dark">Документация</a>
+      <a href="https://github.com/akovardin/adscoffee" target="_blank" rel="noopener" class="link-dark">GitHub</a>
+  </div>
+  <div class="d-flex justify-content-center pt-5">
+
+      &copy; 2025
+
+  </div>
+</div>
+        </footer>
+      </div>
+
+    </main>
+  </body>
+</html>

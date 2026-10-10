@@ -1,0 +1,20 @@
+# https://taskfile.dev
+version: '3'
+
+vars:
+  # Хост — SSH-алиас `venator` (см. ~/.ssh/config); адрес сервера не хранится в git.
+  VENATOR: venator
+  SUP: sup -sshconfig ~/.ssh/config
+  TARGET: /var/www/ads.coffee/web/site
+
+tasks:
+  deploy:
+    desc: Загрузить сайт на venator и выставить права
+    cmds:
+      - '{{ .SUP }} venator site-mkdir'
+      - rsync -az --delete --exclude '.git' --exclude 'Taskfile.yml' --exclude 'Supfile.yml' --exclude '.DS_Store' ./ {{ .VENATOR }}:{{ .TARGET }}/
+      - '{{ .SUP }} venator site-chmod'
+
+  default:
+    cmds:
+      - task: deploy

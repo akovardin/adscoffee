@@ -1,0 +1,8 @@
+baseURL = 'https://ads.coffee/docs/'
+languageCode = 'en-us'
+title = 'Кофеин — документация'
+theme = 'ads'
+
+[markup]
+[markup.goldmark.renderer]
+  unsafe = true

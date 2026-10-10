@@ -1,0 +1,81 @@
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name='robots'
+    content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
+
+<meta property="og:type" content="website" />
+{{- with or .Title site.Title site.Params.title | plainify }}
+<meta property="og:title" content="{{ . }}" />
+{{- end }}
+<meta property="og:url" content="glossary/" />
+
+<link rel="icon" href="{{ .Site.BaseURL }}coffee.png">
+
+{{- with or .Title site.Title site.Params.title | plainify }}
+<title>{{ . }}</title>
+{{- end }}
+
+<link rel='canonical' href='{{ .Permalink }}'>
+
+{{- with or .Description .Summary site.Params.description | plainify |
+htmlUnescape }}
+<meta name="description" content="{{ trim . " \n\r\t " }}">
+{{- end }}
+
+<link rel='stylesheet' id='clearcode-glossary-list-style-css'
+    href='index.css'
+    media='all' />
+
+<link rel='stylesheet' id='global-css'
+    href='global.css'
+    media='all' />
+
+<link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
+    rel="stylesheet">
+
+<style>
+    @font-face {
+        font-family: 'JetBrains Mono';
+        src: url('fonts/JetBrainsMono-Regular.woff2') format('woff2'),
+            url('fonts/JetBrainsMono-Regular.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    body {
+        font-family: 'JetBrains Mono', monospace !important;
+    }
+</style>
+
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet" crossorigin="anonymous">
+<link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    rel="stylesheet" />
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+  m[i].l=1*new Date();
+  for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+  (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+  ym(100191868, "init", {
+       clickmap:true,
+       trackLinks:true,
+       accurateTrackBounce:true
+  });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/100191868"
+            style="position:absolute; left:-9999px;" alt /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+<style>
+    .letters .col {
+        height: 60px;
+    }
+</style>

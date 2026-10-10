@@ -1,0 +1,23 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  # Хост — SSH-алиас `venator` (см. ~/.ssh/config); адрес сервера не хранится в git.
+  VENATOR: venator
+  SUP: sup -sshconfig ~/.ssh/config
+  TARGET: /var/www/ads.coffee/web/docs
+
+tasks:
+  deploy:
+    desc: Собрать документацию и загрузить на venator
+    cmds:
+      - rm -rf ./public/*
+      - hugo build
+      - '{{ .SUP }} venator docs-mkdir'
+      - rsync -az --delete --exclude '.DS_Store' ./public/ {{ .VENATOR }}:{{ .TARGET }}/
+      - '{{ .SUP }} venator docs-chmod'
+
+  default:
+    cmds:
+      - task: deploy

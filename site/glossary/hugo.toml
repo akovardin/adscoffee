@@ -1,0 +1,8 @@
+baseURL = 'https://ads.coffee/glossaries/'
+languageCode = 'en-us'
+title = 'Чашка Кофе | Глоссарий'
+theme = 'ads'
+
+[markup]
+[markup.goldmark.renderer]
+  unsafe = true

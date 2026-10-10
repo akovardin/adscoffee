@@ -1,0 +1,23 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  # Хост — SSH-алиас `venator` (см. ~/.ssh/config); адрес сервера не хранится в git.
+  VENATOR: venator
+  SUP: sup -sshconfig ~/.ssh/config
+  TARGET: /var/www/ads.coffee/web/glossaries
+
+tasks:
+  deploy:
+    desc: Собрать глоссарий и загрузить на venator
+    cmds:
+      - rm -rf ./public/*
+      - hugo build
+      - '{{ .SUP }} venator glossary-mkdir'
+      - rsync -az --delete --exclude '.DS_Store' ./public/ {{ .VENATOR }}:{{ .TARGET }}/
+      - '{{ .SUP }} venator glossary-chmod'
+
+  default:
+    cmds:
+      - task: deploy

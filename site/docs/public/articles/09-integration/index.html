@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<meta property="og:title" content="Интеграция рекламы" />
+<title>Интеграция рекламы</title>
+
+<link rel='canonical' href='https://ads.coffee/docs/articles/09-integration/'>
+<meta name="description" content="09 Интеграция рекламы  
+Рекламный сервер отдаёт рекламу по нескольким маршрутам. Полный список пайплайнов и их параметров описан в dist/server/configs/config.yaml.
+Маршрут Назначение /banner/{placement}/{action} Статический баннер: img — картинка, click — переход /native/{placement} Нативный формат (JSON) /dsp/{placement} RTB/DSP-запрос /inapp/{placement} Формат для мобильных приложений /tracker/{data}.gif Трекинг-пиксель /postback Приём постбеков от сетей Во всех примерах ниже https://ads.example.com — публичный адрес вашего рекламного сервера (порт 8071), а {placement} — числовой ID плейсмента из колонки ID в админке.">
+
+<link rel="icon" href="https://ads.coffee/docs/coffee.png">
+
+<link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
+    rel="stylesheet">
+</style>
+
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet" crossorigin="anonymous">
+<link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    rel="stylesheet" />
+    
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+      <link rel="stylesheet" href="/docs/css/main.min.472899cebc9cc094da51d286db9931709f75c62f645c147ae58d18f0660c4e54.css" integrity="sha256-RyiZzrycwJTaUdKG25kxcJ91xi9kXBR65Y0Y8GYMTlQ=" crossorigin="anonymous">
+
+
+      <script src="/docs/js/main.23cd0c7d837263b9eaeb96ee2d9ccfa2969daa3fa00fa1c1fe8701a9b87251a1.js" integrity="sha256-I80MfYNyY7nq65buLZzPopadqj&#43;gD6HB/ocBqbhyUaE=" crossorigin="anonymous"></script>
+
+
+
+  </head>
+  <body>
+
+    <main>
+      <div class="container pt-4">
+        <header class="pb-3 mb-4 border-bottom">
+          <nav class="navbar navbar-expand-lg w-100">
+  <div class="container-fluid">
+    
+      <a href="/"
+        class="d-flex align-items-center text-dark text-decoration-none navbar-brand">
+        <svg fill="#000000" width="40px" height="40px"
+          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <g id="Coffee_Cup" data-name="Coffee Cup">
+            <path
+              d="M18.79,5.67a1.5,1.5,0,0,0-1.16-1.46l-.38-1.38a1.081,1.081,0,0,0-1.05-.76H7.79a1.06,1.06,0,0,0-1.04.76L6.37,4.21A1.537,1.537,0,0,0,5.21,5.76,1.476,1.476,0,0,0,6.27,7.18l.1,2.77a.75.75,0,0,0-.42.22.768.768,0,0,0-.21.56l.24,5.76a.759.759,0,0,0,.65.72l.08,2.22a2.579,2.579,0,0,0,2.59,2.5h5.39a2.581,2.581,0,0,0,2.6-2.5l.08-2.22a.76.76,0,0,0,.64-.72l.24-5.76a.768.768,0,0,0-.21-.56.72.72,0,0,0-.41-.22l.1-2.77A1.534,1.534,0,0,0,18.79,5.67Zm-11-2.6,8.49.03.3,1.07H7.44Zm8.5,16.33a1.578,1.578,0,0,1-1.6,1.53H9.3A1.575,1.575,0,0,1,7.71,19.4l-.08-2.18h8.74ZM9.9,13.58a2.1,2.1,0,1,1,2.1,2.1A2.1,2.1,0,0,1,9.9,13.58Zm6.73-3.65H7.37l-.1-2.67h9.45Zm.66-3.67H6.71a.522.522,0,0,1-.5-.59.5.5,0,0,1,.5-.5H17.29a.528.528,0,0,1,.5.59A.5.5,0,0,1,17.29,6.26Z" />
+          </g>
+        </svg>
+        <span class="fs-4">Кофеин</span>
+      </a>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarNav" aria-controls="navbarNav"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div class="collapse navbar-collapse text-end w-20" id="navbarNav">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 ">
+        <li class="nav-item pt-1 pb-3">
+          
+        </li>
+        <li class="nav-item pt-1 pb-3">
+          <a href="/glossaries" class="ms-4 link-dark">Глоссарий</a>
+        </li>
+        <li class="nav-item pt-1 pb-3">
+          <a href="/docs" class="ms-4 link-dark">Документация</a>
+        </li>
+        <li class="nav-item pb-3">
+          <a href="https://github.com/akovardin/adscoffee" target="_blank" rel="noopener" class="ms-4 btn btn-dark">GitHub</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+        </header>
+
+        <div class="row align-items-start">
+          <div class="col-3">
+            <p><a href="/docs" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Введение</a></p>
+            
+            <p><a href="/docs/articles/01-start/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Быстрый старт</a></p>
+            
+            <p><a href="/docs/articles/02-architecture/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Архитектура</a></p>
+            
+            <p><a href="/docs/articles/03-config/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Конфигурация</a></p>
+            
+            <p><a href="/docs/articles/04-users/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Пользователи</a></p>
+            
+            <p><a href="/docs/articles/05-sites/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Сайты</a></p>
+            
+            <p><a href="/docs/articles/06-placements/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Плейсменты и юниты</a></p>
+            
+            <p><a href="/docs/articles/07-campaigns/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Рекламодатели и кампании</a></p>
+            
+            <p><a href="/docs/articles/08-creatives/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Креативы</a></p>
+            
+            <p><a href="/docs/articles/09-integration/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Интеграция рекламы</a></p>
+            
+            <p><a href="/docs/articles/10-analytics/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Аналитика и мониторинг</a></p>
+            
+            <p><a href="/docs/articles/11-sources/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Источники рекламы</a></p>
+            
+            <p><a href="/docs/articles/12-operations/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Эксплуатация</a></p>
+            
+            <p><a href="/docs/articles/13-development/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Разработка</a></p>
+            
+          </div>
+
+          <div class="col-8 ps-5">
+            
+
+  <h1 id="09-интеграция-рекламы">09 Интеграция рекламы</h1>
+<p>&nbsp;</p>
+<p>Рекламный сервер отдаёт рекламу по нескольким маршрутам. Полный список пайплайнов и их параметров описан в <code>dist/server/configs/config.yaml</code>.</p>
+<table>
+  <thead>
+      <tr>
+          <th>Маршрут</th>
+          <th>Назначение</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>/banner/{placement}/{action}</code></td>
+          <td>Статический баннер: <code>img</code> — картинка, <code>click</code> — переход</td>
+      </tr>
+      <tr>
+          <td><code>/native/{placement}</code></td>
+          <td>Нативный формат (JSON)</td>
+      </tr>
+      <tr>
+          <td><code>/dsp/{placement}</code></td>
+          <td>RTB/DSP-запрос</td>
+      </tr>
+      <tr>
+          <td><code>/inapp/{placement}</code></td>
+          <td>Формат для мобильных приложений</td>
+      </tr>
+      <tr>
+          <td><code>/tracker/{data}.gif</code></td>
+          <td>Трекинг-пиксель</td>
+      </tr>
+      <tr>
+          <td><code>/postback</code></td>
+          <td>Приём постбеков от сетей</td>
+      </tr>
+  </tbody>
+</table>
+<p>Во всех примерах ниже <code>https://ads.example.com</code> — публичный адрес вашего рекламного сервера (порт <code>8071</code>), а <code>{placement}</code> — <strong>числовой ID плейсмента</strong> из колонки <code>ID</code> в админке.</p>
+<blockquote>
+<p>В <code>dist/server/configs/config.yaml</code> для output-плагинов <code>web</code> и <code>inapp</code> задаётся параметр <code>base</code> — публичный адрес сервера, который подставляется в ссылки трекинга. Укажите там свой домен.</p></blockquote>
+<blockquote>
+<p>Если сайт плейсмента выключен, сервер отвечает <code>200 OK</code> с пустым телом — это значит «рекламы нет». Клиент должен трактовать такой ответ как отсутствие рекламы (noad) и ничего не показывать.</p></blockquote>
+<h2 id="баннер">Баннер</h2>
+<p>Баннер добавляется как обычный HTML-элемент: картинка формируется на лету и оборачивается в ссылку перехода.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">a</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://ads.example.com/banner/4/click&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">img</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://ads.example.com/banner/4/img&#34;</span> <span style="color:#a6e22e">width</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;350&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">a</span>&gt;
+</span></span></code></pre></div><p>Размер тега <code>img</code> зависит от размеров картинок в рекламных кампаниях. Стилизовать элемент можно как угодно — главное, чтобы картинка была внутри ссылки. На баннер автоматически наносятся описание и маркировка рекламодателя.</p>
+<h2 id="нативный-формат">Нативный формат</h2>
+<p>JSON доступен по адресу <code>https://ads.example.com/native/4</code>. Ответ — массив объектов:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>[
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;description&#34;</span>: <span style="color:#e6db74">&#34;Веб-разработка на Go&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;information&#34;</span>: <span style="color:#e6db74">&#34;Реклама. Рекламодатель ООО «Пример», ИНН 0000000000. erid 2SDnjeP817J&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;image&#34;</span>: <span style="color:#e6db74">&#34;https://ads.example.com/files/course.png&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;target&#34;</span>: <span style="color:#e6db74">&#34;https://advertiser.example/landing&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;impressions&#34;</span>: [<span style="color:#e6db74">&#34;https://ads.example.com/tracker/....gif?revenue={revenue}&#34;</span>],
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;clicks&#34;</span>: [<span style="color:#e6db74">&#34;https://ads.example.com/tracker/....gif?revenue={revenue}&#34;</span>],
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;data&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;network&#34;</span>: <span style="color:#e6db74">&#34;coffee&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;format&#34;</span>: <span style="color:#e6db74">&#34;banner&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;revenue&#34;</span>: <span style="color:#ae81ff">1.5</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><p>Поля:</p>
+<ul>
+<li><code>description</code> — текст объявления;</li>
+<li><code>information</code> — маркировка рекламы (для display-креативов);</li>
+<li><code>image</code> — ссылка на изображение;</li>
+<li><code>target</code> — целевая ссылка для перехода;</li>
+<li><code>impressions</code> — трекинг-пиксели показа;</li>
+<li><code>clicks</code> — трекинг-пиксели клика;</li>
+<li><code>data</code> — произвольные данные сети (например, JSON с <code>block</code> для Yandex);</li>
+<li><code>network</code> — источник рекламы (<code>coffee</code>, <code>yandex</code> и т. д.);</li>
+<li><code>format</code> — <code>banner</code> или <code>interstitial</code>;</li>
+<li><code>revenue</code> — доход за показ (для сетей, подключённых через медиацию), опционально.</li>
+</ul>
+<p>Для учёта статистики: вызовите все ссылки из <code>impressions</code> при показе и из <code>clicks</code> при клике. В трекер-ссылках есть макрос <code>{revenue}</code> — подставьте в него доход показа (для собственных креативов он не обязателен). Само объявление ведёт на <code>target</code>.</p>
+<h2 id="js-виджет">JS-виджет</h2>
+<p>Для сайтов есть готовый скрипт <code>server/static/js/coffee.js</code>. Он сам загружает объявление, рендерит его в выбранный контейнер и отправляет трекинг:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;ads-container&#34;</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://ads.example.com/static/js/coffee.js&#34;</span> <span style="color:#a6e22e">async</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>  window.<span style="color:#a6e22e">adsCoffeeCb</span> <span style="color:#f92672">=</span> window.<span style="color:#a6e22e">adsCoffeeCb</span> <span style="color:#f92672">||</span> [];
+</span></span><span style="display:flex;"><span>  window.<span style="color:#a6e22e">adsCoffeeCb</span>.<span style="color:#a6e22e">push</span>(<span style="color:#66d9ef">function</span> () {
+</span></span><span style="display:flex;"><span>    window.<span style="color:#a6e22e">adsCoffee</span>.<span style="color:#a6e22e">render</span>({
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">renderTo</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;ads-container&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">placementId</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;4&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">template</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;horizontal&#34;</span> <span style="color:#75715e">// &#34;horizontal&#34; | &#34;horizontal-marker&#34; | &#34;default&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    });
+</span></span><span style="display:flex;"><span>  });
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span></code></pre></div><p>Виджет умеет показывать собственные (<code>coffee</code>) креативы и блоки Yandex: если сервер вернул <code>network: &quot;yandex&quot;</code>, виджет подключает Yandex Ads SDK и использует <code>data.block</code> как идентификатор блока. При отключённом сайте (пустой ответ) контейнер остаётся пустым.</p>
+<blockquote>
+<p>Скрипт запрашивает объявления с адреса <code>https://platform.ads.coffee</code>. Для самостоятельного хостинга измените этот URL в <code>server/static/js/coffee.js</code> на адрес вашего сервера.</p></blockquote>
+<h2 id="мобильные-приложения">Мобильные приложения</h2>
+<p>Для Android есть SDK в каталоге <code>sdk/android/</code> (модуль <code>coffeesdk</code>). Он умеет загружать объявление, показывать баннер в <code>InAppAdView</code>, интерстишел в полноэкранном диалоге и отправлять события показа и клика. Формат для приложений отдаётся сервером по маршруту <code>/inapp/{placement}</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-kotlin" data-lang="kotlin"><span style="display:flex;"><span><span style="color:#a6e22e">CoffeeAds</span>.setBaseUrl(<span style="color:#e6db74">&#34;https://ads.example.com&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">CoffeeAds</span>.initialize(context) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">val</span> loader = InAppAdLoader(context)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">val</span> request = <span style="color:#a6e22e">InAppAdRequest</span>.Builder(PLACEMENT_ID).build()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    loader.loadAd(request, <span style="color:#66d9ef">object</span> <span style="color:#960050;background-color:#1e0010">: </span><span style="color:#a6e22e">InAppAdLoadListener</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">onAdLoaded</span>(ad: InAppAd) {
+</span></span><span style="display:flex;"><span>            ad.setInAppAdEventListener(<span style="color:#66d9ef">object</span> <span style="color:#960050;background-color:#1e0010">: </span><span style="color:#a6e22e">InAppAdEventListener</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">onAdClicked</span>() { ad.target<span style="color:#f92672">?.</span>let { openTarget(<span style="color:#66d9ef">it</span>) } }
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">onImpression</span>(<span style="color:#66d9ef">data</span>: ImpressionData?) {}
+</span></span><span style="display:flex;"><span>            })
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (ad.format<span style="color:#f92672">?.</span>equals(<span style="color:#e6db74">&#34;interstitial&#34;</span>, ignoreCase = <span style="color:#66d9ef">true</span>) <span style="color:#f92672">==</span> <span style="color:#66d9ef">true</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">InAppInterstitial</span>.show(context, ad) { <span style="color:#75715e">/* закрыт */</span> }
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">val</span> binder = <span style="color:#a6e22e">InAppAdViewBinder</span>.Builder(adView).build()
+</span></span><span style="display:flex;"><span>                ad.bindInAppAd(binder)
+</span></span><span style="display:flex;"><span>                ad.fireImpressionTrackers()
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">onAdFailedToLoad</span>(error: AdRequestError) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Рекламы нет (noad) — ничего не показываем
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        }
+</span></span><span style="display:flex;"><span>    })
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Особенности:</p>
+<ul>
+<li><strong>noad.</strong> Пустой ответ (<code>200 OK</code> без объявлений, в том числе для выключенного сайта) приводит к <code>onAdFailedToLoad</code> — ничего не рисуйте и не показывайте интерстишел.</li>
+<li><strong>Интерстишел.</strong> Клик в любом месте, кроме крестика, открывает <code>target</code>; трекинг клика отправляется автоматически.</li>
+<li><strong>Yandex.</strong> SDK поддерживает креативы сетей, включая Yandex Ads через медиацию (идентификатор блока передаётся в поле <code>data</code>).</li>
+</ul>
+<h2 id="постбеки">Постбеки</h2>
+<p>Маршрут <code>/postback</code> принимает уведомления о конверсиях от партнёрских сетей. Если сеть поддерживает постбеки, укажите в её кабинете URL вашего сервера — так конверсии будут попадать в общую аналитику.</p>
+
+
+          </div>
+        </div>
+
+        
+        <footer class="pt-5 mt-5 pb-5 text-body-secondary border-top">
+          <div>
+  <div class="d-flex justify-content-center flex-wrap">
+      <a href="/book" class="me-4 link-dark">Книга</a>
+      <a href="/glossaries" class="me-4 link-dark">Глоссарий</a>
+      <a href="/docs" class="me-4 link-dark">Документация</a>
+      <a href="https://github.com/akovardin/adscoffee" target="_blank" rel="noopener" class="link-dark">GitHub</a>
+  </div>
+  <div class="d-flex justify-content-center pt-5">
+
+      &copy; 2025
+
+  </div>
+</div>
+        </footer>
+      </div>
+
+    </main>
+  </body>
+</html>

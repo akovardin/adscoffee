@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  <body>
+
+    <main>
+      <div class="container pt-4">
+        <header class="pb-3 mb-4 border-bottom">
+          {{ partial "header.html" . }}
+        </header>
+
+        <div class="row align-items-start">
+          <div class="col-3">
+            <p><a href="/docs" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Введение</a></p>
+            {{ range .Site.RegularPages }}
+            <p><a href="{{ .RelPermalink }}" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{ .Title }}</a></p>
+            {{ end }}
+          </div>
+
+          <div class="col-8 ps-5">
+            {{ block "main" . }}{{ end }}
+          </div>
+        </div>
+
+        
+        <footer class="pt-5 mt-5 pb-5 text-body-secondary border-top">
+          {{ partial "footer.html" . }}
+        </footer>
+      </div>
+
+    </main>
+  </body>
+</html>

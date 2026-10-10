@@ -1,0 +1,12 @@
+networks:
+  # Хост задаётся SSH-алиасом `venator` (см. ~/.ssh/config); адрес сервера не хранится в git.
+  venator:
+    hosts:
+      - venator
+
+commands:
+  docs-mkdir:
+    run: mkdir -p /var/www/ads.coffee/web/docs
+
+  docs-chmod:
+    run: find /var/www/ads.coffee/web/docs -type d -exec chmod 755 {} + && find /var/www/ads.coffee/web/docs -type f -exec chmod 644 {} + && echo "docs updated"

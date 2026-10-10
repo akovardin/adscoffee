@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<meta property="og:title" content="Быстрый старт" />
+<title>Быстрый старт</title>
+
+<link rel='canonical' href='https://ads.coffee/docs/articles/01-start/'>
+<meta name="description" content="01 Быстрый старт  
+Платформа распространяется как исходный код в репозитории github.com/akovardin/adscoffee. Для запуска всей платформы разом используется каталог dist/ — самодостаточный пакет на базе Docker Compose.
+Требования Docker Engine 24&#43; и плагин docker compose v2; сервер с доступом в интернет (виртуальная машина или физический хост). Установка Клонируйте репозиторий и перейдите в каталог dist/:
+git clone https://github.com/akovardin/adscoffee.git cd adscoffee/dist Создайте файл окружения и заполните секреты:
+cp .env.example .env Полный список переменных и их назначение описаны в разделе Конфигурация.">
+
+<link rel="icon" href="https://ads.coffee/docs/coffee.png">
+
+<link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
+    rel="stylesheet">
+</style>
+
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet" crossorigin="anonymous">
+<link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    rel="stylesheet" />
+    
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+      <link rel="stylesheet" href="/docs/css/main.min.472899cebc9cc094da51d286db9931709f75c62f645c147ae58d18f0660c4e54.css" integrity="sha256-RyiZzrycwJTaUdKG25kxcJ91xi9kXBR65Y0Y8GYMTlQ=" crossorigin="anonymous">
+
+
+      <script src="/docs/js/main.23cd0c7d837263b9eaeb96ee2d9ccfa2969daa3fa00fa1c1fe8701a9b87251a1.js" integrity="sha256-I80MfYNyY7nq65buLZzPopadqj&#43;gD6HB/ocBqbhyUaE=" crossorigin="anonymous"></script>
+
+
+
+  </head>
+  <body>
+
+    <main>
+      <div class="container pt-4">
+        <header class="pb-3 mb-4 border-bottom">
+          <nav class="navbar navbar-expand-lg w-100">
+  <div class="container-fluid">
+    
+      <a href="/"
+        class="d-flex align-items-center text-dark text-decoration-none navbar-brand">
+        <svg fill="#000000" width="40px" height="40px"
+          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <g id="Coffee_Cup" data-name="Coffee Cup">
+            <path
+              d="M18.79,5.67a1.5,1.5,0,0,0-1.16-1.46l-.38-1.38a1.081,1.081,0,0,0-1.05-.76H7.79a1.06,1.06,0,0,0-1.04.76L6.37,4.21A1.537,1.537,0,0,0,5.21,5.76,1.476,1.476,0,0,0,6.27,7.18l.1,2.77a.75.75,0,0,0-.42.22.768.768,0,0,0-.21.56l.24,5.76a.759.759,0,0,0,.65.72l.08,2.22a2.579,2.579,0,0,0,2.59,2.5h5.39a2.581,2.581,0,0,0,2.6-2.5l.08-2.22a.76.76,0,0,0,.64-.72l.24-5.76a.768.768,0,0,0-.21-.56.72.72,0,0,0-.41-.22l.1-2.77A1.534,1.534,0,0,0,18.79,5.67Zm-11-2.6,8.49.03.3,1.07H7.44Zm8.5,16.33a1.578,1.578,0,0,1-1.6,1.53H9.3A1.575,1.575,0,0,1,7.71,19.4l-.08-2.18h8.74ZM9.9,13.58a2.1,2.1,0,1,1,2.1,2.1A2.1,2.1,0,0,1,9.9,13.58Zm6.73-3.65H7.37l-.1-2.67h9.45Zm.66-3.67H6.71a.522.522,0,0,1-.5-.59.5.5,0,0,1,.5-.5H17.29a.528.528,0,0,1,.5.59A.5.5,0,0,1,17.29,6.26Z" />
+          </g>
+        </svg>
+        <span class="fs-4">Кофеин</span>
+      </a>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarNav" aria-controls="navbarNav"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div class="collapse navbar-collapse text-end w-20" id="navbarNav">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 ">
+        <li class="nav-item pt-1 pb-3">
+          
+        </li>
+        <li class="nav-item pt-1 pb-3">
+          <a href="/glossaries" class="ms-4 link-dark">Глоссарий</a>
+        </li>
+        <li class="nav-item pt-1 pb-3">
+          <a href="/docs" class="ms-4 link-dark">Документация</a>
+        </li>
+        <li class="nav-item pb-3">
+          <a href="https://github.com/akovardin/adscoffee" target="_blank" rel="noopener" class="ms-4 btn btn-dark">GitHub</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+        </header>
+
+        <div class="row align-items-start">
+          <div class="col-3">
+            <p><a href="/docs" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Введение</a></p>
+            
+            <p><a href="/docs/articles/01-start/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Быстрый старт</a></p>
+            
+            <p><a href="/docs/articles/02-architecture/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Архитектура</a></p>
+            
+            <p><a href="/docs/articles/03-config/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Конфигурация</a></p>
+            
+            <p><a href="/docs/articles/04-users/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Пользователи</a></p>
+            
+            <p><a href="/docs/articles/05-sites/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Сайты</a></p>
+            
+            <p><a href="/docs/articles/06-placements/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Плейсменты и юниты</a></p>
+            
+            <p><a href="/docs/articles/07-campaigns/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Рекламодатели и кампании</a></p>
+            
+            <p><a href="/docs/articles/08-creatives/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Креативы</a></p>
+            
+            <p><a href="/docs/articles/09-integration/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Интеграция рекламы</a></p>
+            
+            <p><a href="/docs/articles/10-analytics/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Аналитика и мониторинг</a></p>
+            
+            <p><a href="/docs/articles/11-sources/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Источники рекламы</a></p>
+            
+            <p><a href="/docs/articles/12-operations/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Эксплуатация</a></p>
+            
+            <p><a href="/docs/articles/13-development/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Разработка</a></p>
+            
+          </div>
+
+          <div class="col-8 ps-5">
+            
+
+  <h1 id="01-быстрый-старт">01 Быстрый старт</h1>
+<p>&nbsp;</p>
+<p>Платформа распространяется как исходный код в репозитории <a href="https://github.com/akovardin/adscoffee">github.com/akovardin/adscoffee</a>. Для запуска всей платформы разом используется каталог <code>dist/</code> — самодостаточный пакет на базе Docker Compose.</p>
+<h2 id="требования">Требования</h2>
+<ul>
+<li>Docker Engine 24+ и плагин <code>docker compose</code> v2;</li>
+<li>сервер с доступом в интернет (виртуальная машина или физический хост).</li>
+</ul>
+<h2 id="установка">Установка</h2>
+<ol>
+<li>
+<p>Клонируйте репозиторий и перейдите в каталог <code>dist/</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>git clone https://github.com/akovardin/adscoffee.git
+</span></span><span style="display:flex;"><span>cd adscoffee/dist
+</span></span></code></pre></div></li>
+<li>
+<p>Создайте файл окружения и заполните секреты:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>cp .env.example .env
+</span></span></code></pre></div><p>Полный список переменных и их назначение описаны в разделе <a href="/docs/articles/03-config/">Конфигурация</a>.</p>
+</li>
+<li>
+<p>Поднимите стек:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker compose up -d
+</span></span></code></pre></div><p>При первом запуске соберётся образ Redis Cluster и применятся миграции БД одноразовым сервисом <code>migrate</code>. Порядок старта: <code>postgres</code>/<code>redis</code>/<code>kafka</code> → <code>kafka-init</code> (создаёт топики) → <code>migrate</code> → <code>admin</code> → <code>server</code>; <code>analytics</code> поднимается после ClickHouse.</p>
+</li>
+<li>
+<p>Создайте пользователя админки:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker compose run --rm admin user -c<span style="color:#f92672">=</span>/configs/config.yaml
+</span></span></code></pre></div><p>По умолчанию создаётся пользователь <code>admin</code> / <code>password</code> — обязательно смените пароль. Подробнее в разделе <a href="/docs/articles/04-users/">Пользователи</a>.</p>
+</li>
+</ol>
+<p>Применить миграции повторно (после обновления) можно так:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker compose run --rm migrate
+</span></span></code></pre></div><p>После этого админ-панель будет доступна по адресу <code>http://&lt;ваш-хост&gt;:8072</code>, а рекламный сервер — на порту <code>8071</code>.</p>
+<h2 id="состав-пакета">Состав пакета</h2>
+<p>В <code>dist/</code> входят:</p>
+<ul>
+<li>сервисы приложений: <code>server</code>, <code>admin</code>, <code>analytics</code> (на базе dagu);</li>
+<li>инфраструктура: PostgreSQL, Redis Cluster, Kafka, ClickHouse, Kafka UI, Grafana, ch-ui, Prometheus, Loki;</li>
+<li>миграции БД, init-скрипты ClickHouse, дашборды и датасорсы Grafana, DAG-и dagu;</li>
+<li>конфиги сервисов <code>dist/{server,admin,analytics}/configs/config.yaml</code>.</li>
+</ul>
+<p>Подробнее о компонентах — в разделе <a href="/docs/articles/02-architecture/">Архитектура</a>.</p>
+<h2 id="доступные-порты">Доступные порты</h2>
+<table>
+  <thead>
+      <tr>
+          <th>Сервис</th>
+          <th>Порт(ы)</th>
+          <th>Назначение</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>admin</td>
+          <td>8072</td>
+          <td>Админ-панель (QOR5)</td>
+      </tr>
+      <tr>
+          <td>server</td>
+          <td>8071</td>
+          <td>Рекламный сервер (<code>/dsp</code>, <code>/native</code>, <code>/banner</code>, <code>/inapp</code>, <code>/tracker</code>, <code>/postback</code>)</td>
+      </tr>
+      <tr>
+          <td>analytics (dagu)</td>
+          <td>8088</td>
+          <td>Планировщик агрегаций</td>
+      </tr>
+      <tr>
+          <td>grafana</td>
+          <td>3001</td>
+          <td>Дашборды</td>
+      </tr>
+      <tr>
+          <td>ch-ui</td>
+          <td>3488</td>
+          <td>Веб-клиент ClickHouse</td>
+      </tr>
+      <tr>
+          <td>kafka-ui</td>
+          <td>8090</td>
+          <td>Kafka UI</td>
+      </tr>
+      <tr>
+          <td>clickhouse</td>
+          <td>8123 / 9000</td>
+          <td>HTTP / native</td>
+      </tr>
+      <tr>
+          <td>postgres</td>
+          <td>6432</td>
+          <td>PostgreSQL</td>
+      </tr>
+      <tr>
+          <td>redis</td>
+          <td>7001–7006</td>
+          <td>Redis Cluster</td>
+      </tr>
+      <tr>
+          <td>kafka</td>
+          <td>19092, 29092, 39092</td>
+          <td>Внешние listener-порты брокеров</td>
+      </tr>
+      <tr>
+          <td>prometheus</td>
+          <td>9090</td>
+          <td>Метрики</td>
+      </tr>
+      <tr>
+          <td>loki</td>
+          <td>3100</td>
+          <td>Логи</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="обновление-и-остановка">Обновление и остановка</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker compose down        <span style="color:#75715e"># остановить стек (данные в dist/data сохраняются)</span>
+</span></span><span style="display:flex;"><span>docker compose up -d       <span style="color:#75715e"># запустить снова</span>
+</span></span><span style="display:flex;"><span>docker compose pull        <span style="color:#75715e"># обновить образы сервисов</span>
+</span></span><span style="display:flex;"><span>docker compose run --rm migrate   <span style="color:#75715e"># применить миграции БД</span>
+</span></span></code></pre></div><h2 id="деплой-через-taskfile">Деплой через Taskfile</h2>
+<p>В репозитории есть <code>Taskfile.yml</code> для сборки образов, публикации в реестр и обновления сервисов на удалённом хосте. Хост задаётся SSH-алиасом <code>VENATOR</code> в <code>.env.deploy</code> (шаблон — <code>.env.deploy.example</code>), сборка использует <code>Supfile.yml</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>task dist-update     <span style="color:#75715e"># синхронизировать dist-ассеты из репозитория (dagu DAG-и, SQL, дашборды, redis-cluster)</span>
+</span></span><span style="display:flex;"><span>task dist-deploy     <span style="color:#75715e"># загрузить dist/ на хост и поднять стек</span>
+</span></span><span style="display:flex;"><span>task server-deploy   <span style="color:#75715e"># собрать/опубликовать и пересоздать только сервис server</span>
+</span></span><span style="display:flex;"><span>task admin-deploy    <span style="color:#75715e"># то же для admin (также выполняет миграции)</span>
+</span></span><span style="display:flex;"><span>task analytics-deploy
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>task nginx-deploy    <span style="color:#75715e"># залить конфиги nginx и перезагрузить</span>
+</span></span><span style="display:flex;"><span>task certbot-setup   <span style="color:#75715e"># установить certbot и включить автопродление</span>
+</span></span></code></pre></div><p><code>task &lt;service&gt;-deploy</code> не синхронизирует <code>dist/</code> и не трогает конфиги сервисов: конфиги монтируются с хоста (<code>./{server,admin,analytics}/configs</code>), поэтому изменения в <code>config.yaml</code> вступят в силу только после <code>task dist-upload</code> и пересоздания сервиса.</p>
+<p>Следующие шаги: настройте <a href="/docs/articles/03-config/">конфигурацию</a>, создайте <a href="/docs/articles/04-users/">пользователя</a> и заведите первый <a href="/docs/articles/05-sites/">сайт</a>.</p>
+
+
+          </div>
+        </div>
+
+        
+        <footer class="pt-5 mt-5 pb-5 text-body-secondary border-top">
+          <div>
+  <div class="d-flex justify-content-center flex-wrap">
+      <a href="/book" class="me-4 link-dark">Книга</a>
+      <a href="/glossaries" class="me-4 link-dark">Глоссарий</a>
+      <a href="/docs" class="me-4 link-dark">Документация</a>
+      <a href="https://github.com/akovardin/adscoffee" target="_blank" rel="noopener" class="link-dark">GitHub</a>
+  </div>
+  <div class="d-flex justify-content-center pt-5">
+
+      &copy; 2025
+
+  </div>
+</div>
+        </footer>
+      </div>
+
+    </main>
+  </body>
+</html>

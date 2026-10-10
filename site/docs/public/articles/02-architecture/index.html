@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<meta property="og:title" content="Архитектура" />
+<title>Архитектура</title>
+
+<link rel='canonical' href='https://ads.coffee/docs/articles/02-architecture/'>
+<meta name="description" content="02 Архитектура  
+Платформа — это Go-монорепозиторий из трёх приложений и набора инфраструктурных сервисов. Стек поднимается одним docker compose up -d из каталога dist/.
+Приложения Админка (admin) Веб-панель управления на QOR5. Через неё создаются и настраиваются рекламодатели, кампании, группы, креативы, рекламные сети, сайты, плейсменты, юниты и пользователи, а также отображается встроенный дашборд Grafana. Загруженные изображения хранятся в S3-совместимом объектном хранилище.
+Порт: 8072 (8082 внутри контейнера). Конфиг: dist/admin/configs/config.yaml. Команды образа: serve (запуск), migrate (миграции БД), user (создать пользователя или сменить пароль). Зависит от PostgreSQL, ClickHouse и S3. Рекламный сервер (server) Сервер показа рекламы. Работает как конвейер плагинов Route → Input → Stages → Output: загрузка кандидатов, проверка лимитов и бюджетов, таргетинг, взвешенный выбор (rotation) и медиация. Сервер не хранит состояние в процессе, поэтому его можно масштабировать горизонтально.">
+
+<link rel="icon" href="https://ads.coffee/docs/coffee.png">
+
+<link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
+    rel="stylesheet">
+</style>
+
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet" crossorigin="anonymous">
+<link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    rel="stylesheet" />
+    
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+      <link rel="stylesheet" href="/docs/css/main.min.472899cebc9cc094da51d286db9931709f75c62f645c147ae58d18f0660c4e54.css" integrity="sha256-RyiZzrycwJTaUdKG25kxcJ91xi9kXBR65Y0Y8GYMTlQ=" crossorigin="anonymous">
+
+
+      <script src="/docs/js/main.23cd0c7d837263b9eaeb96ee2d9ccfa2969daa3fa00fa1c1fe8701a9b87251a1.js" integrity="sha256-I80MfYNyY7nq65buLZzPopadqj&#43;gD6HB/ocBqbhyUaE=" crossorigin="anonymous"></script>
+
+
+
+  </head>
+  <body>
+
+    <main>
+      <div class="container pt-4">
+        <header class="pb-3 mb-4 border-bottom">
+          <nav class="navbar navbar-expand-lg w-100">
+  <div class="container-fluid">
+    
+      <a href="/"
+        class="d-flex align-items-center text-dark text-decoration-none navbar-brand">
+        <svg fill="#000000" width="40px" height="40px"
+          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <g id="Coffee_Cup" data-name="Coffee Cup">
+            <path
+              d="M18.79,5.67a1.5,1.5,0,0,0-1.16-1.46l-.38-1.38a1.081,1.081,0,0,0-1.05-.76H7.79a1.06,1.06,0,0,0-1.04.76L6.37,4.21A1.537,1.537,0,0,0,5.21,5.76,1.476,1.476,0,0,0,6.27,7.18l.1,2.77a.75.75,0,0,0-.42.22.768.768,0,0,0-.21.56l.24,5.76a.759.759,0,0,0,.65.72l.08,2.22a2.579,2.579,0,0,0,2.59,2.5h5.39a2.581,2.581,0,0,0,2.6-2.5l.08-2.22a.76.76,0,0,0,.64-.72l.24-5.76a.768.768,0,0,0-.21-.56.72.72,0,0,0-.41-.22l.1-2.77A1.534,1.534,0,0,0,18.79,5.67Zm-11-2.6,8.49.03.3,1.07H7.44Zm8.5,16.33a1.578,1.578,0,0,1-1.6,1.53H9.3A1.575,1.575,0,0,1,7.71,19.4l-.08-2.18h8.74ZM9.9,13.58a2.1,2.1,0,1,1,2.1,2.1A2.1,2.1,0,0,1,9.9,13.58Zm6.73-3.65H7.37l-.1-2.67h9.45Zm.66-3.67H6.71a.522.522,0,0,1-.5-.59.5.5,0,0,1,.5-.5H17.29a.528.528,0,0,1,.5.59A.5.5,0,0,1,17.29,6.26Z" />
+          </g>
+        </svg>
+        <span class="fs-4">Кофеин</span>
+      </a>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarNav" aria-controls="navbarNav"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div class="collapse navbar-collapse text-end w-20" id="navbarNav">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 ">
+        <li class="nav-item pt-1 pb-3">
+          
+        </li>
+        <li class="nav-item pt-1 pb-3">
+          <a href="/glossaries" class="ms-4 link-dark">Глоссарий</a>
+        </li>
+        <li class="nav-item pt-1 pb-3">
+          <a href="/docs" class="ms-4 link-dark">Документация</a>
+        </li>
+        <li class="nav-item pb-3">
+          <a href="https://github.com/akovardin/adscoffee" target="_blank" rel="noopener" class="ms-4 btn btn-dark">GitHub</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+        </header>
+
+        <div class="row align-items-start">
+          <div class="col-3">
+            <p><a href="/docs" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Введение</a></p>
+            
+            <p><a href="/docs/articles/01-start/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Быстрый старт</a></p>
+            
+            <p><a href="/docs/articles/02-architecture/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Архитектура</a></p>
+            
+            <p><a href="/docs/articles/03-config/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Конфигурация</a></p>
+            
+            <p><a href="/docs/articles/04-users/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Пользователи</a></p>
+            
+            <p><a href="/docs/articles/05-sites/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Сайты</a></p>
+            
+            <p><a href="/docs/articles/06-placements/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Плейсменты и юниты</a></p>
+            
+            <p><a href="/docs/articles/07-campaigns/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Рекламодатели и кампании</a></p>
+            
+            <p><a href="/docs/articles/08-creatives/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Креативы</a></p>
+            
+            <p><a href="/docs/articles/09-integration/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Интеграция рекламы</a></p>
+            
+            <p><a href="/docs/articles/10-analytics/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Аналитика и мониторинг</a></p>
+            
+            <p><a href="/docs/articles/11-sources/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Источники рекламы</a></p>
+            
+            <p><a href="/docs/articles/12-operations/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Эксплуатация</a></p>
+            
+            <p><a href="/docs/articles/13-development/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Разработка</a></p>
+            
+          </div>
+
+          <div class="col-8 ps-5">
+            
+
+  <h1 id="02-архитектура">02 Архитектура</h1>
+<p>&nbsp;</p>
+<p>Платформа — это Go-монорепозиторий из трёх приложений и набора инфраструктурных сервисов. Стек поднимается одним <code>docker compose up -d</code> из каталога <code>dist/</code>.</p>
+<h2 id="приложения">Приложения</h2>
+<h3 id="админка-admin">Админка (<code>admin</code>)</h3>
+<p>Веб-панель управления на QOR5. Через неё создаются и настраиваются рекламодатели, кампании, группы, креативы, рекламные сети, сайты, плейсменты, юниты и пользователи, а также отображается встроенный дашборд Grafana. Загруженные изображения хранятся в S3-совместимом объектном хранилище.</p>
+<ul>
+<li>Порт: <code>8072</code> (<code>8082</code> внутри контейнера).</li>
+<li>Конфиг: <code>dist/admin/configs/config.yaml</code>.</li>
+<li>Команды образа: <code>serve</code> (запуск), <code>migrate</code> (миграции БД), <code>user</code> (создать пользователя или сменить пароль).</li>
+<li>Зависит от PostgreSQL, ClickHouse и S3.</li>
+</ul>
+<h3 id="рекламный-сервер-server">Рекламный сервер (<code>server</code>)</h3>
+<p>Сервер показа рекламы. Работает как конвейер плагинов <code>Route → Input → Stages → Output</code>: загрузка кандидатов, проверка лимитов и бюджетов, таргетинг, взвешенный выбор (rotation) и медиация. Сервер не хранит состояние в процессе, поэтому его можно масштабировать горизонтально.</p>
+<ul>
+<li>Порт: <code>8071</code> (<code>8081</code> внутри).</li>
+<li>Конфиг: <code>dist/server/configs/config.yaml</code> — здесь описаны пайплайны маршрутов <code>/dsp</code>, <code>/native</code>, <code>/banner</code>, <code>/inapp</code>, <code>/tracker</code>, <code>/postback</code>.</li>
+<li>Использует PostgreSQL (кэшируемые репозитории баннеров, плейсментов и юнитов), Redis Cluster (кэш) и публикует события в Kafka.</li>
+</ul>
+<h3 id="аналитика-analytics">Аналитика (<code>analytics</code>)</h3>
+<p>Планировщик и воркер агрегаций на базе <strong>dagu</strong>. По расписанию раз в час (<code>1 * * * *</code>) запускает агрегацию данных в ClickHouse по таблицам <code>requests</code>, <code>impressions</code>, <code>clicks</code>, <code>responses</code> и складывает результат в часовые витрины <code>analytics.*_hour</code> для дашбордов. События <code>conversion</code> и <code>win</code> хранятся в сырых таблицах, часовых DAG-ов для них нет.</p>
+<ul>
+<li>Порт: <code>8088</code> (<code>8080</code> внутри).</li>
+<li>Образ: <code>platform-analytics</code>; команда агрегации — <code>analytics aggregations -table=&lt;requests|impressions|clicks|responses&gt; -c=/configs/config.yaml</code>.</li>
+<li>Конфиг: <code>dist/analytics/configs/config.yaml</code>; DAG-и — <code>dist/analytics/dagu/dags/*.yaml</code>, данные и логи — <code>dist/data/dagu/{data,logs}</code>.</li>
+<li>Читает события из Kafka через Kafka Engine ClickHouse, пишет агрегаты в <code>analytics.*_hour</code> (включая <code>revenue</code>, <code>network</code>, <code>unit_id</code>, <code>bundle</code>).</li>
+</ul>
+<h2 id="поток-событий">Поток событий</h2>
+<pre tabindex="0"><code>Рекламный сервер ──► Kafka (request, impression, click, response, conversion, win)
+                              │
+                              ▼
+                    ClickHouse (сырые таблицы)
+                              │
+                    dagu-агрегации (раз в час)
+                              │
+                              ▼
+                 ClickHouse (*_hour) ──► Grafana / админка
+</code></pre><h2 id="инфраструктура">Инфраструктура</h2>
+<ul>
+<li><strong>Kafka</strong> — шина событий платформы: кластер из трёх брокеров в режиме KRaft (<code>kafka1</code>, <code>kafka2</code>, <code>kafka3</code>, <code>kafka-init</code>, <code>kafka-ui</code>). Топики создаются сервисом <code>kafka-init</code>. Kafka UI — на порту <code>8090</code>.</li>
+<li><strong>PostgreSQL</strong> — основное хранилище данных админки и сервера. Порт <code>6432</code>.</li>
+<li><strong>ClickHouse</strong> — хранилище событий и агрегатов для аналитики. Порты <code>8123</code> (HTTP) и <code>9000</code> (native).</li>
+<li><strong>Redis Cluster</strong> — кэш сервера показа. Порты <code>7001–7006</code>.</li>
+<li><strong>S3</strong> — объектное хранилище для загружаемых изображений (Yandex Object Storage, MinIO, AWS S3 и другие).</li>
+<li><strong>Grafana</strong> — дашборды. Порт <code>3001</code>.</li>
+<li><strong>ch-ui</strong> — веб-клиент ClickHouse для ручных запросов. Порт <code>3488</code>.</li>
+<li><strong>Prometheus и Loki</strong> — метрики и логи (порты <code>9090</code> и <code>3100</code>), собираются через Promtail.</li>
+</ul>
+<h2 id="sdk">SDK</h2>
+<p>Для интеграции рекламы в приложения и на сайты есть SDK:</p>
+<ul>
+<li><strong>Web / JS</strong> — <code>server/static/js/coffee.js</code> (<code>window.adsCoffee.render(...)</code>), поддерживает собственные креативы и блоки Yandex.</li>
+<li><strong>Android</strong> — <code>sdk/android/</code> (модуль <code>coffeesdk</code>): баннеры, интерстишелы, форматы coffee и Yandex.</li>
+</ul>
+<p>Денежное поле событий называется <code>revenue</code> (не <code>price</code>) на всём пути: сервер → Kafka → ClickHouse (<code>analytics.*.revenue</code>, <code>*_hour.revenue</code>). Ставка <code>Banner.Price</code>/<code>Unit.Price</code> (CPM, выбор победителя) остаётся с именем <code>price</code>.</p>
+<p>Подробнее — в разделе <a href="/docs/articles/09-integration/">Интеграция рекламы</a>.</p>
+
+
+          </div>
+        </div>
+
+        
+        <footer class="pt-5 mt-5 pb-5 text-body-secondary border-top">
+          <div>
+  <div class="d-flex justify-content-center flex-wrap">
+      <a href="/book" class="me-4 link-dark">Книга</a>
+      <a href="/glossaries" class="me-4 link-dark">Глоссарий</a>
+      <a href="/docs" class="me-4 link-dark">Документация</a>
+      <a href="https://github.com/akovardin/adscoffee" target="_blank" rel="noopener" class="link-dark">GitHub</a>
+  </div>
+  <div class="d-flex justify-content-center pt-5">
+
+      &copy; 2025
+
+  </div>
+</div>
+        </footer>
+      </div>
+
+    </main>
+  </body>
+</html>

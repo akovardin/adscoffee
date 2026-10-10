@@ -1,0 +1,13 @@
+networks:
+  # Хост задаётся SSH-алиасом `venator` (HostName/User в ~/.ssh/config,
+  # адрес сервера не хранится в git). sup читает его через `-sshconfig ~/.ssh/config`.
+  venator:
+    hosts:
+      - venator
+
+commands:
+  site-mkdir:
+    run: mkdir -p /var/www/ads.coffee/web/site
+
+  site-chmod:
+    run: find /var/www/ads.coffee/web/site -type d -exec chmod 755 {} + && find /var/www/ads.coffee/web/site -type f -exec chmod 644 {} + && echo "site updated"

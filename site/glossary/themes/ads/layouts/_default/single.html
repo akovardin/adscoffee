@@ -1,0 +1,33 @@
+{{ define "main" }}
+<div class="pt-5 mt-5 mx-auto" style="max-width: 700px;">
+
+  <div>
+    <a class="link-dark" href="/glossaries">Глоссарий</a>
+    <p>&nbsp;</p>
+    <!-- Подключаем скрипт (можно асинхронно) -->
+    <script>
+      window.adsCoffeeCb = window.adsCoffeeCb || [];
+    </script>
+    <script src="https://ads.coffee/static/js/coffee.js" async></script>
+
+    <!-- Контейнер для рекламы -->
+    <div id="ads-cf-container"></div>
+
+    <!-- Инициализация -->
+    <script>
+      window.adsCoffeeCb.push(() => {
+          window.adsCoffee.render({
+              renderTo: "ads-cf-container",
+              blockId: "7bgnkq93661832j",
+              template: "horizontal-marker"
+          });
+      });
+    </script>
+    <p>
+
+      {{ .Content }}
+    </p>
+
+  </div>
+</div>
+{{ end }}

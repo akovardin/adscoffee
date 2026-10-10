@@ -99,7 +99,7 @@ pipelines:
   - name: inapp
     route: /inapp/{placement}
     input:
-      name: inputs.web
+      name: inputs.inapp
     stages:
       - name: stages.banners
       - name: stages.limits
