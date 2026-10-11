@@ -11,12 +11,7 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 
 	"go.ads.coffee/platform/server/internal/domain/plugins"
-	"go.ads.coffee/platform/server/internal/inputs"
-	"go.ads.coffee/platform/server/internal/limits"
 	"go.ads.coffee/platform/server/internal/metrics"
-	"go.ads.coffee/platform/server/internal/outputs"
-	"go.ads.coffee/platform/server/internal/stages"
-	"go.ads.coffee/platform/server/internal/targetings"
 )
 
 var tracer = otel.Tracer("server")
@@ -27,11 +22,11 @@ type Manager struct {
 
 func NewManager(
 	pipelines []Config,
-	inputs *inputs.Inputs,
-	outputs *outputs.Outputs,
-	stages *stages.Stages,
-	targetings *targetings.Targetings,
-	limits *limits.Limits,
+	inputs *Inputs,
+	outputs *Outputs,
+	stages *Stages,
+	targetings *Targetings,
+	limits *Limits,
 ) (*Manager, error) {
 	m := &Manager{}
 	for _, c := range pipelines {

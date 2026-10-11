@@ -3,32 +3,13 @@ package plugins
 import (
 	"go.uber.org/fx"
 
-	"go.ads.coffee/platform/server/internal/inputs"
-	"go.ads.coffee/platform/server/internal/limits"
-	"go.ads.coffee/platform/server/internal/outputs"
 	"go.ads.coffee/platform/server/internal/pipeline"
-	"go.ads.coffee/platform/server/internal/stages"
-	"go.ads.coffee/platform/server/internal/targetings"
 )
 
 var Module = fx.Module(
 	"plugins",
 
-	// inputs
-	inputs.Module,
-
-	// stages
-	stages.Module,
-
-	// targetings
-	targetings.Module,
-
-	// limits
-	limits.Module,
-
-	// output
-	outputs.Module,
-
-	// pipeline
+	// pipeline собирает реестры inputs/outputs/stages/targetings/limits
+	// и менеджер пайплайнов
 	pipeline.Module,
 )
