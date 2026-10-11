@@ -38,20 +38,21 @@ func (t *Timetable) Name() string {
 	return "targetings.timetable"
 }
 
-func (t *Timetable) Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner {
+func (t *Timetable) Filter(candidates []*ads.Banner, state *plugins.State) []*ads.Banner {
 	now := t.now()
 
 	// приводим Go weekday (Вс=0) к конвенции админки (Пн=0..Вс=6)
 	day := (int(now.Weekday()) + 6) % 7
 	hour := now.Hour()
 
-	filtered := make([]ads.Banner, 0, len(candidates))
+	// in-place компакция: пишем выживших в тот же буфер, без аллокаций
+	kept := candidates[:0]
 
 	for _, candidate := range candidates {
 		if candidate.Timetable.Validate(day, hour) {
-			filtered = append(filtered, candidate)
+			kept = append(kept, candidate)
 		}
 	}
 
-	return filtered
+	return kept
 }

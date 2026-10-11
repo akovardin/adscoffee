@@ -13,15 +13,15 @@ import (
 
 type testTargeting struct {
 	name string
-	keep func(ads.Banner) bool
+	keep func(*ads.Banner) bool
 }
 
 func (t *testTargeting) Name() string {
 	return t.name
 }
 
-func (t *testTargeting) Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner {
-	filtered := make([]ads.Banner, 0, len(candidates))
+func (t *testTargeting) Filter(candidates []*ads.Banner, state *plugins.State) []*ads.Banner {
+	filtered := make([]*ads.Banner, 0, len(candidates))
 
 	for _, candidate := range candidates {
 		if t.keep(candidate) {
@@ -44,12 +44,12 @@ func newStage(t *testing.T) *Targeting {
 func TestTargeting_Do(t *testing.T) {
 	stage := newStage(t)
 	stage.Targetings([]plugins.Targeting{
-		&testTargeting{name: "first", keep: func(b ads.Banner) bool { return b.ID != 2 }},
-		&testTargeting{name: "second", keep: func(b ads.Banner) bool { return b.ID != 3 }},
+		&testTargeting{name: "first", keep: func(b *ads.Banner) bool { return b.ID != 2 }},
+		&testTargeting{name: "second", keep: func(b *ads.Banner) bool { return b.ID != 3 }},
 	})
 
 	state := &plugins.State{
-		Candidates: []ads.Banner{{ID: 1}, {ID: 2}, {ID: 3}},
+		Candidates: []*ads.Banner{{ID: 1}, {ID: 2}, {ID: 3}},
 	}
 
 	err := stage.Do(context.Background(), state)

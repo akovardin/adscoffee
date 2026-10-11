@@ -40,7 +40,7 @@ type Analytics interface {
 }
 
 type Banners interface {
-	One(ctx context.Context, id uint) (ads.Banner, bool)
+	One(ctx context.Context, id uint) (*ads.Banner, bool)
 }
 
 type Session interface {

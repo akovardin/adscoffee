@@ -36,7 +36,7 @@ type Analytics interface {
 }
 
 type Banner interface {
-	Banner(ctx context.Context, base string, banner ads.Banner, w http.ResponseWriter) error
+	Banner(ctx context.Context, base string, banner *ads.Banner, w http.ResponseWriter) error
 }
 
 type Session interface {

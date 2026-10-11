@@ -14,14 +14,14 @@ type State struct {
 	Response   http.ResponseWriter
 	User       *User
 	Device     *Device
-	Candidates []ads.Banner
-	Winners    []ads.Banner
+	Candidates []*ads.Banner
+	Winners    []*ads.Banner
 	Placement  ads.Placement
 	Units      []ads.Unit
 }
 
 func (s *State) Value(key any) any {
-	return s.Request.Context().Value("action")
+	return s.Request.Context().Value(key)
 }
 
 func (s *State) WithValue(key, value any) {

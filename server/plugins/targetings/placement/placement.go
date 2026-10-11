@@ -36,19 +36,20 @@ func (p *Placement) Name() string {
 	return "targetings.placement"
 }
 
-func (p *Placement) Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner {
+func (p *Placement) Filter(candidates []*ads.Banner, state *plugins.State) []*ads.Banner {
 	id := strconv.FormatUint(uint64(state.Placement.ID), 10)
 	if id == "0" {
 		return candidates
 	}
 
-	filtered := make([]ads.Banner, 0, len(candidates))
+	// in-place компакция: пишем выживших в тот же буфер, без аллокаций
+	kept := candidates[:0]
 
 	for _, candidate := range candidates {
 		if candidate.Targeting.Placement.Validate([]string{id}) {
-			filtered = append(filtered, candidate)
+			kept = append(kept, candidate)
 		}
 	}
 
-	return filtered
+	return kept
 }

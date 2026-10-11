@@ -38,7 +38,7 @@ func (r *Rotattion) Name() string {
 }
 
 func (r *Rotattion) Do(ctx context.Context, state *plugins.State) error {
-	winners, ok, err := r.rotate(state.Candidates)
+	winner, ok, err := r.rotate(state.Candidates)
 	if err != nil {
 		return err
 	}
@@ -47,24 +47,24 @@ func (r *Rotattion) Do(ctx context.Context, state *plugins.State) error {
 		return nil
 	}
 
-	state.Winners = []ads.Banner{winners}
+	state.Winners = []*ads.Banner{winner}
 
 	return nil
 }
 
-func (r *Rotattion) rotate(candidates []ads.Banner) (ads.Banner, bool, error) {
-	choices := []weightedrand.Choice[ads.Banner, int]{}
+func (r *Rotattion) rotate(candidates []*ads.Banner) (*ads.Banner, bool, error) {
+	choices := []weightedrand.Choice[*ads.Banner, int]{}
 	for _, candidate := range candidates {
 		choices = append(choices, weightedrand.NewChoice(candidate, candidate.Price))
 	}
 
 	if len(choices) == 0 {
-		return ads.Banner{}, false, nil
+		return nil, false, nil
 	}
 
 	chooser, err := weightedrand.NewChooser(choices...)
 	if err != nil {
-		return ads.Banner{}, false, fmt.Errorf("error on chooser: %w", err)
+		return nil, false, fmt.Errorf("error on chooser: %w", err)
 	}
 
 	return chooser.Pick(), true, nil

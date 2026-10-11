@@ -29,7 +29,7 @@ func TestTimetable_Filter(t *testing.T) {
 
 	tt := &Timetable{now: now}
 
-	candidates := []ads.Banner{
+	candidates := []*ads.Banner{
 		{ID: 1, Timetable: ads.Timetable{0: {10: true}}},  // пн 10:00 — проходит
 		{ID: 2, Timetable: ads.Timetable{0: {10: false}}}, // пн 10:00 выключен — отсев
 		{ID: 3, Timetable: ads.Timetable{1: {10: true}}},  // вт — отсев
@@ -49,7 +49,7 @@ func TestTimetable_FilterSunday(t *testing.T) {
 
 	tt := &Timetable{now: now}
 
-	candidates := []ads.Banner{
+	candidates := []*ads.Banner{
 		{ID: 1, Timetable: ads.Timetable{6: {12: true}}},
 	}
 

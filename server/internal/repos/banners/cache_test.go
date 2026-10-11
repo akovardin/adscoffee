@@ -29,12 +29,12 @@ func TestCacheAll(t *testing.T) {
 	// Create cache instance directly without NewCache
 	cache := &Cache{
 		logger:      logger,
-		banners:     []ads.Banner{},
-		bannersById: map[uint]ads.Banner{},
+		banners:     []*ads.Banner{},
+		bannersById: map[uint]*ads.Banner{},
 	}
 
 	// Add some test data
-	banners := []ads.Banner{
+	banners := []*ads.Banner{
 		{ID: 1, Title: "Banner 1"},
 		{ID: 2, Title: "Banner 2"},
 	}
@@ -60,12 +60,12 @@ func TestCacheOne(t *testing.T) {
 	// Create cache instance directly without NewCache
 	cache := &Cache{
 		logger:      logger,
-		banners:     []ads.Banner{},
-		bannersById: map[uint]ads.Banner{},
+		banners:     []*ads.Banner{},
+		bannersById: map[uint]*ads.Banner{},
 	}
 
 	// Add some test data
-	banner := ads.Banner{ID: 1, Title: "Test Banner"}
+	banner := &ads.Banner{ID: 1, Title: "Test Banner"}
 	cache.lock.Lock()
 	cache.bannersById[1] = banner
 	cache.lock.Unlock()
@@ -91,8 +91,8 @@ func TestCacheReload(t *testing.T) {
 	cache := &Cache{
 		logger:      logger,
 		repo:        repo,
-		banners:     []ads.Banner{},
-		bannersById: map[uint]ads.Banner{},
+		banners:     []*ads.Banner{},
+		bannersById: map[uint]*ads.Banner{},
 	}
 
 	// Set up mock expectations
@@ -130,8 +130,8 @@ func TestCacheStart(t *testing.T) {
 	cache := &Cache{
 		logger:      logger,
 		repo:        repo,
-		banners:     []ads.Banner{},
-		bannersById: map[uint]ads.Banner{},
+		banners:     []*ads.Banner{},
+		bannersById: map[uint]*ads.Banner{},
 	}
 
 	// Set up mock expectations

@@ -34,7 +34,7 @@ type MockAnalytics struct {
 	mock.Mock
 }
 
-func (m *MockAnalytics) LogResponse(ctx context.Context, w ads.Banner, state *plugins.State) error {
+func (m *MockAnalytics) LogResponse(ctx context.Context, w *ads.Banner, state *plugins.State) error {
 	args := m.Called(ctx, w, state)
 	return args.Error(0)
 }
@@ -88,7 +88,7 @@ func TestWeb_Do_FormatNotFound(t *testing.T) {
 	ctx := context.Background()
 	state := &plugins.State{
 		Response: nil,
-		Winners:  []ads.Banner{},
+		Winners:  []*ads.Banner{},
 	}
 
 	// Act
@@ -116,7 +116,7 @@ func TestWeb_Do_RenderError(t *testing.T) {
 	ctx := context.Background()
 	state := &plugins.State{
 		Response: nil,
-		Winners:  []ads.Banner{},
+		Winners:  []*ads.Banner{},
 	}
 
 	// Act
@@ -147,7 +147,7 @@ func TestWeb_Do_JSONMarshalError(t *testing.T) {
 	ctx := context.Background()
 	state := &plugins.State{
 		Response: nil,
-		Winners:  []ads.Banner{},
+		Winners:  []*ads.Banner{},
 	}
 
 	// Act
@@ -182,7 +182,7 @@ func TestWeb_Do_Success(t *testing.T) {
 	ctx := context.Background()
 	state := &plugins.State{
 		Response: mockResponseWriter,
-		Winners:  []ads.Banner{},
+		Winners:  []*ads.Banner{},
 	}
 
 	// Act
@@ -221,7 +221,7 @@ func TestWeb_Do_WithWinners_AnalyticsCalled(t *testing.T) {
 	mockResponseWriter := new(MockResponseWriter)
 	mockResponseWriter.On("Write", mock.Anything).Return(len(responseData), nil)
 
-	winnerBanner := ads.Banner{
+	winnerBanner := &ads.Banner{
 		ID:    1,
 		Title: "Test Banner",
 		Price: 100,
@@ -230,7 +230,7 @@ func TestWeb_Do_WithWinners_AnalyticsCalled(t *testing.T) {
 	ctx := context.Background()
 	state := &plugins.State{
 		Response:  mockResponseWriter,
-		Winners:   []ads.Banner{winnerBanner},
+		Winners:   []*ads.Banner{winnerBanner},
 		RequestID: "test-request-id",
 		ClickID:   "test-click-id",
 	}
@@ -272,7 +272,7 @@ func TestWeb_Do_WithoutWinners_AnalyticsNotCalled(t *testing.T) {
 	ctx := context.Background()
 	state := &plugins.State{
 		Response: mockResponseWriter,
-		Winners:  []ads.Banner{}, // Empty winners list
+		Winners:  []*ads.Banner{}, // Empty winners list
 	}
 
 	// Act

@@ -14,7 +14,7 @@ import (
 )
 
 type Analytics interface {
-	LogResponse(ctx context.Context, w ads.Banner, state *plugins.State) error
+	LogResponse(ctx context.Context, w *ads.Banner, state *plugins.State) error
 }
 
 type Config struct {

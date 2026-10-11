@@ -20,9 +20,9 @@ type MockBanners struct {
 	mock.Mock
 }
 
-func (m *MockBanners) One(ctx context.Context, id uint) (ads.Banner, bool) {
+func (m *MockBanners) One(ctx context.Context, id uint) (*ads.Banner, bool) {
 	args := m.Called(ctx, id)
-	banner, _ := args.Get(0).(ads.Banner)
+	banner, _ := args.Get(0).(*ads.Banner)
 	return banner, args.Bool(1)
 }
 
@@ -254,7 +254,7 @@ func TestStatic_Do_ClickAction_BannerNotFound(t *testing.T) {
 	session.On("LoadWithExpire", mock.MatchedBy(func(r *http.Request) bool {
 		return r.URL == reqForMock.URL
 	})).Return(sess, true)
-	banners.On("One", ctx, uint(1)).Return(ads.Banner{}, false)
+	banners.On("One", ctx, uint(1)).Return((*ads.Banner)(nil), false)
 
 	result := static.Do(ctx, state)
 
@@ -307,7 +307,7 @@ func TestStatic_Do_ClickAction_Success(t *testing.T) {
 
 	reqForMock := req.Clone(ctx)
 	sess := sessions.Session{Value: "1"}
-	banner := ads.Banner{Target: "https://example.com/target"}
+	banner := &ads.Banner{Target: "https://example.com/target"}
 	session.On("LoadWithExpire", mock.MatchedBy(func(r *http.Request) bool {
 		return r.URL == reqForMock.URL
 	})).Return(sess, true)

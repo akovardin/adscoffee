@@ -37,7 +37,7 @@ func TestMediation_Do(t *testing.T) {
 					Data:  "",
 				},
 			},
-			Winners: []ads.Banner{},
+			Winners: []*ads.Banner{},
 		}
 
 		err := mediation.Do(ctx, state)
@@ -68,7 +68,7 @@ func TestMediation_Do(t *testing.T) {
 					Data:  "",
 				},
 			},
-			Winners: []ads.Banner{},
+			Winners: []*ads.Banner{},
 		}
 
 		err := mediation.Do(ctx, state)
@@ -82,7 +82,7 @@ func TestMediation_Do(t *testing.T) {
 		state := &plugins.State{
 			Request: &http.Request{},
 			Units:   []ads.Unit{},
-			Winners: []ads.Banner{},
+			Winners: []*ads.Banner{},
 		}
 
 		err := mediation.Do(ctx, state)
@@ -106,7 +106,7 @@ func TestMediation_Do(t *testing.T) {
 					Data:  "",
 				},
 			},
-			Winners: []ads.Banner{
+			Winners: []*ads.Banner{
 				{
 					ID:    2,
 					Title: "Existing Banner",
@@ -127,7 +127,7 @@ func TestMediation_Do(t *testing.T) {
 		state := &plugins.State{
 			Request: &http.Request{},
 			Units:   []ads.Unit{},
-			Winners: []ads.Banner{},
+			Winners: []*ads.Banner{},
 		}
 
 		err := mediation.Do(ctx, state)
@@ -144,14 +144,14 @@ func TestMediation_rotate(t *testing.T) {
 	m := &Mediation{}
 
 	t.Run("empty candidates", func(t *testing.T) {
-		banner, ok, err := m.rotate([]ads.Banner{})
+		banner, ok, err := m.rotate([]*ads.Banner{})
 		assert.NoError(t, err)
 		assert.False(t, ok)
-		assert.Equal(t, ads.Banner{}, banner)
+		assert.Nil(t, banner)
 	})
 
 	t.Run("single candidate", func(t *testing.T) {
-		candidates := []ads.Banner{
+		candidates := []*ads.Banner{
 			{
 				ID:    1,
 				Title: "Test Banner",
@@ -166,7 +166,7 @@ func TestMediation_rotate(t *testing.T) {
 	})
 
 	t.Run("multiple candidates with different prices", func(t *testing.T) {
-		candidates := []ads.Banner{
+		candidates := []*ads.Banner{
 			{
 				ID:    1,
 				Title: "Banner 1",
@@ -200,7 +200,7 @@ func TestMediation_rotate(t *testing.T) {
 	})
 
 	t.Run("candidates with zero price", func(t *testing.T) {
-		candidates := []ads.Banner{
+		candidates := []*ads.Banner{
 			{
 				ID:    1,
 				Title: "Banner 1",
@@ -228,7 +228,7 @@ func TestMediation_rotate(t *testing.T) {
 	})
 
 	t.Run("all candidates with zero price", func(t *testing.T) {
-		candidates := []ads.Banner{
+		candidates := []*ads.Banner{
 			{
 				ID:    1,
 				Title: "Banner 1",
@@ -248,7 +248,7 @@ func TestMediation_rotate(t *testing.T) {
 	})
 
 	t.Run("candidates with equal prices", func(t *testing.T) {
-		candidates := []ads.Banner{
+		candidates := []*ads.Banner{
 			{
 				ID:    1,
 				Title: "Banner 1",

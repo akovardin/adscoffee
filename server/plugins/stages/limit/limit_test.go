@@ -13,15 +13,15 @@ import (
 
 type testLimit struct {
 	name string
-	drop func(ads.Banner) bool
+	drop func(*ads.Banner) bool
 }
 
 func (t *testLimit) Name() string {
 	return t.name
 }
 
-func (t *testLimit) Apply(candidates []ads.Banner, state *plugins.State) []ads.Banner {
-	kept := make([]ads.Banner, 0, len(candidates))
+func (t *testLimit) Apply(candidates []*ads.Banner, state *plugins.State) []*ads.Banner {
+	kept := make([]*ads.Banner, 0, len(candidates))
 
 	for _, candidate := range candidates {
 		if !t.drop(candidate) {
@@ -44,12 +44,12 @@ func newStage(t *testing.T) *Limit {
 func TestLimit_Do(t *testing.T) {
 	stage := newStage(t)
 	stage.Limits([]plugins.Limit{
-		&testLimit{name: "budget", drop: func(b ads.Banner) bool { return b.ID == 2 }},
-		&testLimit{name: "capping", drop: func(b ads.Banner) bool { return b.ID == 3 }},
+		&testLimit{name: "budget", drop: func(b *ads.Banner) bool { return b.ID == 2 }},
+		&testLimit{name: "capping", drop: func(b *ads.Banner) bool { return b.ID == 3 }},
 	})
 
 	state := &plugins.State{
-		Candidates: []ads.Banner{{ID: 1}, {ID: 2}, {ID: 3}},
+		Candidates: []*ads.Banner{{ID: 1}, {ID: 2}, {ID: 3}},
 	}
 
 	err := stage.Do(context.Background(), state)

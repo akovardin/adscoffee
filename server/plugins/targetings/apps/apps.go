@@ -32,6 +32,6 @@ func (a *Apps) Name() string {
 	return "targetings.apps"
 }
 
-func (a *Apps) Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner {
+func (a *Apps) Filter(candidates []*ads.Banner, state *plugins.State) []*ads.Banner {
 	return candidates
 }

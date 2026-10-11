@@ -102,7 +102,7 @@ func TestBanner_Banner_Success(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	// Call the Banner method
-	err = banner.Banner(context.Background(), "", testBanner, rr)
+	err = banner.Banner(context.Background(), "", &testBanner, rr)
 	assert.NoError(t, err)
 
 	// Check the response
@@ -135,7 +135,7 @@ func TestBanner_Banner_FileError(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	// Call the Banner method
-	err := banner.Banner(context.Background(), "http://example.com", testBanner, rr)
+	err := banner.Banner(context.Background(), "http://example.com", &testBanner, rr)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to download url")
 }

@@ -64,7 +64,7 @@ func (m *mockTargeting) Name() string {
 	return m.name
 }
 
-func (m *mockTargeting) Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner {
+func (m *mockTargeting) Filter(candidates []*ads.Banner, state *plugins.State) []*ads.Banner {
 	return candidates
 }
 
@@ -76,7 +76,7 @@ func (m *mockLimit) Name() string {
 	return m.name
 }
 
-func (m *mockLimit) Apply(candidates []ads.Banner, state *plugins.State) []ads.Banner {
+func (m *mockLimit) Apply(candidates []*ads.Banner, state *plugins.State) []*ads.Banner {
 	return candidates
 }
 

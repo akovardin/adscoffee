@@ -12,10 +12,10 @@ import (
 )
 
 type mockBannersCache struct {
-	banners []ads.Banner
+	banners []*ads.Banner
 }
 
-func (m *mockBannersCache) All(ctx context.Context) []ads.Banner {
+func (m *mockBannersCache) All(ctx context.Context) []*ads.Banner {
 	return m.banners
 }
 
@@ -37,7 +37,7 @@ func TestBanners_Name(t *testing.T) {
 }
 
 func TestBanners_Do(t *testing.T) {
-	testBanners := []ads.Banner{
+	testBanners := []*ads.Banner{
 		{
 			ID:     1,
 			Title:  "Test Banner 1",
@@ -65,8 +65,8 @@ func TestBanners_Do(t *testing.T) {
 		Response:   nil,
 		User:       nil,
 		Device:     nil,
-		Candidates: []ads.Banner{},
-		Winners:    []ads.Banner{},
+		Candidates: []*ads.Banner{},
+		Winners:    []*ads.Banner{},
 	}
 
 	banners.Do(ctx, state)
@@ -77,7 +77,7 @@ func TestBanners_Do(t *testing.T) {
 
 func TestBanners_DoWithEmptyCache(t *testing.T) {
 	mockCache := &mockBannersCache{
-		banners: []ads.Banner{},
+		banners: []*ads.Banner{},
 	}
 	banners := &Banners{
 		cache: mockCache,
@@ -89,8 +89,8 @@ func TestBanners_DoWithEmptyCache(t *testing.T) {
 		Response:   nil,
 		User:       nil,
 		Device:     nil,
-		Candidates: []ads.Banner{},
-		Winners:    []ads.Banner{},
+		Candidates: []*ads.Banner{},
+		Winners:    []*ads.Banner{},
 	}
 
 	banners.Do(ctx, state)

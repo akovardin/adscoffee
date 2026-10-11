@@ -37,7 +37,7 @@ type MockBanner struct {
 	mock.Mock
 }
 
-func (m *MockBanner) Banner(ctx context.Context, base string, banner ads.Banner, w http.ResponseWriter) error {
+func (m *MockBanner) Banner(ctx context.Context, base string, banner *ads.Banner, w http.ResponseWriter) error {
 	args := m.Called(ctx, base, banner, w)
 	return args.Error(0)
 }
@@ -83,7 +83,7 @@ func TestStatic_Do_EmptyWinners(t *testing.T) {
 	state := &plugins.State{
 		Request:  req,
 		Response: rr,
-		Winners:  []ads.Banner{}, // Empty winners
+		Winners:  []*ads.Banner{}, // Empty winners
 	}
 
 	err := static.Do(context.Background(), state)
@@ -113,14 +113,14 @@ func TestStatic_Do_SessionStartError(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	// Create a test banner
-	banner := ads.Banner{
+	banner := &ads.Banner{
 		ID: 1,
 	}
 
 	state := &plugins.State{
 		Request:  req,
 		Response: rr,
-		Winners:  []ads.Banner{banner},
+		Winners:  []*ads.Banner{banner},
 	}
 
 	// Set up mock expectations
@@ -156,14 +156,14 @@ func TestStatic_Do_Success(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	// Create a test banner
-	banner := ads.Banner{
+	banner := &ads.Banner{
 		ID: 1,
 	}
 
 	state := &plugins.State{
 		Request:  req,
 		Response: rr,
-		Winners:  []ads.Banner{banner},
+		Winners:  []*ads.Banner{banner},
 	}
 
 	// Set up mock expectations

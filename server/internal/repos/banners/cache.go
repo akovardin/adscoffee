@@ -19,29 +19,30 @@ type Cache struct {
 	repo   Banners
 
 	lock        sync.RWMutex
-	banners     []ads.Banner
-	bannersById map[uint]ads.Banner
+	banners     []*ads.Banner
+	bannersById map[uint]*ads.Banner
 }
 
 func NewCache(logger *zap.Logger, repo *Repo) *Cache {
 	return &Cache{
 		logger:      logger,
 		repo:        repo,
-		bannersById: map[uint]ads.Banner{},
+		bannersById: map[uint]*ads.Banner{},
 	}
 }
 
-func (c *Cache) All(ctx context.Context) []ads.Banner {
+// All возвращает общий слайс указателей на баннеры. Контракт: результат
+// read-only — вызывающая сторона обязана скопировать его (n*8 байт) перед
+// любой модификацией. Это позволяет не копировать сами структуры на каждый
+// запрос.
+func (c *Cache) All(ctx context.Context) []*ads.Banner {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 
-	banners := make([]ads.Banner, len(c.banners))
-	copy(banners, c.banners)
-
-	return banners
+	return c.banners
 }
 
-func (c *Cache) One(ctx context.Context, id uint) (ads.Banner, bool) {
+func (c *Cache) One(ctx context.Context, id uint) (*ads.Banner, bool) {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 
@@ -74,11 +75,17 @@ func (c *Cache) reload() {
 		return
 	}
 
-	c.lock.Lock()
-	c.banners = banners
-	c.bannersById = map[uint]ads.Banner{}
-	for _, banner := range banners {
-		c.bannersById[banner.ID] = banner
+	ptrs := make([]*ads.Banner, len(banners))
+	byID := make(map[uint]*ads.Banner, len(banners))
+
+	for i := range banners {
+		banner := &banners[i]
+		ptrs[i] = banner
+		byID[banner.ID] = banner
 	}
+
+	c.lock.Lock()
+	c.banners = ptrs
+	c.bannersById = byID
 	c.lock.Unlock()
 }

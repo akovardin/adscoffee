@@ -33,6 +33,6 @@ func (g *Geo) Name() string {
 	return "targetings.geo"
 }
 
-func (g *Geo) Filter(candidates []ads.Banner, state *plugins.State) []ads.Banner {
+func (g *Geo) Filter(candidates []*ads.Banner, state *plugins.State) []*ads.Banner {
 	return candidates
 }

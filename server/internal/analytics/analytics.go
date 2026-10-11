@@ -81,7 +81,7 @@ func (r *Analytics) LogRequest(ctx context.Context, state *plugins.State) error 
 	)
 }
 
-func (r *Analytics) LogResponse(ctx context.Context, w ads.Banner, state *plugins.State) error {
+func (r *Analytics) LogResponse(ctx context.Context, w *ads.Banner, state *plugins.State) error {
 	return r.Log(
 		ctx,
 		ads.ActionResponse,

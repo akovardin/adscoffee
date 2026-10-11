@@ -33,7 +33,7 @@ func (c *Capping) Name() string {
 	return "limits.capping"
 }
 
-func (c *Capping) Apply(candidates []ads.Banner, state *plugins.State) []ads.Banner {
+func (c *Capping) Apply(candidates []*ads.Banner, state *plugins.State) []*ads.Banner {
 	state.Candidates = state.Candidates[:]
 
 	return candidates

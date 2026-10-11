@@ -2,6 +2,7 @@ package banners
 
 import (
 	"context"
+	"slices"
 
 	"go.uber.org/fx"
 
@@ -22,7 +23,7 @@ var Module = fx.Module(
 )
 
 type BannersCache interface {
-	All(ctx context.Context) []ads.Banner
+	All(ctx context.Context) []*ads.Banner
 }
 
 type Banners struct {
@@ -43,7 +44,9 @@ func (b *Banners) Name() string {
 }
 
 func (b *Banners) Do(ctx context.Context, state *plugins.State) error {
-	state.Candidates = b.cache.All(ctx)
+	// копируем только слайс указателей (n*8 байт): дальше таргетинги/лимиты
+	// фильтруют in-place, не трогая общий кэш баннеров
+	state.Candidates = slices.Clone(b.cache.All(ctx))
 
 	return nil
 }

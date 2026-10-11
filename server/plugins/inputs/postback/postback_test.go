@@ -35,8 +35,8 @@ func TestPostback_Do(t *testing.T) {
 		Response:   nil,
 		User:       nil,
 		Device:     nil,
-		Candidates: []ads.Banner{},
-		Winners:    []ads.Banner{},
+		Candidates: []*ads.Banner{},
+		Winners:    []*ads.Banner{},
 	}
 
 	result := postback.Do(ctx, state)

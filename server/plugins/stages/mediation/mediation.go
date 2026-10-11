@@ -3,6 +3,7 @@ package mediation
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"github.com/mroth/weightedrand/v2"
 	"go.uber.org/fx"
@@ -45,10 +46,10 @@ func (t *Mediation) Name() string {
 }
 
 func (t *Mediation) Do(ctx context.Context, state *plugins.State) error {
-	winners := state.Winners
+	winners := slices.Clone(state.Winners)
 
 	for _, u := range state.Units {
-		winners = append(winners, ads.Banner{
+		winners = append(winners, &ads.Banner{
 			ID:      u.ID,
 			Title:   u.Name, // TODO: title or name?
 			Price:   u.Price,
@@ -65,29 +66,33 @@ func (t *Mediation) Do(ctx context.Context, state *plugins.State) error {
 		return nil
 	}
 
-	winner, _, err := t.rotate(winners)
+	winner, ok, err := t.rotate(winners)
 	if err != nil {
 		return fmt.Errorf("error on rotate: %w", err)
 	}
 
-	state.Winners = []ads.Banner{winner}
+	if !ok {
+		winner = &ads.Banner{}
+	}
+
+	state.Winners = []*ads.Banner{winner}
 
 	return nil
 }
 
-func (t *Mediation) rotate(candidates []ads.Banner) (ads.Banner, bool, error) {
-	choices := []weightedrand.Choice[ads.Banner, int]{}
+func (t *Mediation) rotate(candidates []*ads.Banner) (*ads.Banner, bool, error) {
+	choices := []weightedrand.Choice[*ads.Banner, int]{}
 	for _, candidate := range candidates {
 		choices = append(choices, weightedrand.NewChoice(candidate, candidate.Price))
 	}
 
 	if len(choices) == 0 {
-		return ads.Banner{}, false, nil
+		return nil, false, nil
 	}
 
 	chooser, err := weightedrand.NewChooser(choices...)
 	if err != nil {
-		return ads.Banner{}, false, fmt.Errorf("error on chooser: %w", err)
+		return nil, false, fmt.Errorf("error on chooser: %w", err)
 	}
 
 	return chooser.Pick(), true, nil

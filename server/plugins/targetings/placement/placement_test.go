@@ -20,7 +20,7 @@ func TestPlacement_Filter(t *testing.T) {
 		Placement: ads.Placement{ID: 5},
 	}
 
-	candidates := []ads.Banner{
+	candidates := []*ads.Banner{
 		{ID: 1, Targeting: ads.Targeting{Placement: ads.ExcludeInclude{IncludeOr: []string{"5"}}}},
 		{ID: 2, Targeting: ads.Targeting{Placement: ads.ExcludeInclude{IncludeOr: []string{"6"}}}},
 		{ID: 3, Targeting: ads.Targeting{}},
@@ -37,7 +37,7 @@ func TestPlacement_Filter(t *testing.T) {
 func TestPlacement_FilterWithoutPlacement(t *testing.T) {
 	p := &Placement{}
 
-	candidates := []ads.Banner{
+	candidates := []*ads.Banner{
 		{ID: 1, Targeting: ads.Targeting{Placement: ads.ExcludeInclude{IncludeOr: []string{"5"}}}},
 	}
 

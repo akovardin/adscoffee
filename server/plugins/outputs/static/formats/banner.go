@@ -29,7 +29,7 @@ func NewBanner() *Banner {
 	return &Banner{}
 }
 
-func (b *Banner) Banner(ctx context.Context, base string, banner ads.Banner, w http.ResponseWriter) error {
+func (b *Banner) Banner(ctx context.Context, base string, banner *ads.Banner, w http.ResponseWriter) error {
 	image, err := filesystem.NewFileFromURL(ctx, banner.Media("image"))
 	if err != nil {
 		return err

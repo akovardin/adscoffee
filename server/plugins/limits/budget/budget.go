@@ -33,7 +33,7 @@ func (b *Budget) Name() string {
 	return "limits.budget"
 }
 
-func (b *Budget) Apply(candidates []ads.Banner, state *plugins.State) []ads.Banner {
+func (b *Budget) Apply(candidates []*ads.Banner, state *plugins.State) []*ads.Banner {
 	state.Candidates = state.Candidates[:]
 
 	return candidates

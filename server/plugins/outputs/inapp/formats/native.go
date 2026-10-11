@@ -120,7 +120,7 @@ func imageStyle(format string) string {
 	return "250x250"
 }
 
-func revenueFor(b ads.Banner) *float64 {
+func revenueFor(b *ads.Banner) *float64 {
 	if b.Network != networkCoffee {
 		return nil
 	}
@@ -130,7 +130,7 @@ func revenueFor(b ads.Banner) *float64 {
 	return &revenue
 }
 
-func (f *Native) tracker(w ads.Banner, state *plugins.State, action string) (string, error) {
+func (f *Native) tracker(w *ads.Banner, state *plugins.State, action string) (string, error) {
 	info := ads.TrackerInfo{
 		Action:       action,
 		BannerID:     w.ID,

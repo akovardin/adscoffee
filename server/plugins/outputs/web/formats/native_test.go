@@ -40,7 +40,7 @@ func TestNative_Render_WithEmptyWinners(t *testing.T) {
 	native := &Native{}
 	ctx := context.Background()
 	state := &plugins.State{
-		Winners: []ads.Banner{},
+		Winners: []*ads.Banner{},
 	}
 
 	result, err := native.Render(ctx, state)
@@ -60,7 +60,7 @@ func TestNative_Render_WithOneWinner(t *testing.T) {
 	image := media_library.MediaBox{Url: "/test/image.jpg"}
 
 	state := &plugins.State{
-		Winners: []ads.Banner{
+		Winners: []*ads.Banner{
 			{
 				Title:       "Test Native Ad",
 				Description: "This is a test native advertisement",
@@ -102,7 +102,7 @@ func TestNative_Render_WithMultipleWinners(t *testing.T) {
 	}
 
 	state := &plugins.State{
-		Winners: []ads.Banner{
+		Winners: []*ads.Banner{
 			{
 				Title:       "First Native Ad",
 				Description: "This is the first test native advertisement",
@@ -151,7 +151,7 @@ func TestNative_Render_PriceOnlyForCoffee(t *testing.T) {
 	ctx := context.Background()
 
 	state := &plugins.State{
-		Winners: []ads.Banner{
+		Winners: []*ads.Banner{
 			{Network: "coffee", Price: 15},
 			{Network: "yandex", Price: 20, Data: `{"block":"R-A-1"}`},
 		},
@@ -178,7 +178,7 @@ func TestNative_Render_WithEmptyFields(t *testing.T) {
 	image := media_library.MediaBox{}
 
 	state := &plugins.State{
-		Winners: []ads.Banner{
+		Winners: []*ads.Banner{
 			{
 				Title:       "",
 				Description: "",
